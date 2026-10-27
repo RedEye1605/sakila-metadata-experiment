@@ -43,3 +43,9 @@ def test_sampler_belongs_to_audited_backend_and_seed(tmp_path, monkeypatch):
     with pytest.raises(ValueError, match="sampler/seed"):
         runtime.verify_sampler(config, tmp_path / "backend.json", pilot, tmp_path / "wrong.json")
     assert not (tmp_path / "wrong.json").exists()
+    # Float32 sampler values need tolerance; an adjacent large integer seed
+    # must still fail even when its relative difference is below 1e-6.
+    records[0]["inference_seed"] = 828229203
+    slots[0]["params"]["seed"] = 828229204
+    with pytest.raises(ValueError, match="sampler/seed"):
+        runtime.verify_sampler(config, tmp_path / "backend.json", pilot, tmp_path / "large-wrong.json")

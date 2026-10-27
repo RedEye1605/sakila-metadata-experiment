@@ -130,7 +130,9 @@ def verify_sampler(config: AppConfig, backend_path: Path, pilot_directory: Path,
     if len(slots) != 1 or slots[0].get("is_processing") or slots[0].get("n_prompt_tokens_cache") != 0:
         raise ValueError("Backend is active or prompt caching is not zero")
     params = slots[0].get("params", {})
-    if any(type(params.get(k)) not in (int, float) or not math.isclose(params[k], v, rel_tol=1e-6) for k, v in expected.items()):
+    if any(type(params.get(k)) not in (int, float)
+           or (params[k] != v if type(v) is int else not math.isclose(params[k], v, rel_tol=1e-6))
+           for k, v in expected.items()):
         raise ValueError("Actual sampler/seed differs from the last audited pilot request")
     record = {"status": "sampler_seed_cache_verified", "model_sha256": evidence.model_sha256,
               "backend_evidence_sha256": evidence.verification_artifact_sha256, "source_trial": last["trial_id"],
