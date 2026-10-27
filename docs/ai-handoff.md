@@ -10,7 +10,7 @@ Gunakan delapan tahap metodologi yang disepakati: Studi Literatur; Penyusunan An
 
 | Kebutuhan | Sumber |
 |---|---|
-| BAB IV: rancangan dan implementasi | `docs/bab-iv.md`, `docs/implementation-plan.md`, source modules |
+| BAB IV: rancangan dan implementasi | `docs/bab-iv.md`, `docs/implementation-plan.md`, `docs/reproduction.md`, source modules |
 | Kontrol dan keputusan | `docs/decisions.md`, `docs/evaluation-protocol.md`, `docs/analysis-plan.md` |
 | Diagram editable dan siap pakai | `docs/figures/source/*.mmd`, SVG/PNG pada directory induk |
 | Soal/gold dan kontrak | `data/public/main.questions.jsonl`, `data/private/main.gold.jsonl`, `data/pilot` |
@@ -34,6 +34,8 @@ Repository publik sengaja tidak menyertakan keluaran model, angka EX, p-values a
 ## Status ilmiah dan batas klaim
 
 Benchmark/gold/anotasi masih **draft**. Peneliti mengizinkan 36 pilot dan 600 trial **pendahuluan** untuk menghasilkan laporan teknis. Software tidak mengubah draft menjadi approved. Gunakan kata pendahuluan/provisional pada semua keluaran yang belum melewati review.
+
+Run pendahuluan sudah lengkap dan lolos audit. Laporan aktual berada secara lokal di `runs/analysis/preliminary-01`, khususnya `interpretation.md`, `report.md` dan `report.json`. Jangan mengirim paket penulis yang memuat skor kepada A01/A02 sebelum submission independen mereka selesai. Source generation/analisis asli adalah commit bb32938; hardening review ditambahkan sesudah completion, bukan mengganti source di tengah run.
 
 Rencana analisis dipilih sebelum run pendahuluan dan di-hash: agregasi skor/5 per question–scenario, omnibus permutation dalam question blocks, enam paired contrasts dengan Holm, 10.000 bootstrap question-level berstrata complexity; seed dan implementasi tercatat. Uraikan asumsi exchangeability, keterbatasan 30 soal terpilih, tied/discrete scores, pointwise CI, dan bahwa nonsignificance bukan bukti ekuivalensi.
 

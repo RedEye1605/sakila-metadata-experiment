@@ -37,6 +37,17 @@ Thesis: **Analisis Pengaruh Metadata terhadap Execution Accuracy pada Sistem Tex
 | D31 | Four human review components; mechanical checks are automatic | Benchmark (including EX contracts/separation), metadata, generation and analysis; audit real pilot artifacts and selected-backend matches |
 | D32 | Reproduction replays archived MCP exports on a fresh workspace/database | Fresh Python + official isolated MySQL import and identical snapshot payloads verified; not a claim of new DataHub ingestion |
 | D33 | MySQL healthcheck must query the final TCP server | Cold-start found a temporary-socket readiness race; query SELECT 1 over TCP resolves it |
+| D34 | Explicit provisional route supersedes D30 for the authorized preliminary run | User clarified reviews are incomplete and requested testing anyway; --allow-unreviewed never creates approval |
+| D35 | Run one 36-trial 7B pilot, then a separately frozen 600-trial preliminary benchmark | Same fixed source/model/settings; complete pilot audit, backend-specific sampler proof and all 120 prompt budgets precede benchmark dispatch |
+| D36 | A01/A02 review independently, followed by human adjudication | Each receives 152 items without predictions/scores; identities/dates not supplied and never fabricated |
+| D37 | Keep public source/docs; embargo actual EX/predictions until review | Existing public repository authorized; keyring authentication used, exposed chat token not used or stored |
+| D38 | Freeze paired permutation/Holm/bootstrap protocol before preliminary generation | User selected full EX and paired analysis; draft-reference statistics remain exploratory/conditional, not supervisor-approved final findings |
+| D39 | Gold-only corrections may reuse stored prediction results | Require unchanged generation inputs/database and hash-bound complete adjudication; other treatment/question changes require new generation |
+| D40 | Preserve exact local snapshots and publish explicit portable distribution views | Payload bytes/hashes unchanged; distribution manifest records original manifest hash and relative provenance paths |
+| D41 | Generation and original analysis use frozen commit bb32938; review hardening merges only after completion | 600 responses/outcomes completed and audited before source changes; full data and model/snapshot hashes preserved |
+| D42 | Bind rescore to exact adjudicated gold and frozen evaluation policy | Preserve six submission hashes, reject unrecorded corrections/complexity changes and database/comparator/protocol drift; no new inference |
+| D43 | Compare integer sampler parameters exactly | Postrun inspection exposed float32 serialization differences; floats retain defined tolerance, large neighboring integer seeds must fail verification; actual final seed matched exactly |
+| D44 | Latest reconstruction tests archived MCP replay in a new database/environment | publication-01 verified schema/data and all payload hashes with 144 tests; does not claim fresh catalog ingestion or regenerated model outputs |
 
 ## Verified observations
 

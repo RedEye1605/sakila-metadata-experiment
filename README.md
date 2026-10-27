@@ -1,5 +1,7 @@
 # Sakila Metadata Experiment
 
+[![Tests](https://github.com/RedEye1605/sakila-metadata-experiment/actions/workflows/tests.yml/badge.svg)](https://github.com/RedEye1605/sakila-metadata-experiment/actions/workflows/tests.yml)
+
 **A controlled Indonesian Text-to-SQL research instrument.**
 
 Investigate how metadata annotation changes the execution accuracy of one fixed local LLM on the official MySQL Sakila database. DataHub and MCP prepare auditable metadata snapshots; Python runs independent inference requests, safe SQL execution, result comparison and question-paired analysis.
@@ -11,6 +13,8 @@ Investigate how metadata annotation changes the execution accuracy of one fixed 
 **Thesis title — unchanged:** *Analisis Pengaruh Metadata terhadap Execution Accuracy pada Sistem Text-to-SQL Berbasis Large Language Model (Studi Kasus: Basis Data Sakila)*
 
 [BAB IV](docs/bab-iv.md) · [Runbook](docs/runbook.md) · [Annotator guide](annotations/round-01/GUIDE.md) · [AI handoff](docs/ai-handoff.md) · [Decisions](docs/decisions.md)
+
+A full preliminary run has completed and passed integrity checks. The latest source passes 144 local and isolated-reconstruction tests; actual scores remain embargoed pending review.
 
 ## Experimental design
 
@@ -61,6 +65,8 @@ uv run --frozen sakila-experiment schedule --questions data/public/main.question
 MySQL binds to **127.0.0.1:13306**, DataHub GMS/UI to **18080/19002**, and inference to **18081**. Credentials, downloads and experiment logs are Git-ignored. `.env.example` documents configuration; never commit an actual `.env`.
 
 Public candidate payloads in `snapshots/distribution-v1` are byte-identical to the local candidates. Distribution manifests use relative provenance paths and preserve original manifest hashes. Raw MCP exports/runtime receipts remain local; replay requires their archive or fresh documented DataHub/MCP preparation. Public payloads alone do not establish fresh ingestion.
+
+See the [full reconstruction guide](docs/reproduction.md) for fresh DataHub preparation, runtime-image receipts and the distinction between archived replay and a new ingestion.
 
 ## Running an experiment
 

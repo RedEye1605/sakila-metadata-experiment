@@ -26,6 +26,8 @@ One generation opportunity per evaluable assigned trial. Malformed, unsafe, inco
 
 ## Human readiness gates
 
+The latest user decision authorizes a **separate preliminary route with draft inputs**. It is not a bypass that marks these gates passed. Its 36-trial qualification pilot and frozen 600-trial run share source/model/settings; every resulting report remains provisional and locally embargoed. See D34–D40. The gates below still govern reviewed main execution.
+
 - Questions and gold SQL require user/reviewer semantic approval.
 - Annotations require schema/documentation-grounded review; no gold or answer-specific hints.
 - No main run until model, snapshots, benchmark, prompt, comparison rules, source version, and analysis protocol are frozen.

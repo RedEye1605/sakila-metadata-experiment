@@ -40,7 +40,7 @@ uv run --frozen sakila-experiment backend verify --config configs/coder7b.toml -
 
 Kandidat 7B sudah diunduh dan loading/token budget diverifikasi di `runs/inference/coder7b/backend-24`. Gunakan directory baru untuk pemeriksaan berbeda; jangan menimpa bukti lama. Pilih backend evidence yang memang dipakai untuk run berikutnya. Model download menerima revision, byte count dan SHA-256 yang dipin. Pastikan tersedia RAM sebelum startup, DataHub berhenti dan endpoint sudah siap sebelum verifikasi. Server memakai satu slot, context 16.384, 24 GPU layers, fit/cache/context shift off. Verifikasi ini tidak melakukan generation.
 
-**Pilot/gold tetap draft. Perintah pilot dan probe akan ditolak sebelum ada review semantik.** Contoh di bawah hanya digunakan setelah reviewer menyelesaikan koreksi dan status referensi disetujui. Gunakan run ID baru karena source dan kebijakan telah berubah dari pilot 3B historis.
+**Pilot/gold tetap draft. Jalur reviewed menolak draft; jalur pendahuluan terpisah memakai opt-in eksplisit.** Contoh reviewed di bawah hanya digunakan setelah koreksi dan persetujuan semantik. Jalur pendahuluan yang dipilih peneliti dijelaskan pada bagian tersendiri; tidak mengubah review status.
 
 ```bash
 uv run --frozen sakila-experiment validate-gold --questions data/pilot/questions.jsonl --gold data/pilot/gold.jsonl --output-directory runs/gold/pilot-reviewed-01
@@ -60,6 +60,24 @@ uv run --frozen sakila-experiment experiment recover --run-directory runs/main/m
 Perintah tersebut hanya mencatat insiden, tidak memanggil model dan tidak memperbaiki SQL. Gunakan ID/attempt yang benar dari ledger; contoh bukan instruksi untuk membuat main run sekarang.
 
 `analyze` mengaudit manifest, plan, SQLite events, JSONL export, prompt hashes dan result hashes. Pilot mendapat tabel deskriptif saja.
+
+## Preliminary route — explicit draft authorization
+
+Urutan ini dipilih peneliti untuk memperoleh laporan teknis sebelum review. Semua actual scores/predictions tetap lokal. Gunakan source commit yang sama dari pilot sampai 600 trial selesai; jangan commit perubahan atau mengubah source/config/prompt/input di tengah run. Perubahan naskah Markdown diperbolehkan kecuali analysis plan yang sudah di-hash. Gunakan directory baru untuk percobaan baru. Perintah berikut merujuk bukti backend lokal; pada host baru lakukan backend verification dengan bukti baru terlebih dahulu.
+
+```bash
+uv run --frozen python infra/inference/start_local.py
+uv run --frozen sakila-experiment run-preliminary --pilot --allow-unreviewed --config configs/coder7b.toml --backend-evidence runs/inference/coder7b/backend-final-24/verification.json --experiment-id prelim-pilot-01 --output-directory runs/preliminary/pilot-01
+uv run --frozen sakila-experiment backend verify-sampler --config configs/coder7b.toml --backend-evidence runs/inference/coder7b/backend-final-24/verification.json --pilot-directory runs/preliminary/pilot-01 --output runs/inference/coder7b/backend-final-24/sampler-verification.json
+uv run --frozen sakila-experiment backend probe --allow-unreviewed --config configs/coder7b.toml --backend-evidence runs/inference/coder7b/backend-final-24/verification.json --output-directory runs/inference/coder7b/probe-preliminary-01
+uv run --frozen sakila-experiment freeze-preliminary --allow-unreviewed --config configs/coder7b.toml --backend-evidence runs/inference/coder7b/backend-final-24/verification.json --pilot-directory runs/preliminary/pilot-01 --experiment-id preliminary-01 --output-directory runs/preliminary/benchmark-01
+uv run --frozen sakila-experiment run-preliminary --allow-unreviewed --config configs/coder7b.toml --backend-evidence runs/inference/coder7b/backend-final-24/verification.json --pilot-directory runs/preliminary/pilot-01 --experiment-id preliminary-01 --output-directory runs/preliminary/benchmark-01
+uv run --frozen --group analysis sakila-experiment analyze --run-directory runs/preliminary/benchmark-01 --output-directory runs/analysis/preliminary-01
+```
+
+Pilot berisi 36 assignment dengan satu repetition; benchmark berisi 600 assignment. Freeze memeriksa semua 120 prompt serta gold execution tanpa generation. `--allow-unreviewed` tidak membuat approval. Report/CSV/figures menyatakan provisional; statistics tetap exploratory/conditional. Model failures tidak diperbaiki/diulang. Infra incident mengikuti kebijakan recovery yang sama dengan reviewed route.
+
+Public clone memakai `snapshots/distribution-v1` untuk inspect/validate dengan `--snapshot-root`. Untuk run yang auditable, lakukan persiapan DataHub/MCP pada host tersebut atau sediakan arsip raw receipts asli dan baseline pendukung. Candidate manifests lokal dan receipts runtime sengaja tidak disebarkan sebagai bukti instalasi host baru.
 
 ## Main gates — currently pending
 
@@ -100,3 +118,33 @@ uv run --frozen python infra/reproduce.py --id closure-new --port 13309 --output
 Reproduksi membuat workspace/venv, project/container/volume dan credentials baru; hanya loopback port alternatif digunakan. Fresh official import dibandingkan terhadap skema/DDL/data baseline. Snapshot direkonstruksi dari dua ekspor MCP aktual yang diarsipkan untuk setiap kondisi dan hash payload harus identik. Ini bukan fresh DataHub catalog test dan tidak menjalankan LLM. Report/failure receipt dan cleanup dipertahankan; container reproduksi dihentikan tanpa menghapus volume.
 
 Tiga script lama pada `infra/inference` kini merupakan compatibility entrypoint untuk CLI parameterized yang sama dan memerlukan argumen eksplisit. Model 3B tetap tersedia melalui `models/qwen25-3b-q4km.json` dan config/compose historis, tetapi belum menjadi model final. Source lama untuk mengulang milestone lama tersedia dalam bundle evidence historis; jangan menggunakan source baru untuk mengklaim resume manifest lama cocok.
+
+## Independent annotation and reference-only reevaluation
+
+Paket siap distribusi: `annotations/round-01`. Berikan hanya folder A01 kepada A01 dan A02 kepada A02, ditambah GUIDE.md, schema.json serta material reference bersama. Path panduan detail adalah **`reference/review-guide.md`** (huruf kecil). Jangan berikan actual model output/EX. File template read-only: reviewer mengedit salinannya pada directory kerja privat.
+
+```bash
+uv run --frozen sakila-experiment review consolidate --package annotations/round-01 --a01 annotations/submissions/A01 --a02 annotations/submissions/A02 --output-directory annotations/submissions/consolidation-01
+```
+
+Program menolak source cells/ID berubah dan memvalidasi criterion, decision, alasan serta tanggal. Submission parsial boleh dikonsolidasikan untuk memantau kemajuan, tetapi adjudikasi/rescore mensyaratkan kedua submission lengkap. Tidak ada approval otomatis. Adjudikator mengisi final_decision, final_correction, adjudicator, rationale dan adjudicated_at_utc pada salinan adjudication.csv. Untuk gold-only correction, final_correction harus JSON berisi hanya gold_sql/column_count/ordered/approximate_columns/semantic_notes. Koreksi metadata atau pertanyaan menuntut generation baru.
+
+Rescore kemudian memerlukan receipt nyata dengan status adjudicated, reviewers A01/A02, adjudicator/tanggal, generation_signature, gold_sha256, adjudication_sha256, consolidation_report_sha256 dan review_package_sha256. Generation signature dihitung dari manifest sumber melalui `evaluation.reevaluate.generation_signature`; hash lain memakai SHA-256 byte file sebenarnya. Jangan mengisi receipt dengan nama/tanggal contoh dan menyebutnya keputusan sebenarnya. `report.json` konsolidasi lengkap harus berada bersama adjudication.csv.
+
+```bash
+uv run --frozen --group analysis sakila-experiment experiment reevaluate --config configs/coder7b.toml --source-run runs/preliminary/benchmark-01 --questions data/public/main.questions.jsonl --gold data/private/main.reviewed.gold.jsonl --snapshot-root snapshots/candidates-v2 --review-package annotations/round-01 --adjudication-file annotations/submissions/consolidation-01/adjudication.csv --receipt annotations/submissions/adjudication-receipt.json --output-directory runs/reevaluation/reviewed-01
+```
+
+Perintah contoh ini **belum dapat dijalankan** sebelum review sesungguhnya. Tidak ada reviewed replacement gold/receipt yang dibuat otomatis. Reevaluation menjalankan gold baru serta membandingkan typed prediction results yang tersimpan, tanpa inference baru atau modifikasi ledger asal. Jangan mengganti mode pendahuluan menjadi reviewed main secara retroaktif.
+
+## Figures and publication
+
+Diagram menggunakan Mermaid CLI 12.0.0 terpin. Node 22.13+ dan Chrome diperlukan; `tools/diagrams/puppeteer.json` menetapkan executable Linux lokal dan dapat disesuaikan pada host lain. Sesuaikan hanya tooling visual, bukan runtime eksperimen.
+
+```bash
+PUPPETEER_SKIP_DOWNLOAD=1 npm ci --prefix tools/diagrams --ignore-scripts --no-audit --no-fund
+uv run --frozen python infra/render_diagrams.py
+uv run --frozen python infra/publication.py
+```
+
+Audit publikasi membaca **staged index**; pemeriksaan naskah manual tetap diperlukan. Jangan memasukkan directory reproduksi workspace secara utuh ke archive karena berisi credentials/venv. Hanya kumpulkan file bukti yang dipilih dan sudah diaudit. `docs/publication.md` menetapkan embargo aktual model results sebelum external review.
