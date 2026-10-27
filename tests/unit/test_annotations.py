@@ -62,4 +62,6 @@ def test_complete_synthetic_agreement_still_requires_adjudication(tmp_path):
     result = consolidate(package, tmp_path / "A01", tmp_path / "A02", tmp_path / "consolidated")
     assert result["paired_completed"] == result["resolution_agreements"] == 4
     assert result["approvals_created"] == 0
+    assert len(result["submission_sha256"]) == 6
+    assert result["adjudication_template_sha256"]
     assert json.loads((tmp_path / "data/private/main.gold.jsonl").read_bytes())["review_status"] == "draft"

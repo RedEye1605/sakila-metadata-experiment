@@ -62,7 +62,7 @@ def build_annotation_round(root: Path, output: Path):
 Tujuan: menilai kebenaran dan kejelasan benchmark serta anotasi metadata. Ini bukan penilaian apakah model berhasil menjawab. Hasil model berada dalam embargo selama review.
 
 1. A01 dan A02 mengerjakan salinan folder masing-masing secara independen. Jangan melihat isian anotator lain, SQL prediksi, EX, atau laporan error model sebelum submit.
-2. Baca schema.json, pertanyaan, draft gold, kontrak hasil dan sumber metadata. Reference/review-guide.md memuat cuplikan hasil referensi bertipe. Keberhasilan SQL dieksekusi tidak otomatis membuat maknanya benar.
+2. Baca schema.json, pertanyaan, draft gold, kontrak hasil dan sumber metadata. reference/review-guide.md memuat cuplikan hasil referensi bertipe. Keberhasilan SQL dieksekusi tidak otomatis membuat maknanya benar.
 3. Isi setiap criterion dengan yes, no, atau uncertain. Isi decision dengan accepted, revise, rejected, atau uncertain. Pending berarti belum dikerjakan. Accepted mensyaratkan seluruh criterion yes tanpa usulan perubahan.
 4. Tulis usulan pada proposed_*; jangan mengganti teks sumber, ID, kontrak atau hash. Tulis alasan di notes, terutama untuk keputusan selain accepted. Isi annotated_at_utc dengan ISO 8601 bertimezone, misalnya 2026-10-27T12:00:00Z (gunakan tanggal sebenarnya).
 5. Soal: periksa makna Indonesia, answerability, JOIN/aggregation grain, NULL, duplikat, kolom, ordering/ties, gold SQL, complexity dan paraphrase overlap antara pilot/utama. Simple tanpa JOIN/group/subquery; medium memakai JOIN/group/HAVING tanpa struktur complex; complex memakai subquery/CTE/window/set operation atau sedikitnya tiga JOIN.
@@ -82,6 +82,7 @@ Kirim CSV melalui kanal yang ditetapkan peneliti. Simpan identitas asli di luar 
 def consolidate(package: Path, a01: Path, a02: Path, output: Path):
     manifest = json.loads((package / "manifest.json").read_bytes())
     adjudication, paired, agreements = [], 0, 0
+    submission_hashes = {}
     for kind in CRITERIA:
         submitted = {}
         for reviewer, directory in (("A01", a01), ("A02", a02)):
@@ -89,7 +90,9 @@ def consolidate(package: Path, a01: Path, a02: Path, output: Path):
             if sha256_bytes(template_path.read_bytes()) != manifest["template_sha256"][str(template_path.relative_to(package))]:
                 raise ValueError("Distributed template changed")
             expected = {r["item_id"]: r for r in rows(template_path)}
-            incoming = rows(directory / (kind + ".csv"))
+            submitted_bytes = (directory / (kind + ".csv")).read_bytes()
+            submission_hashes[reviewer + "/" + kind + ".csv"] = sha256_bytes(submitted_bytes)
+            incoming = list(csv.DictReader(io.StringIO(submitted_bytes.decode("utf-8-sig"))))
             actual = {r["item_id"]: r for r in incoming}
             if len(actual) != len(incoming) or actual.keys() != expected.keys():
                 raise ValueError("Missing, duplicate or unexpected annotation IDs")
@@ -127,6 +130,7 @@ def consolidate(package: Path, a01: Path, a02: Path, output: Path):
     write_csv(output / "adjudication.csv", adjudication)
     report = {"status": "pending_adjudication", "items": len(adjudication), "paired_completed": paired, "resolution_agreements": agreements,
               "agreement_percent": agreements / paired * 100 if paired else None, "approvals_created": 0,
+              "submission_sha256": submission_hashes, "adjudication_template_sha256": sha256_bytes((output / "adjudication.csv").read_bytes()),
               "source_manifest_sha256": sha256_bytes((package / "manifest.json").read_bytes())}
     publish_artifact(output / "report.json", canonical_json(report))
     return report
