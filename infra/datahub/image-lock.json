@@ -1,0 +1,42 @@
+{
+  "provenance": "Resolved from images used by the verified local DataHub deployment",
+  "release": "v1.8.0",
+  "services": {
+    "datahub-gms-quickstart": {
+      "image_id": "sha256:2ba07610b3aa6d534003bd905360987d4db860874b094017466d694095a3e98d",
+      "locked_reference": "acryldata/datahub-gms@sha256:2ba07610b3aa6d534003bd905360987d4db860874b094017466d694095a3e98d",
+      "original_reference": "acryldata/datahub-gms:${DATAHUB_VERSION}",
+      "verified_runtime_tag": "acryldata/datahub-gms:v1.8.0"
+    },
+    "frontend-quickstart": {
+      "image_id": "sha256:ab1df1ae0854149e1213f7e8c2200307654ef7f52283977a7acd7833e4cc0900",
+      "locked_reference": "acryldata/datahub-frontend-react@sha256:ab1df1ae0854149e1213f7e8c2200307654ef7f52283977a7acd7833e4cc0900",
+      "original_reference": "acryldata/datahub-frontend-react:${DATAHUB_VERSION}",
+      "verified_runtime_tag": "acryldata/datahub-frontend-react:v1.8.0"
+    },
+    "kafka-broker": {
+      "image_id": "sha256:8e01c0305844d6c05bfb8e86479f5f363bb6a53497625395943a9da780de67ce",
+      "locked_reference": "confluentinc/cp-kafka@sha256:8e01c0305844d6c05bfb8e86479f5f363bb6a53497625395943a9da780de67ce",
+      "original_reference": "confluentinc/cp-kafka:8.2.2",
+      "verified_runtime_tag": "confluentinc/cp-kafka:8.2.2"
+    },
+    "mysql": {
+      "image_id": "sha256:212fe73edca5df6ff14826d5eb975c914bfb91f82a2e923f9050568f99525da1",
+      "locked_reference": "mysql@sha256:212fe73edca5df6ff14826d5eb975c914bfb91f82a2e923f9050568f99525da1",
+      "original_reference": "mysql:8.2",
+      "verified_runtime_tag": "mysql:8.2"
+    },
+    "opensearch": {
+      "image_id": "sha256:e96cc6ae1500a073d973c0906f30f7cf4d9c461f32f855f9242a2da933660cdd",
+      "locked_reference": "opensearchproject/opensearch@sha256:e96cc6ae1500a073d973c0906f30f7cf4d9c461f32f855f9242a2da933660cdd",
+      "original_reference": "opensearchproject/opensearch:2.19.3",
+      "verified_runtime_tag": "opensearchproject/opensearch:2.19.3"
+    },
+    "system-update-quickstart": {
+      "image_id": "sha256:751d1148981b27f9c6d54ddbc69bd33fff0ba26ff833b0c45cb64f0ebe8b06d6",
+      "locked_reference": "acryldata/datahub-upgrade@sha256:751d1148981b27f9c6d54ddbc69bd33fff0ba26ff833b0c45cb64f0ebe8b06d6",
+      "original_reference": "acryldata/datahub-upgrade:${DATAHUB_VERSION}",
+      "verified_runtime_tag": "acryldata/datahub-upgrade:v1.8.0"
+    }
+  }
+}

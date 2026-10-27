@@ -1,0 +1,16 @@
+flowchart LR
+  TECH[Shared technical schema<br/>16 base tables · 90 columns<br/>PK + 22 FK · native types]
+  TECH --> S0[S0<br/>Technical baseline]
+  TECH --> S1[S1<br/>Short descriptions<br/>106 elements]
+  TECH --> S2[S2<br/>Detailed descriptions<br/>same 106 elements]
+  TECH --> S3[S3<br/>Exact S2 descriptions<br/>+ 7 business terms]
+  S2 -. verbatim preservation .-> S3
+  S0 --> FIXED[Fixed questions · prompt · model<br/>database · sampling · EX rules]
+  S1 --> FIXED
+  S2 --> FIXED
+  S3 --> FIXED
+  FIXED --> TRIALS[30 questions × 4 conditions × 5 repetitions<br/>600 assigned trials · randomized order]
+  classDef shared fill:#edf1f5,stroke:#536879,color:#213242;
+  classDef treatment fill:#e5f1ed,stroke:#447568,color:#193b31;
+  class TECH,FIXED,TRIALS shared;
+  class S0,S1,S2,S3 treatment;

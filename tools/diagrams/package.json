@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "name": "sakila-research-diagrams",
+  "version": "1.0.0",
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "12.0.0"
+  }
+}

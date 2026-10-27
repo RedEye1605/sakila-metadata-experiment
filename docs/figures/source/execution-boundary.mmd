@@ -1,0 +1,23 @@
+flowchart TB
+  INPUT[Only instructions + assigned snapshot<br/>+ Indonesian question + output rules]
+  subgraph MODEL[LLM boundary — generation only]
+    INPUT --> REQUEST[One stateless chat completion]
+    REQUEST --> RAW[Raw model response]
+  end
+  subgraph PY[Python orchestration boundary]
+    RAW --> SAVE[Persist response before evaluation]
+    SAVE --> FORMAT[Predefined formatting extraction]
+    FORMAT --> AST[Single-statement AST policy]
+    AST -->|allowed| MYSQL[SELECT-only MySQL account<br/>timeouts + result bounds]
+    AST -->|rejected| ZERO[Terminal model failure · EX 0]
+    MYSQL -->|result| EX[Compare against isolated gold result]
+    MYSQL -->|service outage| INFRA[EX null · preserve response<br/>explicit incident handling]
+    EX --> LEDGER[Immutable outcome + audit events]
+    ZERO --> LEDGER
+  end
+  GOLD[Gold SQL + comparison contract] --> EX
+  PREP[DataHub + MCP<br/>preparation only] --> INPUT
+  classDef boundary fill:#eaf2f8,stroke:#335c81,color:#213242;
+  classDef policy fill:#fff1df,stroke:#a77932,color:#503718;
+  class INPUT,REQUEST,RAW,SAVE,EX,LEDGER boundary;
+  class FORMAT,AST,MYSQL,ZERO,INFRA policy;

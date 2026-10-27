@@ -1,0 +1,24 @@
+name: Tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  python:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install uv==0.11.16
+      - run: uv sync --frozen --group analysis
+      - run: uv run --frozen sakila-experiment database bootstrap
+      - run: uv run --frozen sakila-experiment database inspect --output runs/database/baseline.json
+      - run: uv run --frozen --group analysis pytest -q --run-integration
+      - if: always()
+        run: docker compose -f infra/compose.yaml down

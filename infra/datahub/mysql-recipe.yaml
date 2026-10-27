@@ -1,0 +1,25 @@
+# Environment variables are resolved only in the metadata tooling process.
+# Never replace these references with literal credentials in tracked files.
+source:
+  type: mysql
+  config:
+    host_port: "127.0.0.1:13306"
+    database: sakila
+    username: metadata_reader
+    password: ${SAKILA_METADATA_PASSWORD}
+    platform_instance: sakila-research
+    env: DEV
+    include_tables: true
+    include_views: false
+    include_stored_procedures: false
+    include_usage_statistics: false
+    include_view_lineage: false
+    include_view_column_lineage: false
+    profiling:
+      enabled: false
+sink:
+  type: datahub-rest
+  config:
+    server: "http://127.0.0.1:18080"
+    token: ${DATAHUB_GMS_TOKEN}
+

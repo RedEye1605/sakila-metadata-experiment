@@ -1,0 +1,18 @@
+{
+  "source_url": "https://raw.githubusercontent.com/datahub-project/datahub/v1.8.0/docker/quickstart/docker-compose.quickstart-profile.yml",
+  "release": "v1.8.0",
+  "source_sha256": "4342e78a4c05aedc34d014d0c29d7d536caa3a04bc173aa0ade6a64a139b3b9f",
+  "derived_sha256": "ec57b05367c1b7071015e6be4189cd663a0ef9efa57ce1795b6a970f22fd90ed",
+  "changes": [
+    "loopback-only GMS and frontend ports",
+    "unpublished internal service ports",
+    "isolated named volumes and network",
+    "removed host AWS/plugin mounts",
+    "removed unused Actions worker",
+    "enabled metadata-service authentication",
+    "random local authentication secrets",
+    "bounded container memory"
+  ],
+  "runtime_verified": false,
+  "image_lock_sha256": "d657445a47e2bd8e4dc44d0f7c32e1aab240e3f034ed03abe19138a87ddf5185"
+}

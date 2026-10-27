@@ -1,0 +1,12 @@
+# Use the audited two-stage ingestion output so MySQL geometry is not mislabeled BLOB.
+# Regenerate/verify the fidelity receipt before ingesting; never feed this file to LLM.
+source:
+  type: file
+  config:
+    path: ${SAKILA_VALIDATED_INGESTION_FILE}
+sink:
+  type: datahub-rest
+  config:
+    server: "http://127.0.0.1:18080"
+    token: ${DATAHUB_GMS_TOKEN}
+

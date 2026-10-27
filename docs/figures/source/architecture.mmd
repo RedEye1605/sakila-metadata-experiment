@@ -1,0 +1,21 @@
+flowchart TB
+  subgraph A[Phase A — metadata preparation]
+    direction LR
+    DB[Official Sakila<br/>MySQL · fixed records] --> DH[DataHub Core<br/>ingestion + annotations]
+    DH --> CLIENT[MCP server + Python client<br/>raw retrieval receipts]
+    CLIENT --> SNAP[S0 · S1 · S2 · S3 snapshots<br/>validation + SHA-256]
+  end
+  subgraph B[Phase B — controlled experiment]
+    direction LR
+    Q[30 Indonesian questions<br/>10 simple · 10 medium · 10 complex] --> BUILD[Fixed prompt builder]
+    BUILD --> LLM[One local LLM<br/>independent request]
+    LLM --> EXEC[AST policy + read-only MySQL]
+    EXEC --> CMP[Execution-result comparator]
+    GOLD[Isolated gold SQL + result contract] --> CMP
+    CMP --> ANALYSIS[Ledger + paired analysis<br/>EX · effects · uncertainty]
+  end
+  A -->|Frozen metadata only| B
+  classDef prep fill:#eaf2f8,stroke:#335c81,color:#19334b;
+  classDef run fill:#edf5ee,stroke:#4c7853,color:#213d26;
+  class DB,DH,CLIENT,SNAP prep;
+  class Q,BUILD,LLM,EXEC,CMP,GOLD,ANALYSIS run;

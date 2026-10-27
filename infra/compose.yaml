@@ -1,0 +1,44 @@
+name: sakila-research
+
+services:
+  mysql:
+    image: mysql@sha256:b3b90af2a6552ae30c266fdb7d5dd55f3afb72404bb78d37fe8a23eb857fd3fb
+    container_name: sakila-research-mysql
+    restart: unless-stopped
+    mem_limit: 1g
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/root_password
+      TZ: UTC
+    ports:
+      - "127.0.0.1:13306:3306"
+    command:
+      - --innodb-buffer-pool-size=128M
+      - --max-connections=20
+      - --performance-schema=OFF
+      - --local-infile=OFF
+      - --secure-file-priv=NULL
+      - --max-execution-time=10000
+      - --default-time-zone=+00:00
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+    secrets:
+      - root_password
+      - admin_client
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysql", "--defaults-extra-file=/run/secrets/admin_client", "--protocol=TCP", "--host=127.0.0.1", "--port=3306", "--batch", "--skip-column-names", "--execute=SELECT 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 20s
+
+secrets:
+  root_password:
+    file: ../secrets/root_password.txt
+  admin_client:
+    file: ../secrets/admin-client.cnf
+
+volumes:
+  mysql_data:
+

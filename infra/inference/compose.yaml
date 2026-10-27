@@ -1,0 +1,53 @@
+name: sakila-inference
+services:
+  llama:
+    image: ghcr.io/ggml-org/llama.cpp@sha256:91ac61def9ed19af96b9b2d2a0c1570a0903046f4e2dcbac7e3d965e5917b4ba
+    container_name: sakila-research-llama
+    ports:
+      - "127.0.0.1:18081:8080"
+    volumes:
+      - ../../downloads/models/7dabda4d13d513e3e842b20f0d435c732f172cbe:/models:ro
+    command:
+      - --model
+      - /models/qwen2.5-3b-instruct-q4_k_m.gguf
+      - --alias
+      - sakila-qwen25-3b-q4km
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8080"
+      - --ctx-size
+      - "16384"
+      - --parallel
+      - "1"
+      - --n-gpu-layers
+      - "99"
+      - --threads
+      - "6"
+      - --batch-size
+      - "512"
+      - --ubatch-size
+      - "128"
+      - --flash-attn
+      - "on"
+      - --fit
+      - "off"
+      - --cache-ram
+      - "0"
+      - --no-cache-prompt
+      - --no-context-shift
+      - --no-cont-batching
+      - --jinja
+    mem_limit: 5g
+    pids_limit: 256
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "Please cite this research software when reusing the pipeline."
+title: "Sakila Metadata Experiment"
+type: software
+authors:
+  - name: RedEye1605
+    alias: RedEye1605
+version: 0.1.0
+license: MIT
+repository-code: "https://github.com/RedEye1605/sakila-metadata-experiment"
+url: "https://github.com/RedEye1605/sakila-metadata-experiment"
+abstract: "An Indonesian Text-to-SQL research instrument comparing metadata conditions on MySQL Sakila using DataHub/MCP snapshots, local inference and paired execution-accuracy evaluation."
+keywords:
+  - text-to-sql
+  - metadata
+  - reproducible-research
+  - execution-accuracy
