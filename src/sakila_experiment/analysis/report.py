@@ -61,6 +61,15 @@ def audit_run(directory: Path) -> tuple[dict, list[dict]]:
             raise IntegrityError("Model or inference configuration changed")
         if row["snapshot_sha256"] != manifest["snapshots"]["snapshot_sha256"][row["scenario_id"]]:
             raise IntegrityError("Scenario snapshot changed")
+        if manifest.get("comparator_version") == "ex-results-v3-column-permutation":
+            if row.get("column_order_policy") != "permutation":
+                raise IntegrityError("Trial column-order policy differs from the frozen comparator")
+            if row["execution_accuracy"] == 1:
+                width = json.loads((directory / "gold-results" / f"{row['question_id']}.json").read_bytes())["column_count"]
+                mapping = row.get("column_permutation")
+                if (not isinstance(mapping, list) or any(type(i) is not int for i in mapping)
+                        or sorted(mapping) != list(range(width))):
+                    raise IntegrityError("Correct v3 outcome lacks a complete global column bijection")
         if manifest.get("benchmark_manifest_sha256"):
             settings = manifest["inference_config"]
             expected_request = {"model": manifest["model_id"], "temperature": settings["temperature"],

@@ -65,3 +65,20 @@ Thesis: **Analisis Pengaruh Metadata terhadap Execution Accuracy pada Sistem Tex
 - DataHub MCP 0.8.0 defaults to 120-character field descriptions and annotation-dependent field priority ordering. Full retrieval and independent canonical sorting are required.
 - Metadata runtime compatibility verified for server 0.8.0, FastMCP 3.2.0, MCP SDK 1.30.0, ingestion SDK 1.7.0.17, Core v1.8.0. MCP serverInfo.version=3.2.0 identifies the FastMCP framework; it must not be confused with the server package version.
 
+
+
+### D52 — Pertanyaan alami revision03
+
+Atas instruksi peneliti, hilangkan footer kolom teknis dan gunakan permintaan bisnis berbahasa Indonesia. Definisi domain tetap pada metadata. Tetap30soal/10–10–10 dan enam tugas source-rule. Tambahkan tiga ordered tasks termasuk dua top-k berdasarkan celah cakupan, bukan model EX. Blind review Q154 menghasilkan klarifikasi relasi yang diminta tanpa SQL recipe.
+
+### D53 — Kesetaraan kolom global
+
+Revision03 memilih permutation policy eksplisit: satu bijeksi kolom berlaku untuk seluruh hasil, aliases bebas, whole-row duplicates dan requested row order dipertahankan. Numeric/date contracts memakai koordinat gold. Fixed policy v1/v2 tetap tersedia. Tidak ada regrading atau relabelling hasil lama secara diam-diam.
+
+### D54 — Source correction dan batas run baru
+
+Perbaiki lookup question_attributes dari Question objects ke question_id string dengan regression test. Pertahankan source equality gate. Source/prompt/questions/comparator berubah, sehingga approval/pilot versi lama tidak dianggap bukti untuk request versi baru. Tidak ada generation baru selama perubahan instrumen ini.
+
+### D55 — Reference dan witness revision03
+
+Gold B ditulis independen tanpa gold A/prediksi dan dikunci sebelum eksekusi. Seluruh30pasangan agree pada baseline+8variations; semua critical mutants distinguished. Fixtures revision03 menambah ranking/tie boundaries pada clone terisolasi, tanpa mengubah Sakila utama. Human review tetap pending; agreement AI dan finite witnesses bukan proof semantik universal.

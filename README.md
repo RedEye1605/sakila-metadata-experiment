@@ -12,11 +12,13 @@ Investigate how metadata annotation changes the execution accuracy of one fixed 
 
 **Thesis title — unchanged:** *Analisis Pengaruh Metadata terhadap Execution Accuracy pada Sistem Text-to-SQL Berbasis Large Language Model (Studi Kasus: Basis Data Sakila)*
 
-[BAB IV](docs/bab-iv.md) · [Runbook](docs/runbook.md) · [Annotator guide](annotations/round-01/GUIDE.md) · [AI handoff](docs/ai-handoff.md) · [Decisions](docs/decisions.md)
+[BAB IV](docs/bab-iv.md) · [Runbook](docs/runbook.md) · [Annotator guide](annotations/round-03/review-guide.md) · [AI handoff](docs/ai-handoff.md) · [Decisions](docs/decisions.md)
 
 A full preliminary run has completed and passed integrity checks. Its archived release passed 144 local and isolated-reconstruction tests; actual scores remain embargoed pending review.
 
 **Revision-02 inputs are frozen after independent audit.** The revised design uses a pinned Spider complexity adapter, three source-based domain rules, a separate 180-trial diagnostic and isolated semantic witnesses. All 30 selected and 12 pilot references pass nine database cases; 228 local tests including MySQL integration pass. No revised EX exists at this pre-generation source checkpoint. Read the [revision status](docs/revision-02/implementation-status.md), [dataset methodology](docs/revision-02/dataset-methodology.md), [runbook](docs/revision-02/runbook.md), and [blank review packet](annotations/round-02/review-guide.md). The design does not require richer metadata to win.
+
+**Revision-03 is the current instrument.** Questions now use natural business requests without technical output footers. The30-question benchmark retains10/10/10 complexity and adds three ordered tasks, including two top-k tasks. EX accepts one global column permutation while preserving row associations, duplicates and requested row order. Independent references agree on the primary database plus eight isolated variations; human review remains pending. No revision03 model outputs exist. Read the [revision03 design](docs/revision-03/README.md), [evaluation policy](docs/revision-03/evaluation-protocol.md) and [current questions](data/benchmarks/revision-03/final-02/questions.md) and [updated reviewer packet](annotations/round-03/review-guide.md). Older sections below describe archived versions.
 
 ## Original experimental design — preliminary-01
 

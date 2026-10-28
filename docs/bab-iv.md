@@ -417,3 +417,32 @@ Rincian metode, amendments, acceptance gates dan bukti berada pada `docs/revisio
 - [Panduan review](review-guide.md)
 
 Sumber perangkat lunak: [DataHub](https://docs.datahub.com/), [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk), dan [llama.cpp server](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md). Perilaku yang dinyatakan berhasil pada bab ini harus ditelusuri ke bukti versi terpasang, bukan diasumsikan hanya dari dokumentasi versi terbaru.
+
+
+## 4.13 Revisi pertanyaan dan kesetaraan kolom (revision-03)
+
+Revisi ini ditetapkan sebelum generation benchmark baru untuk memperbaiki cakupan ordering/top-k, menghilangkan petunjuk projection teknis pada soal, dan menerima ekuivalensi hasil dengan urutan kolom berbeda. Source, manifest dan keluaran versi sebelumnya tetap dipertahankan. Judul penelitian, delapan tahap metodologi, database resmi Sakila, empat tingkat metadata, satu local model serta desain30×4×5 tidak berubah.
+
+### 4.13.1 Penyusunan pertanyaan alami
+
+Dataset tetap30soal:10simple,10medium,10complex; raw Spider10easy/10medium/5hard/5extra. Footer `Keluaran (berurutan)` serta identifier `table.column`/snake_case dihapus. Pertanyaan menyatakan kebutuhan bisnis dan objek/ukuran yang diminta dalam bahasa Indonesia. Parameter seperti tanggal, batas nominal dan jumlah peringkat tetap disebut bila merupakan bagian tugas. Definisi business terms, unit field, peran home store, ketersediaan salinan, rewards dan komponen keterlambatan berada dalam metadata yang sudah bersumber. Pertanyaan tidak menjelaskan cara join, agregasi SQL atau formula aturan bisnis.
+
+Cakupan baru meliputi laporan film berurutan menurut tarif (Q128), satu staf dengan jumlah pembayaran lintas pemroses terbanyak (Q141), dan sepuluh pelanggan dengan keragaman kategori serta judul tertinggi (Q152). Komposisi kebutuhan tetap10schema mapping,14local semantics,6domain integration dari tiga keluarga aturan. Pemilihan scope berdasarkan celah kemampuan yang diuji dan instruksi peneliti, bukan hasil EX model.
+
+Reviewer AI independen mengunci interpretasi question-only sebelum membaca metadata dan menulis reference B tanpa melihat gold A/prediksi model. Review menemukan ambiguitas observed actor/category pairs versus Cartesian product pada Q154. Wording kemudian menyebut kategori film yang pernah dibintangi pemeran, dalam bahasa kebutuhan bisnis. Initial lock, amendment wording dan final independent references diarsipkan; AI review tidak dilaporkan sebagai human annotation.
+
+### 4.13.2 EX dengan pemetaan kolom global
+
+Evaluator `ex-results-v3-column-permutation` memeriksa jumlah kolom dan mencari satu bijeksi yang berlaku pada seluruh baris. Contoh gold `(nama, pendapatan)` dapat cocok dengan prediksi `(pendapatan, nama)`. Alias tidak menjadi syarat. Pemetaan yang menghubungkan pendapatan ke orang berbeda tetap salah. Kolom tidak dibandingkan sebagai himpunan nilai independen, dan isi setiap baris tidak diurutkan sendiri-sendiri.
+
+Sesudah mapping, hasil tanpa permintaan urutan dibandingkan sebagai multiset whole rows sehingga multiplicity duplikat dipertahankan. Hasil ranking/ordering dibandingkan menurut urutan baris. Aturan ties yang seragam pada semua kondisi memakai identifier numerik unik entitas ascending setelah prioritas yang diminta. Top-k tepat k atau seluruh eligible rows jika kurang dari k. Posisi kolom keluaran bebas; urutan baris hanya dipersyaratkan oleh maksud pertanyaan.
+
+Kontrak numeric tolerance dan DATE tetap memakai koordinat kolom gold. Count serta total uang exact. NULL tidak disamakan dengan teks/zero. Empty results masih memerlukan jumlah kolom sama, dengan batas bahwa identitas kolom kosong tidak dapat ditentukan dari nilainya. Ledger menyimpan policy dan mapping aktual. Search-budget exhaustion merupakan evaluator/infrastructure incident, bukan model EX nol. Prinsip global permutation mengacu pada Test Suite SQL Evaluation; implementasi lokal tetap memakai MySQL dan kontrak tipe/budget eksplisit.
+
+### 4.13.3 Implementasi dan verifikasi
+
+Komponen yang diperbarui mencakup typed GoldReference/ComparisonSpec, comparator, runner, auxiliary replay, reference validator dan integrity audit. Policy lama tetap default fixed untuk reproduksi v1/v2; seluruh gold revision03 memilih permutation secara eksplisit dan manifest mengikat versi evaluator. Bug lookup objek Question versus question_id pada pembuatan question_attributes diperbaiki dengan regression test. Tidak ada pelonggaran source equality gate.
+
+Dua reference untuk seluruh30soal berhasil dan sepakat pada Sakila utama serta delapan variations clone. Setiap predeclared critical mutant mempunyai observed witness. Fixture ties memperlihatkan dua staf tied pada top1 dan sedikitnya12pelanggan pada batas top10, sehingga salah urutan/k/tie-breaking dapat dibedakan. Primary schema dan records tetap utuh. Pengujian comparator mencakup swapped projections, rusaknya pasangan nilai, global versus row-specific permutation, duplikat, NULL, date/numeric contracts, ordering dan resource limits. Audit independen juga memakai exhaustive/synthetic relation cases.
+
+Detail kontrak ada pada `docs/revision-03/evaluation-protocol.md`; manifest dan validation receipts pada `data/benchmarks/revision-03/final-02`. Evidence lengkap lokal berada di `runs/revision-03`. Review manusia masih pending. Belum ada generation/EX revision03 pada tahap perbaikan ini. Sebelum600trial baru, full prompt budgets, pilot yang sesuai versi, source freeze dan backend/sampler harus kembali diverifikasi. Hasil revision02 tidak menjadi hasil revision03.

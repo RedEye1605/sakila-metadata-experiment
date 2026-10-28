@@ -13,7 +13,7 @@ from ..config import AppConfig
 from ..contracts import DatasetError, load_gold, load_questions
 from ..db.execute import execute_sql
 from ..db.inspect import inspect_database
-from .compare import ComparisonSpec, compare_results
+from .compare import compare_results, comparison_spec
 
 
 def structural_complexity(sql: str) -> str:
@@ -36,7 +36,11 @@ def validate_gold_dataset(config: AppConfig, questions_path: Path, gold_path: Pa
     markdown = ["# Draft benchmark review", "", "Human semantic review is pending. Successful execution and self-comparison are engineering checks, not proof of gold correctness. No LLM generation has been executed.", ""]
     for question in questions:
         reference = references[question.question_id]
-        classification = structural_complexity(reference.sql)
+        if config.benchmark_manifest:
+            from .structure import profile_sql
+            classification = profile_sql(reference.sql).complexity
+        else:
+            classification = structural_complexity(reference.sql)
         if classification != question.complexity:
             raise DatasetError(f"{question.question_id}: gold structure does not match the complexity rubric")
         if any(name.split(".", 1)[0] not in tables for name in question.schema_references):
@@ -44,7 +48,7 @@ def validate_gold_dataset(config: AppConfig, questions_path: Path, gold_path: Pa
         execution = execute_sql(config, reference.sql, tables)
         if execution.status != "success":
             raise DatasetError(f"{question.question_id}: gold execution failed ({execution.validation_code}; {execution.error_code})")
-        spec = ComparisonSpec(reference.column_count, reference.ordered, reference.approximate_columns)
+        spec = comparison_spec(reference)
         if compare_results(execution.result, execution.result, spec).execution_accuracy != 1:
             raise DatasetError(f"{question.question_id}: evaluator self-check failed")
         if not execution.result.rows:

@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import importlib.metadata
 import platform
+import re
 from collections import Counter
 from pathlib import Path
 from typing import Literal
@@ -105,6 +106,7 @@ class BenchmarkManifest(StrictModel):
     status: Literal["draft", "frozen_exploratory"] = "draft"
     main_experiment_allowed: Literal[False] = False
     rubric_version: Literal["spider-components-mysql-v2"] = RUBRIC_VERSION
+    result_comparison: Literal["ex-results-v2-column-contracts", "ex-results-v3-column-permutation"] = "ex-results-v2-column-contracts"
     questions: ArtifactReference
     gold: ArtifactReference
     contracts: ArtifactReference
@@ -133,6 +135,53 @@ def read_manifest(root: Path, path: Path) -> tuple[BenchmarkManifest, dict[str, 
     return manifest, manifest.paths(root)
 
 
+def validate_permutation_witnesses(summary_path: Path, lock_path: Path, checks: dict, mutants: dict, identifiers: set[str]):
+    """Reconstruct declared witnesses from hash-bound per-case evidence."""
+    lock_sha = sha256_bytes(lock_path.read_bytes())
+    if checks.get("input_lock_sha256") != lock_sha:
+        raise DatasetError("Reference summary belongs to another input lock")
+    cases = checks["cases"]
+    digests = checks.get("case_evidence_sha256", {})
+    if set(digests) != set(cases) or set(mutants) != identifiers:
+        raise DatasetError("Reference case or declared-mutant coverage differs")
+    declared = {qid: [m["mutation_id"] for m in values] for qid, values in mutants.items()}
+    if any(not values or len(set(values)) != len(values) for values in declared.values()):
+        raise DatasetError("Declared mutant IDs must be present and unique")
+    records = {r["question_id"]: r for r in checks["records"]}
+    if len(records) != len(checks["records"]) or set(records) != identifiers:
+        raise DatasetError("Reference summary IDs are duplicated or incomplete")
+    observed = {qid: {mid: [] for mid in mids} for qid, mids in declared.items()}
+    for case in cases:
+        path = summary_path.parent / case / "comparisons.json"
+        if not path.is_file() or sha256_bytes(path.read_bytes()) != digests[case]:
+            raise DatasetError("Reference per-case evidence hash differs")
+        rows = json.loads(path.read_bytes())
+        by_id = {r["question_id"]: r for r in rows}
+        if len(by_id) != len(rows) or set(by_id) != identifiers:
+            raise DatasetError("Reference per-case IDs are duplicated or incomplete")
+        for qid, row in by_id.items():
+            if (row.get("input_lock_sha256") != lock_sha or row.get("fixture_id") != case
+                    or row.get("reference_agreement") is not True
+                    or row.get("author_a_status") != "success" or row.get("author_b_status") != "success"):
+                raise DatasetError("Reference per-case execution does not match the locked proof")
+            results = {r["mutation_id"]: r for r in row["mutations"]}
+            if len(results) != len(row["mutations"]) or set(results) != set(declared[qid]):
+                raise DatasetError("Reference per-case mutant IDs differ from the declared set")
+            for mid, result in results.items():
+                if result.get("semantic_difference_observed") is True:
+                    if result.get("execution_status") != "success":
+                        raise DatasetError("A failed mutant cannot establish a semantic witness")
+                    observed[qid][mid].append(case)
+    for qid, record in records.items():
+        witnesses = record.get("witnesses", {})
+        if set(witnesses) != set(declared[qid]):
+            raise DatasetError("Reference witness IDs differ from the predeclared mutants")
+        for mid, values in witnesses.items():
+            if (not isinstance(values, list) or not values or any(not isinstance(v, str) for v in values)
+                    or len(values) != len(set(values)) or set(values) != set(observed[qid][mid])):
+                raise DatasetError("Reference witnesses do not match actual declared case evidence")
+
+
 def validate_instrument(root: Path, manifest_path: Path, output: Path | None = None) -> dict:
     manifest, paths = read_manifest(root, manifest_path)
     questions, gold = load_questions(paths["questions"]), load_gold(paths["gold"])
@@ -140,6 +189,9 @@ def validate_instrument(root: Path, manifest_path: Path, output: Path | None = N
     ids = {q.question_id for q in questions}
     if ids != gold.keys() or ids != {c.question_id for c in contracts} or len(contracts) != len(ids):
         raise DatasetError("Question, gold and semantic-contract IDs must agree without duplicates")
+    expected_column_order = "permutation" if manifest.result_comparison == "ex-results-v3-column-permutation" else "fixed"
+    if any(reference.column_order != expected_column_order for reference in gold.values()):
+        raise DatasetError("Gold column-order policy differs from the versioned evaluator")
     if len(ids) != 30 or Counter(q.complexity for q in questions) != {label: 10 for label in STRUCTURAL_LEVELS}:
         raise DatasetError("Revised benchmark requires 30 questions, ten per complexity")
     if any(not q.question_id.startswith("Q") for q in questions):
@@ -147,11 +199,26 @@ def validate_instrument(root: Path, manifest_path: Path, output: Path | None = N
     selection = json.loads(paths["selection_receipt"].read_bytes())
     if set(selection.get("selected_question_ids", [])) != ids or selection.get("generation_requests") != 0:
         raise DatasetError("Selection receipt does not bind the prospective selected questions")
+    if expected_column_order == "permutation":
+        for question in questions:
+            if re.search(r"\b(?:keluaran|select|join|having|limit)\b|\b(?:group|order)\s+by\b|[a-z]+_[a-z]+", question.question, re.IGNORECASE):
+                raise DatasetError("Natural question contains an output footer or technical SQL/schema hint")
+        profiles = [profile_sql(gold[q.question_id].sql) for q in questions]
+        if (sum(bool(p.features["order"]) for p in profiles) < 3
+                or sum(bool(p.features["limit"]) for p in profiles) < 2):
+            raise DatasetError("Revised coverage requires three ordered tasks including two top-k tasks")
+        if any(bool(p.features["order"]) != gold[q.question_id].ordered for q, p in zip(questions, profiles, strict=True)):
+            raise DatasetError("Ordered-result contracts disagree with the declared ranking tasks")
     candidates = {name: ArtifactReference.model_validate(reference).verified_path(root) for name, reference in selection["candidates"].items()}
     candidate_questions, candidate_gold = {q.question_id: q for q in load_questions(candidates["questions"])}, load_gold(candidates["gold"])
     if any(q != candidate_questions.get(q.question_id) or gold[q.question_id] != candidate_gold.get(q.question_id) for q in questions):
         raise DatasetError("Selected question/reference differs from its validated candidate version")
     reference_lock = json.loads(paths["reference_validation_lock"].read_bytes())
+    if expected_column_order == "permutation":
+        mutant = ArtifactReference.model_validate(selection.get("mutations", {}))
+        mutant.verified_path(root)
+        if reference_lock.get("mutations_artifact") != mutant.model_dump(mode="json"):
+            raise DatasetError("Reference witnesses differ from the predeclared semantic mutants")
     if reference_lock["gold_a_sha256"] != sha256_bytes(candidates["gold"].read_bytes()) or reference_lock["questions_sha256"] != sha256_bytes(candidates["questions"].read_bytes()):
         raise DatasetError("Reference execution evidence belongs to another candidate version")
     if reference_lock["fixture_definition_sha256"] != sha256_bytes(paths["fixture_specification"].read_bytes()):
@@ -164,6 +231,9 @@ def validate_instrument(root: Path, manifest_path: Path, output: Path | None = N
     if (len(reference_checks["cases"]) != 9 or set(reference_checks["cases"]) != {"baseline", *fixture_ids}
             or reference_checks.get("primary_database_unchanged") is not True):
         raise DatasetError("Complete baseline plus8fixture reference evidence is required")
+    if expected_column_order == "permutation":
+        validate_permutation_witnesses(paths["reference_validation"], paths["reference_validation_lock"],
+                                       reference_checks, json.loads(mutant.verified_path(root).read_bytes()), set(candidate_questions))
     for qid in ids:
         record = checked.get(qid, {})
         if not all(record.get(key) is True for key in ("reference_agreement_all_checked", "reference_execution_valid", "all_predeclared_mutants_distinguished")):

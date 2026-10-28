@@ -2,6 +2,8 @@
 
 Dokumen ini mengarahkan penulis/AI pendamping; bukan sumber untuk mengarang hasil penelitian.
 
+**Instrumen terkini revision-03:** gunakan `docs/revision-03/`, `data/benchmarks/revision-03/final-02/`, `configs/revision03.toml` dan `prompts/generation-v3.txt`. Soal tidak lagi memiliki footer kolom teknis, dan EX menerima satu pemetaan bijektif kolom global. Ranking/ordering tetap memerlukan urutan baris benar. Tiga soal ordered mencakup dua top-k dengan konvensi ties seragam. Gold A/B sepakat pada sembilan database cases; human review tetap pending. Belum ada generation atau EX revision03. Hasil diagnostik revision02 tetap milik versi lama dan tidak boleh dipindahkan ke revision03. BAB IV bagian4.13 menjelaskan perubahan. Uraian berikutnya adalah sejarah versi lama kecuali diberi label terkini.
+
 **Pembaruan revision-02:** tabel dan penjelasan pendahuluan di bawah mengacu pada instrumen lama. Revisi setelah audit ada pada `docs/bab-iv.md` bagian 4.12 dan `docs/revision-02/`. Revisi memakai tiga kartu domain dan 12 pilot diagnostik, berbeda dari tujuh istilah/sembilan pilot lama. Input akhir `data/benchmarks/revision-02/final-02` berisi 30 soal dari pool 60 dengan rubric adaptasi Spider dan kebutuhan pengetahuan terpisah. Reference utama/pilot lolos sembilan database; source checkpoint lulus 228 tests dan driver dry-run tanpa generation. Tidak ada EX revisi pada checkpoint ini; jangan menyalin skor lama menjadi skor revisi. Gunakan run completion/laporan aktual nanti, bukan status source pra-run, untuk menulis hasil. Human review tetap pending; paket akhir berada di `annotations/round-02`.
 
 Judul wajib: **Analisis Pengaruh Metadata terhadap Execution Accuracy pada Sistem Text-to-SQL Berbasis Large Language Model (Studi Kasus: Basis Data Sakila)**.

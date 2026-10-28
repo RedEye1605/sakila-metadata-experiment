@@ -20,7 +20,7 @@ from ..config import AppConfig
 from ..contracts import DatasetError, load_gold, load_questions
 from ..db.execute import execute_sql
 from ..db.inspect import inspect_database, verify_fingerprint
-from ..evaluation.compare import COMPARATOR_VERSION, ComparisonSpec, EvaluationError, compare_results
+from ..evaluation.compare import COMPARATOR_VERSION, EvaluationError, compare_results, comparison_spec
 from ..evaluation.safety import extract_sql
 from ..generation.backend import check_live_backend, load_backend_evidence
 from ..generation.llama import GenerationResponse, LlamaClient, LLMServiceError
@@ -89,6 +89,9 @@ def _build_inputs(config: AppConfig, snapshots: Path, backend_path: Path, *, smo
     elif mode == "diagnostic":
         raise RunError("Diagnostic mode requires the versioned exploratory instrument")
     questions, references = load_questions(questions_path), load_gold(gold_path)
+    expected_column_order = "permutation" if instrument and instrument.result_comparison == "ex-results-v3-column-permutation" else "fixed"
+    if any(reference.column_order != expected_column_order for reference in references.values()):
+        raise RunError("Loaded references differ from the selected column-order evaluation policy")
     if {q.question_id for q in questions} != references.keys():
         raise DatasetError("Pilot question and reference IDs differ")
     if smoke:
@@ -149,19 +152,25 @@ def _build_inputs(config: AppConfig, snapshots: Path, backend_path: Path, *, smo
     if instrument:
         manifest.update(instrument_id=instrument.benchmark_id, benchmark_manifest_sha256=sha256_bytes(config.resolve(config.benchmark_manifest).read_bytes()),
                         instrument_paths={key: str(path.relative_to(root)) for key, path in instrument_paths.items()},
-                        canonical_snapshots=canonical_validation, comparator_version="ex-results-v2-column-contracts",
+                        canonical_snapshots=canonical_validation, comparator_version=instrument.result_comparison,
                         analysis_protocol_id="paired-question-permutation-exact-v2", human_review_status="pending")
         if benchmark:
             contracts = {row["question_id"]: row for row in map(json.loads, instrument_paths["contracts"].read_bytes().splitlines())}
-            from ..evaluation.structure import profile_sql
-            manifest["question_attributes"] = {qid: {"primary_need": contracts[qid]["primary_need"],
-                "semantic_family": contracts[qid]["semantic_family"], "spider_level": profile_sql(references[qid].sql).spider_level}
-                for qid in questions}
+            manifest["question_attributes"] = _question_attributes(questions, references, contracts)
     if diagnostic:
         manifest.update(diagnostic_manifest_sha256=sha256_bytes(config.resolve(config.diagnostic_manifest).read_bytes()),
                         diagnostic_rendering_directories=directories, diagnostic_repetitions=3,
                         diagnostic_rendering_provenance=[json.loads((root / directory / "manifest.json").read_bytes()) for directory in directories.values()])
     return manifest, assignments, {q.question_id: q for q in questions}, references
+
+
+def _question_attributes(questions, references, contracts):
+    """The loader returns Question objects, while private maps use ID keys."""
+    from ..evaluation.structure import profile_sql
+    return {q.question_id: {"primary_need": contracts[q.question_id]["primary_need"],
+                           "semantic_family": contracts[q.question_id]["semantic_family"],
+                           "spider_level": profile_sql(references[q.question_id].sql).spider_level}
+            for q in questions}
 
 
 def validate_reference_database(proof, actual):
@@ -266,6 +275,7 @@ def evaluate_response(config, tables, response: GenerationResponse, reference, g
     if response.infrastructure_error:
         raise RunError(response.infrastructure_error)
     common = {"raw_llm_response": response.raw_response, "raw_model_text": response.text,
+              "column_order_policy": reference.column_order, "column_permutation": None,
               "inference_latency_ms": response.inference_latency_ms, "input_tokens": response.input_tokens,
               "output_tokens": response.output_tokens, "token_usage_source": response.token_usage_source,
               "model_response_valid": response.response_valid, "finish_reason": response.finish_reason,
@@ -289,8 +299,9 @@ def evaluate_response(config, tables, response: GenerationResponse, reference, g
     if execution.status != "success":
         return {**common, "execution_accuracy": 0}, None
     comparison = compare_results(execution.result, gold_execution.result,
-                                 ComparisonSpec(reference.column_count, reference.ordered, reference.approximate_columns, date_columns=reference.date_columns))
-    return {**common, "execution_accuracy": comparison.execution_accuracy, "comparison_reason": comparison.reason}, execution.result
+                                 comparison_spec(reference))
+    return {**common, "execution_accuracy": comparison.execution_accuracy, "comparison_reason": comparison.reason,
+            "column_order_policy": reference.column_order, "column_permutation": comparison.column_permutation}, execution.result
 
 
 def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path, experiment_id: str,
@@ -337,7 +348,7 @@ def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path
         execution = execute_sql(config, reference.sql, tables)
         if execution.status != "success":
             raise RunError("Reference SQL preflight failed: " + question_id)
-        spec = ComparisonSpec(reference.column_count, reference.ordered, reference.approximate_columns, date_columns=reference.date_columns)
+        spec = comparison_spec(reference)
         if compare_results(execution.result, execution.result, spec).execution_accuracy != 1:
             raise RunError("Reference SQL column/result contract failed")
         publish_artifact(directory / "gold-results" / f"{question_id}.json", canonical_json(execution.result.encoded()))

@@ -17,7 +17,7 @@ from ..db.execute import execute_sql
 from ..db.inspect import inspect_database, verify_fingerprint
 from ..experiment.runner import source_version
 from ..instrument import read_manifest
-from .compare import ComparisonSpec, compare_results
+from .compare import compare_results, comparison_spec
 from .fixtures import prepare_fixture
 
 
@@ -39,9 +39,10 @@ def score_prediction(config, tables, record, reference, gold_execution):
                "sql_execution_latency_ms": result.latency_ms}
     if result.status != "success":
         return {**outcome, "execution_accuracy": 0, "comparison_reason": "SQL_rejected_or_failed"}, None
-    spec = ComparisonSpec(reference.column_count, reference.ordered, reference.approximate_columns, date_columns=reference.date_columns)
+    spec = comparison_spec(reference)
     comparison = compare_results(result.result, gold_execution.result, spec)
-    return {**outcome, "execution_accuracy": comparison.execution_accuracy, "comparison_reason": comparison.reason}, result.result
+    return {**outcome, "execution_accuracy": comparison.execution_accuracy, "comparison_reason": comparison.reason,
+            "column_order_policy": reference.column_order, "column_permutation": comparison.column_permutation}, result.result
 
 
 def replay_fixtures(config, run_directory: Path, output: Path, *, progress=print):
@@ -52,10 +53,15 @@ def replay_fixtures(config, run_directory: Path, output: Path, *, progress=print
         raise RobustnessError("Auxiliary replay requires the complete matching revision-02 exploratory benchmark")
     instrument, paths = read_manifest(root, config.resolve(config.benchmark_manifest))
     gold = load_gold(paths["gold"])
+    if manifest.get("comparator_version") != instrument.result_comparison:
+        raise RobustnessError("Auxiliary comparator differs from the frozen generation run")
+    expected_order = "permutation" if instrument.result_comparison == "ex-results-v3-column-permutation" else "fixed"
+    if any(reference.column_order != expected_order for reference in gold.values()):
+        raise RobustnessError("Auxiliary gold column policy differs from the frozen comparator")
     fixture_bytes = paths["fixture_specification"].read_bytes()
     fixture_definition = json.loads(fixture_bytes)
-    if paths["fixture_specification"].resolve() != (root / "research/revision-02/fixture_cases.json").resolve():
-        raise RobustnessError("Fixture builder would read a different definition")
+    if paths["fixture_specification"].resolve() not in {(root / f"research/{version}/fixture_cases.json").resolve() for version in ("revision-02", "revision-03")}:
+        raise RobustnessError("Fixture builder requires a versioned research definition")
     cases = [case["fixture_id"] for case in fixture_definition["cases"]]
     if len(cases) != 8 or len(set(cases)) != 8:
         raise RobustnessError("Expected the eight predeclared distinct fixture cases")
@@ -63,6 +69,7 @@ def replay_fixtures(config, run_directory: Path, output: Path, *, progress=print
     tables = frozenset(table["name"] for table in baseline["technical_schema"]["tables"])
     verify_fingerprint(inspect_database(config), baseline)
     frozen = {"status": "auxiliary_plan_frozen", "benchmark_id": instrument.benchmark_id,
+              "comparator_version": instrument.result_comparison,
               "source_run_manifest_sha256": sha256_bytes((run_directory / "manifest.json").read_bytes()),
               "source_trials_sha256": sha256_bytes((run_directory / "trials.jsonl").read_bytes()),
               "benchmark_manifest_sha256": manifest["benchmark_manifest_sha256"],
@@ -80,14 +87,14 @@ def replay_fixtures(config, run_directory: Path, output: Path, *, progress=print
             if pending:
                 receipts = folder / "preparation-attempts"
                 attempt = len(list(receipts.glob("*.json"))) + 1
-                selected, fixture_receipt = prepare_fixture(root, case, receipts / f"{attempt:04}.json")
+                selected, fixture_receipt = prepare_fixture(root, case, receipts / f"{attempt:04}.json", definition=paths["fixture_specification"])
                 selected = selected.model_copy(update={"database": selected.database.model_copy(update={
                     "sql_policy_version": config.database.sql_policy_version, "time_names_locale": config.database.time_names_locale})})
                 for qid, reference in gold.items():
                     execution = execute_sql(selected, reference.sql, tables)
                     if execution.status != "success":
                         raise RobustnessError("Gold execution failed on the predefined fixture: " + case + "/" + qid)
-                    spec = ComparisonSpec(reference.column_count, reference.ordered, reference.approximate_columns, date_columns=reference.date_columns)
+                    spec = comparison_spec(reference)
                     if not compare_results(execution.result, execution.result, spec).execution_accuracy:
                         raise RobustnessError("Gold result contract failed on fixture")
                     publish_artifact(folder / "gold-results" / (qid + ".json"), canonical_json(execution.result.encoded()))
@@ -95,6 +102,7 @@ def replay_fixtures(config, run_directory: Path, output: Path, *, progress=print
             for record in records:
                 path = folder / "outcomes" / (record["trial_id"] + ".json")
                 binding = {"trial_id": record["trial_id"], "question_id": record["question_id"], "scenario_id": record["scenario_id"],
+                           "comparator_version": instrument.result_comparison,
                            "repetition_id": record["repetition_id"], "fixture_id": case,
                            "sql_sha256": sha256_bytes(canonical_json(record.get("extracted_sql"))),
                            "gold_sql_sha256": sha256_bytes(gold[record["question_id"]].sql.encode()),

@@ -1,0 +1,16 @@
+{
+  "adoption": "Global column bijection, whole-row bag comparison and requested row ordering; local MySQL/type/date/budget rules are independent adaptations. No source code copied into runtime.",
+  "commit": "14784c3546b8aac64dc6ce018ce923bc5efbc75d",
+  "not_adopted": [
+    "random pruning",
+    "empty result without width check",
+    "prediction SQL repair",
+    "value substitution",
+    "removing DISTINCT"
+  ],
+  "path": "exec_eval.py",
+  "retrieved_at_utc": "2026-10-28T17:43:00.763079+00:00",
+  "sha256": "29d034db28904490c28037537a14fbb0150b6e86cef0049076c0511d6b6b77f7",
+  "source": "taoyds/test-suite-sql-eval",
+  "url": "https://raw.githubusercontent.com/taoyds/test-suite-sql-eval/14784c3546b8aac64dc6ce018ce923bc5efbc75d/exec_eval.py"
+}

@@ -23,3 +23,6 @@ snapshots/candidates-v2/
 # Superseded, unused local freeze; active revision is final-02.
 data/benchmarks/revision-02/final/
 
+
+# Local revision03 pre-hardening checkpoint; use the published final-02 inputs.
+data/benchmarks/revision-03/final-01/

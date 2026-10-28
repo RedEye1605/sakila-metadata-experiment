@@ -18,7 +18,7 @@ from sakila_experiment.config import load_config
 from sakila_experiment.contracts import load_gold, load_questions
 from sakila_experiment.db.execute import execute_sql
 from sakila_experiment.db.inspect import inspect_database, verify_fingerprint
-from sakila_experiment.evaluation.compare import ComparisonSpec, compare_results
+from sakila_experiment.evaluation.compare import compare_results, comparison_spec
 from sakila_experiment.evaluation.fixtures import prepare_fixture
 from sakila_experiment.instrument import REFERENCE_VALIDATION_SOURCES, REFERENCE_VALIDATION_PACKAGES
 
@@ -32,11 +32,16 @@ def main():
     parser.add_argument("--dataset", choices=("candidates", "pilot"), default="candidates")
     parser.add_argument("--config", type=Path, default=ROOT / "configs/revision02.toml")
     parser.add_argument("--gold-b", type=Path, action="append", help="Independent reference files; default is latest natural-question audit")
+    parser.add_argument("--data-directory", type=Path, help="Explicit versioned inputs; legacy revision-02 is the default")
+    parser.add_argument("--mutations", type=Path, help="Predeclared, hash-bound semantic-mutant JSON for revised inputs")
+    parser.add_argument("--fixture-definition", type=Path, help="Versioned isolated fixture definition")
     args = parser.parse_args()
     root, output = ROOT, args.output.resolve()
     if output.exists():
         raise FileExistsError("Choose a new reference-validation output directory")
-    folder = root / "data/benchmarks/revision-02"
+    folder = (args.data_directory or root / "data/benchmarks/revision-02").resolve()
+    if not folder.is_relative_to(root / "data/benchmarks"):
+        raise ValueError("Reference inputs must be inside the versioned benchmark directory")
     prefix = args.dataset
     references = load_gold(folder / (prefix + ".gold-a.jsonl"))
     questions = load_questions(folder / (prefix + ".questions.jsonl"))
@@ -52,7 +57,10 @@ def main():
     tables = frozenset(table["name"] for table in baseline["technical_schema"]["tables"])
     config = load_config(args.config)
     verify_fingerprint(inspect_database(config), baseline)
-    mutations = {qid: wrong_variants(qid, reference.sql) for qid, reference in references.items()}
+    mutations = json.loads(args.mutations.read_bytes()) if args.mutations else {qid: wrong_variants(qid, reference.sql) for qid, reference in references.items()}
+    if set(mutations) != set(references) or any(not values for values in mutations.values()):
+        raise ValueError("Every reference requires predeclared semantic mutants")
+    fixture_definition = args.fixture_definition or root / "research/revision-02/fixture_cases.json"
     publish_artifact(output / "mutations.json", canonical_json(mutations))
     publish_artifact(output / "input-lock.json", canonical_json({
         "questions_sha256": sha256_bytes((folder / (prefix + ".questions.jsonl")).read_bytes()),
@@ -65,29 +73,32 @@ def main():
         "database_schema_sha256": baseline["schema_sha256"], "database_data_sha256": baseline["data_sha256"],
         "gold_b_files": [{"path": str(path.resolve().relative_to(root)), "sha256": sha256_bytes(path.read_bytes())} for path in gold_b_files],
         "mutation_definition_sha256": sha256_bytes((root / "research/revision-02/mutations.py").read_bytes()),
-        "fixture_definition_sha256": sha256_bytes((root / "research/revision-02/fixture_cases.json").read_bytes()),
+        "mutations_artifact": {"path": str(args.mutations.resolve().relative_to(root)), "sha256": sha256_bytes(args.mutations.read_bytes())} if args.mutations else None,
+        "fixture_definition_sha256": sha256_bytes(fixture_definition.read_bytes()),
         "generation_requests": 0, "human_review_complete": False}))
+    input_lock_sha256 = sha256_bytes((output / "input-lock.json").read_bytes())
     cases = ["baseline"]
     if args.fixtures:
-        cases += [case["fixture_id"] for case in json.loads((root / "research/revision-02/fixture_cases.json").read_bytes())["cases"]]
+        cases += [case["fixture_id"] for case in json.loads(fixture_definition.read_bytes())["cases"]]
     records = []
     for case in cases:
         selected = config
         if case != "baseline":
-            selected, _ = prepare_fixture(root, case, output / case / "fixture.json")
+            selected, _ = prepare_fixture(root, case, output / case / "fixture.json", definition=fixture_definition)
             selected = selected.model_copy(update={"database": selected.database.model_copy(update={
                 "sql_policy_version": config.database.sql_policy_version, "time_names_locale": config.database.time_names_locale})})
         case_records = []
         for question in questions:
             qid = question.question_id
             reference = references[qid]
-            spec = ComparisonSpec(reference.column_count, reference.ordered, reference.approximate_columns, date_columns=reference.date_columns)
+            spec = comparison_spec(reference)
             # A's correlated Q136 exceeded the unchanged 10s policy in initial
             # preflight. Preserve it as an ineligible draft; use independent B
             # solely to examine its requirements without repeatedly timing out.
             a = execute_sql(selected, reference.sql, tables) if qid != "Q136" else None
             b = execute_sql(selected, independent[qid]["sql"], tables)
             record = {"fixture_id": case, "question_id": qid,
+                      "input_lock_sha256": input_lock_sha256,
                       "author_a_status": a.status if a else "initial_deadline_ineligible",
                       "author_b_status": b.status, "reference_agreement": None,
                       "author_a_error": a.error_code if a else 3024,
@@ -98,7 +109,10 @@ def main():
                 if result and result.result is not None:
                     publish_artifact(output / case / f"{qid}-{author}.json", canonical_json(result.result.encoded()))
             if a and a.result and b.result:
-                record["reference_agreement"] = bool(compare_results(a.result, b.result, spec).execution_accuracy)
+                # The reference owns date/tolerance indices. Legacy comparison
+                # orientation is retained; v3 always anchors contracts to A.
+                actual_result, gold_result = (b.result, a.result) if reference.column_order == "permutation" else (a.result, b.result)
+                record["reference_agreement"] = bool(compare_results(actual_result, gold_result, spec).execution_accuracy)
             expected = a if a and a.result else b
             if expected.result is None:
                 record["evaluation_status"] = "reference_execution_blocked"
@@ -128,6 +142,8 @@ def main():
                         "reference_execution_valid": all(r["author_a_status"] == r["author_b_status"] == "success" for r in rows)})
     verify_fingerprint(inspect_database(config), baseline)
     publish_artifact(output / "summary.json", canonical_json({"status": "reference_and_witness_checks_complete", "cases": cases,
+        "input_lock_sha256": input_lock_sha256,
+        "case_evidence_sha256": {case: sha256_bytes((output / case / "comparisons.json").read_bytes()) for case in cases},
         "records": summary, "generation_requests": 0, "primary_database_unchanged": True, "human_review_complete": False,
         "limits": "Agreement of AI-authored references and finite witnesses is engineering evidence, not semantic proof or human approval."}))
     print(json.dumps({"status": "reference_and_witness_checks_complete", "cases": len(cases), "question_candidates": len(summary),
