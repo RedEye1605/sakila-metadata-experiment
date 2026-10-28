@@ -48,10 +48,12 @@ def score_prediction(config, tables, record, reference, gold_execution):
 def replay_fixtures(config, run_directory: Path, output: Path, *, progress=print):
     root = config.project_root
     manifest, records = audit_run(run_directory)
-    if (manifest.get("mode") != "preliminary" or not config.benchmark_manifest
+    if (manifest.get("mode") not in {"preliminary", "main"} or not config.benchmark_manifest
             or manifest.get("benchmark_manifest_sha256") != sha256_bytes(config.resolve(config.benchmark_manifest).read_bytes())):
         raise RobustnessError("Auxiliary replay requires the complete matching revision-02 exploratory benchmark")
     instrument, paths = read_manifest(root, config.resolve(config.benchmark_manifest))
+    from ..instrument import validate_instrument
+    validate_instrument(root, config.resolve(config.benchmark_manifest))
     gold = load_gold(paths["gold"])
     if manifest.get("comparator_version") != instrument.result_comparison:
         raise RobustnessError("Auxiliary comparator differs from the frozen generation run")
@@ -76,7 +78,10 @@ def replay_fixtures(config, run_directory: Path, output: Path, *, progress=print
               "fixture_specification_sha256": sha256_bytes(fixture_bytes), "case_ids": cases,
               "trial_ids": [record["trial_id"] for record in records], "generation_requests": 0,
               "scope": "all600assignedSQL_on_all8auxiliarycases; primary EX unchanged",
-              "source_version": source_version(root), "human_review_complete": False, "public_results_embargo": True}
+              "source_version": source_version(root),
+              "human_review_complete": manifest.get("human_review_status") == "user_attested_complete",
+              "review_basis": "user_attestation" if manifest.get("human_review_status") == "user_attested_complete" else "not_provided",
+              "reviewer_identity_status": manifest.get("reviewer_identity_status", "not_recorded"), "public_results_embargo": True}
     publish_artifact(output / "plan.json", canonical_json(frozen))
     outcomes = []
     try:
@@ -151,7 +156,9 @@ def replay_fixtures(config, run_directory: Path, output: Path, *, progress=print
         correct = sum(all(trial_scores[r["trial_id"]]) for r in selected_records)
         by_scenario.append({"scenario_id": scenario, "trials": len(selected_records), "all_auxiliary_cases_correct": correct,
                             "all_auxiliary_cases_percent": correct / len(selected_records) * 100})
-    report = {"status": "auxiliary_replay_complete", "generation_requests": 0, "human_review_complete": False,
+    report = {"status": "auxiliary_replay_complete", "generation_requests": 0,
+              "review_status": manifest.get("human_review_status", "pending"),
+              "reviewer_identity_status": manifest.get("reviewer_identity_status", "not_recorded"),
               "primary_database_unchanged": True, "primary_EX_modified": False,
               "by_scenario": by_scenario,
               "by_case": [{"scenario_id": scenario, "fixture_id": case, "trials": len(scores), "correct": sum(scores),

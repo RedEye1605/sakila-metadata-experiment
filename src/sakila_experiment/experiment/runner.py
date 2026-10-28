@@ -46,7 +46,7 @@ def source_version(root: Path) -> dict:
 
 def _build_inputs(config: AppConfig, snapshots: Path, backend_path: Path, *, smoke: bool = False, mode: str = "pilot", allow_unreviewed: bool = False) -> tuple[dict, tuple, dict, dict]:
     root = config.project_root
-    if mode not in {"pilot", "main", "preliminary", "preliminary_pilot", "diagnostic"} or (mode in {"main", "preliminary", "diagnostic"} and smoke):
+    if mode not in {"pilot", "main", "preliminary", "preliminary_pilot", "diagnostic", "engineering_smoke"} or (mode in {"main", "preliminary", "diagnostic", "engineering_smoke"} and smoke):
         raise RunError("Unsupported run mode")
     provisional = mode.startswith("preliminary") or mode == "diagnostic"
     if provisional and not allow_unreviewed:
@@ -59,15 +59,26 @@ def _build_inputs(config: AppConfig, snapshots: Path, backend_path: Path, *, smo
     instrument, instrument_paths, diagnostic, directories, selected_assignments, selected_validation = None, {}, None, {}, None, None
     pilot_proof, context_proof = None, None
     if config.benchmark_manifest:
-        if mode not in {"preliminary", "diagnostic"}:
+        if mode not in {"preliminary", "diagnostic", "main", "engineering_smoke"}:
             raise RunError("Revision-02 remains exploratory; reviewed/legacy pilot routes cannot approve it")
         from ..instrument import read_manifest, validate_instrument
         instrument_path = config.resolve(config.benchmark_manifest)
         validate_instrument(root, instrument_path)
         instrument, instrument_paths = read_manifest(root, instrument_path)
-        if instrument.status != "frozen_exploratory":
+        if instrument.status not in {"frozen_exploratory", "frozen_user_attested"}:
             raise RunError("A conditional draft proposal cannot enter generation; freeze the validated instrument first")
         questions_path, gold_path = instrument_paths["questions"], instrument_paths["gold"]
+        if mode in {"main", "engineering_smoke"}:
+            if instrument.status != "frozen_user_attested" or not instrument.main_experiment_allowed:
+                raise RunError("Versioned main execution requires the researcher's hash-bound review statement")
+            from .execution_review import validate_execution_review, load_smoke
+            validate_execution_review(root, instrument, instrument_paths)
+            if mode == "engineering_smoke":
+                _, smoke_paths, _, _, pilot_proof = load_smoke(root, instrument, instrument_paths)
+                questions_path, gold_path = smoke_paths["questions"], smoke_paths["gold"]
+                pilot_proof = json.loads(smoke_paths["validation_lock"].read_bytes())
+                if pilot_proof.get("database_config") != config.database.model_dump(mode="json"):
+                    raise RunError("Smoke reference validation uses another database execution policy")
         specification_path, analysis_path = instrument_paths["annotation_specification"], instrument_paths["analysis_protocol"]
         proof = json.loads(instrument_paths["reference_validation_lock"].read_bytes())
         if proof.get("database_config") != config.database.model_dump(mode="json"):
@@ -88,6 +99,8 @@ def _build_inputs(config: AppConfig, snapshots: Path, backend_path: Path, *, smo
                 raise RunError("Pilot reference validation and evaluation database policies differ")
     elif mode == "diagnostic":
         raise RunError("Diagnostic mode requires the versioned exploratory instrument")
+    elif mode == "engineering_smoke":
+        raise RunError("Engineering smoke requires a versioned user-attested instrument")
     questions, references = load_questions(questions_path), load_gold(gold_path)
     expected_column_order = "permutation" if instrument and instrument.result_comparison == "ex-results-v3-column-permutation" else "fixed"
     if any(reference.column_order != expected_column_order for reference in references.values()):
@@ -153,7 +166,17 @@ def _build_inputs(config: AppConfig, snapshots: Path, backend_path: Path, *, smo
         manifest.update(instrument_id=instrument.benchmark_id, benchmark_manifest_sha256=sha256_bytes(config.resolve(config.benchmark_manifest).read_bytes()),
                         instrument_paths={key: str(path.relative_to(root)) for key, path in instrument_paths.items()},
                         canonical_snapshots=canonical_validation, comparator_version=instrument.result_comparison,
-                        analysis_protocol_id="paired-question-permutation-exact-v2", human_review_status="pending")
+                        analysis_protocol_id="paired-question-permutation-exact-v2", human_review_status=instrument.human_review_status)
+        if instrument.status == "frozen_user_attested":
+            from .execution_review import validate_execution_review
+            review = validate_execution_review(root, instrument, instrument_paths)
+            manifest.update(review_attestation_sha256=instrument.execution_review.sha256,
+                            review_attestation=review, reviewer_identity_status=review["reviewer_identity_status"],
+                            smoke_manifest_sha256=instrument.smoke_test.sha256)
+            if mode == "main":
+                manifest.update(evaluation_status="user_attested_review", gold_file_review_labels=manifest["gold_review_status"],
+                                gold_review_status=["user_attested_complete"], annotation_review_status="user_attested_complete",
+                                note="Review completion reported by researcher; reviewer names/date not independently documented yet.")
         if benchmark:
             contracts = {row["question_id"]: row for row in map(json.loads, instrument_paths["contracts"].read_bytes().splitlines())}
             manifest["question_attributes"] = _question_attributes(questions, references, contracts)
@@ -192,6 +215,8 @@ def pilot_inputs(config: AppConfig, snapshots: Path, backend_path: Path, *, smok
 
 
 def main_inputs(config: AppConfig, snapshots: Path, backend_path: Path, pilot_directory: Path):
+    if config.benchmark_manifest:
+        return _attested_main_inputs(config, snapshots, backend_path, pilot_directory)
     from .readiness import main_readiness
     readiness = main_readiness(config, snapshots, backend_path, pilot_directory)
     if readiness["status"] != "review_gates_passed":
@@ -214,6 +239,38 @@ def main_inputs(config: AppConfig, snapshots: Path, backend_path: Path, pilot_di
                                 "prompt_sha256": prompt.prompt_sha256})
     manifest.update(review_decisions_sha256=sha256_bytes((config.project_root / "data/reviews/decisions.json").read_bytes()),
                     required_reviews=readiness["required_reviews"], complete_main_prompt_budgets=budgets,
+                    verified_pilot_manifest_sha256=sha256_bytes((pilot_directory / "manifest.json").read_bytes()))
+    return manifest, assignments, questions, references
+
+
+def _attested_main_inputs(config, snapshots, backend_path, pilot_directory):
+    from ..analysis.report import audit_run
+    manifest, assignments, questions, references = _build_inputs(config, snapshots, backend_path, mode="main")
+    pilot, records = audit_run(pilot_directory)
+    if pilot.get("mode") != "engineering_smoke" or len(records) != 12:
+        raise RunError("A complete matching12-request engineering smoke is required")
+    from ..instrument import read_manifest
+    from .execution_review import load_smoke
+    instrument, paths = read_manifest(config.project_root, config.resolve(config.benchmark_manifest))
+    _, smoke_paths, smoke_questions, _, _ = load_smoke(config.project_root, instrument, paths)
+    expected = {(q.question_id, s, 1) for q in smoke_questions for s in config.experiment.scenario_ids}
+    if (pilot.get("questions_sha256") != sha256_bytes(smoke_paths["questions"].read_bytes())
+            or pilot.get("gold_sha256") != sha256_bytes(smoke_paths["gold"].read_bytes())
+            or {(r["question_id"], r["scenario_id"], r["repetition_id"]) for r in records} != expected):
+        raise RunError("Completed smoke differs from the declared separate question/reference plan")
+    for key in ("model_version_or_hash", "backend_evidence_sha256", "inference_config", "prompt_template_sha256",
+                "database_schema_sha256", "database_data_sha256", "source_version", "benchmark_manifest_sha256",
+                "canonical_snapshots", "smoke_manifest_sha256", "comparator_version", "review_attestation_sha256",
+                "database_config", "fixed_request_parameters", "snapshot_manifest_sha256"):
+        if pilot.get(key) != manifest.get(key):
+            raise RunError("Smoke/main input or source mismatch: " + key)
+    sampler_path = backend_path.parent / "sampler-verification.json"
+    sampler = json.loads(sampler_path.read_bytes())
+    if (sampler.get("status") != "sampler_seed_cache_verified" or sampler.get("model_sha256") != manifest["model_version_or_hash"]
+            or sampler.get("backend_evidence_sha256") != manifest["backend_evidence_sha256"]
+            or sampler.get("pilot_manifest_sha256") != sha256_bytes((pilot_directory / "manifest.json").read_bytes())):
+        raise RunError("Sampler evidence does not match this smoke and backend")
+    manifest.update(complete_main_prompt_budgets=_prompt_budgets(config, backend_path, questions, snapshots),
                     verified_pilot_manifest_sha256=sha256_bytes((pilot_directory / "manifest.json").read_bytes()))
     return manifest, assignments, questions, references
 
@@ -326,6 +383,11 @@ def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path
         manifest["complete_diagnostic_prompt_budgets"] = _prompt_budgets(config, backend_path, questions, snapshots, manifest["diagnostic_rendering_directories"])
         if not freeze_only and not (directory / "freeze.json").is_file():
             raise RunError("Freeze all 60 diagnostic prompts and references before generation")
+    elif mode == "engineering_smoke":
+        manifest, assignments, questions, references = _build_inputs(config, snapshots, backend_path, mode=mode)
+        manifest["complete_smoke_prompt_budgets"] = _prompt_budgets(config, backend_path, questions, snapshots)
+        if not freeze_only and not (directory / "freeze.json").is_file():
+            raise RunError("Freeze the separate smoke inputs before generation")
     elif mode == "preliminary_pilot":
         manifest, assignments, questions, references = _build_inputs(config, snapshots, backend_path, mode=mode, allow_unreviewed=allow_unreviewed)
     else:
@@ -333,7 +395,7 @@ def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path
     manifest["experiment_id"] = experiment_id
     publish_artifact(directory / "manifest.json", canonical_json(manifest))
     publish_artifact(directory / "plan.json", canonical_json([asdict(a) for a in assignments]))
-    if mode in {"main", "preliminary", "diagnostic"} and not freeze_only:
+    if mode in {"main", "preliminary", "diagnostic", "engineering_smoke"} and not freeze_only:
         freeze = json.loads((directory / "freeze.json").read_bytes())
         expected_status = mode + "_manifest_frozen"
         if freeze.get("status") != expected_status or freeze.get("manifest_sha256") != sha256_bytes(canonical_json(manifest)):
@@ -400,6 +462,8 @@ def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path
                                model_version_or_hash=evidence.model_sha256, inference_config=config.inference.model_dump(mode="json"),
                                snapshot_id=snapshot["snapshot_id"], snapshot_sha256=snapshot["snapshot_sha256"],
                                prompt_hash=prompt.prompt_sha256, raw_prompt_or_reproducible_prompt_reference=str(prompt_path.resolve()))
+                if manifest.get("evaluation_status") == "user_attested_review":
+                    outcome.update(reference_file_label=outcome["reference_review_status"], reference_review_status="user_attested_complete")
                 ledger.finish_trial(experiment_id, assignment.trial_id, attempt, outcome)
                 progress(canonical_json({"trial_id": assignment.trial_id, "status": "completed", "execution_accuracy": outcome["execution_accuracy"]}).decode().strip())
             except (LLMServiceError, RunError, EvaluationError) as error:
@@ -443,3 +507,8 @@ def run_preliminary(config, snapshots, backend_path, directory, experiment_id, *
 def run_diagnostic(config, snapshots, backend_path, directory, experiment_id, *, freeze_only=False, allow_unreviewed=False, progress=print):
     return _run(config, snapshots, backend_path, directory, experiment_id, mode="diagnostic",
                 freeze_only=freeze_only, allow_unreviewed=allow_unreviewed, progress=progress)
+
+
+def run_engineering_smoke(config, snapshots, backend_path, directory, experiment_id, *, freeze_only=False, progress=print):
+    return _run(config, snapshots, backend_path, directory, experiment_id, mode="engineering_smoke",
+                freeze_only=freeze_only, progress=progress)

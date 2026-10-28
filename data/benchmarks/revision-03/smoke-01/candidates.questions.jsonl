@@ -1,0 +1,3 @@
+{"complexity":"medium","question":"Berapa banyak film yang judulnya diawali huruf A?","question_id":"P201","schema_references":[]}
+{"complexity":"medium","question":"Tampilkan nama setiap bahasa penayangan beserta jumlah judul film yang memakai bahasa tersebut.","question_id":"P202","schema_references":[]}
+{"complexity":"complex","question":"Tampilkan nomor dan nama depan lima pemeran dengan judul film terbanyak, beserta jumlah judulnya.","question_id":"P203","schema_references":[]}

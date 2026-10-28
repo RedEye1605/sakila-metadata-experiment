@@ -82,3 +82,12 @@ Perbaiki lookup question_attributes dari Question objects ke question_id string 
 ### D55 — Reference dan witness revision03
 
 Gold B ditulis independen tanpa gold A/prediksi dan dikunci sebelum eksekusi. Seluruh30pasangan agree pada baseline+8variations; semua critical mutants distinguished. Fixtures revision03 menambah ranking/tie boundaries pada clone terisolasi, tanpa mengubah Sakila utama. Human review tetap pending; agreement AI dan finite witnesses bukan proof semantik universal.
+
+
+### D56 — Pernyataan review peneliti dan run utama
+
+Peneliti secara eksplisit menyatakan input telah direview serta meminta600trial dan BABIV/V. Catat `user_attested_complete` dengan reviewer identity/date belum diberikan; tidak mengarang submission atau signed review. Execution manifest terpisah mengikat scope yang sama, tanpa mengubah input asli.
+
+### D57 — Smoke teknis sebelum600trial
+
+Pakai3pertanyaan terpisah×4snapshot=12request untuk memastikan jalur source/model/API/safety/evaluator/sampler yang sama bekerja. References/mutants diperiksa independen pada9database cases. Tidak ada score threshold; diagnostic180lama tetap arsip dan tidak diulang. Manuscript builder hanya menerima600primary+4800auxiliary outcomes lengkap.

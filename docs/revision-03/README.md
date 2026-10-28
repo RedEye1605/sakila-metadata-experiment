@@ -41,3 +41,7 @@ rtk proxy .venv/bin/pytest tests/unit
 Manifest mengikat evidence lokal yang asli; source repository saja tidak menggantikan independent review atau ingestion provenance. Untuk membangun ulang reference checks gunakan `research/revision-02/validate_references.py --data-directory data/benchmarks/revision-03 --mutations data/benchmarks/revision-03/mutations.json --fixture-definition research/revision-03/fixture_cases.json` dengan reference B, config dan output directory baru secara eksplisit. Jangan membuat receipt sukses tanpa pengujian.
 
 Paket review manusia terbaru: [panduan](../../annotations/round-03/review-guide.md), stage-1-blind.zip dan stage-2-reference.zip. Keputusan reviewer tetap kosong; metadata S3 dan instruksi bersama disertakan untuk menilai makna tanpa melihat gold pada tahap pertama.
+
+## Otorisasi peneliti dan eksekusi utama
+
+Setelah checkpoint implementasi di atas, peneliti menyatakan review telah selesai, dengan nama reviewer akan dilengkapi sendiri. Execution manifest terpisah merekam pernyataan tersebut tanpa membuat identitas/tanggal review. [Rencana eksekusi](execution-plan.md) menggunakan12engineering requests lalu600main trials; seluruh kontrol dan source gates tetap berlaku. Artefak authoring lama tetap menunjukkan status pada saat dibuat.

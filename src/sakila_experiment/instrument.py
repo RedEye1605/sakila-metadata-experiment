@@ -103,8 +103,8 @@ class BenchmarkManifest(StrictModel):
     manifest_version: Literal[2] = 2
     benchmark_id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]{2,63}$")
     estimand: Literal["metadata-package-domain-information-availability"]
-    status: Literal["draft", "frozen_exploratory"] = "draft"
-    main_experiment_allowed: Literal[False] = False
+    status: Literal["draft", "frozen_exploratory", "frozen_user_attested"] = "draft"
+    main_experiment_allowed: bool = False
     rubric_version: Literal["spider-components-mysql-v2"] = RUBRIC_VERSION
     result_comparison: Literal["ex-results-v2-column-contracts", "ex-results-v3-column-permutation"] = "ex-results-v2-column-contracts"
     questions: ArtifactReference
@@ -122,12 +122,28 @@ class BenchmarkManifest(StrictModel):
     reference_validation: ArtifactReference
     reference_validation_lock: ArtifactReference
     fixture_specification: ArtifactReference
-    human_review_status: Literal["pending"] = "pending"
+    human_review_status: Literal["pending", "user_attested_complete"] = "pending"
+    execution_review: ArtifactReference | None = None
+    smoke_test: ArtifactReference | None = None
+
+    @model_validator(mode="after")
+    def review_state(self):
+        if self.status == "frozen_user_attested":
+            if (not self.main_experiment_allowed or self.human_review_status != "user_attested_complete"
+                    or self.execution_review is None or self.smoke_test is None):
+                raise ValueError("User-attested execution needs its review and separate smoke evidence")
+        elif self.main_experiment_allowed or self.human_review_status != "pending" or self.execution_review is not None:
+            raise ValueError("main_experiment_allowed requires a hash-bound user review statement")
+        return self
 
     def paths(self, root: Path) -> dict[str, Path]:
-        return {name: getattr(self, name).verified_path(root) for name in (
+        paths = {name: getattr(self, name).verified_path(root) for name in (
             "questions", "gold", "contracts", "annotation_specification", "fact_inventory",
             "analysis_protocol", "evaluation_protocol", "source_lock", "selection_receipt", "prompt_template", "information_audit", "metadata_snapshots", "reference_validation", "reference_validation_lock", "fixture_specification")}
+        for name in ("execution_review", "smoke_test"):
+            if getattr(self, name) is not None:
+                paths[name] = getattr(self, name).verified_path(root)
+        return paths
 
 
 def read_manifest(root: Path, path: Path) -> tuple[BenchmarkManifest, dict[str, Path]]:
@@ -266,7 +282,7 @@ def validate_instrument(root: Path, manifest_path: Path, output: Path | None = N
     profiles = []
     for question in questions:
         reference, contract = gold[question.question_id], by_id[question.question_id]
-        if manifest.status == "frozen_exploratory" and not contract.independent_review_artifacts:
+        if manifest.status in {"frozen_exploratory", "frozen_user_attested"} and not contract.independent_review_artifacts:
             raise DatasetError("Frozen private contracts require their independent interpretation source")
         for artifact in contract.independent_review_artifacts:
             records = [json.loads(line) for line in artifact.verified_path(root).read_bytes().splitlines() if line.strip()]
@@ -299,9 +315,15 @@ def validate_instrument(root: Path, manifest_path: Path, output: Path | None = N
     baseline = json.loads((root / "runs/database/baseline.json").read_bytes())
     for scenario in SCENARIOS:
         validate_mcp_provenance(root, snapshot_root / scenario, spec, baseline)
+    if manifest.status == "frozen_user_attested":
+        from .experiment.execution_review import validate_execution_review, load_smoke
+        validate_execution_review(root, manifest, paths)
+        load_smoke(root, manifest, paths)
     report = {"status": "offline_instrument_validated", "benchmark_id": manifest.benchmark_id,
               "manifest_sha256": sha256_bytes(manifest_path.read_bytes()), "rubric_version": RUBRIC_VERSION,
-              "profiles": profiles, "question_count": 30, "human_review_complete": False,
+              "profiles": profiles, "question_count": 30,
+              "human_review_complete": manifest.human_review_status == "user_attested_complete",
+              "review_basis": "user_attestation" if manifest.human_review_status == "user_attested_complete" else "not_provided",
               "main_experiment_allowed": False, "generation_requests": 0,
               "limits": "Structure and artifact checks do not establish semantic correctness; gold, metadata and fixtures require separate validation."}
     if output:

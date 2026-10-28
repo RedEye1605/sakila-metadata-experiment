@@ -21,7 +21,7 @@ from .prompt import build_prompt
 
 
 def verify_backend(config: AppConfig, model_receipt: Path, compose_file: Path, container_name: str,
-                   snapshots: Path, output: Path) -> dict:
+                   snapshots: Path, output: Path, *, context_questions: Path | None = None) -> dict:
     if (output / "verification.json").exists():
         raise ValueError("Backend verification exists; choose a new output directory")
     candidate = json.loads(model_receipt.read_bytes())
@@ -89,8 +89,8 @@ def verify_backend(config: AppConfig, model_receipt: Path, compose_file: Path, c
     evidence = BackendEvidence(config.inference.model_id, candidate["model_sha256"], revision,
                                config.inference.context_tokens, sha256_bytes(canonical_json(record)))
     budgets = []
-    questions_path = config.project_root / "data/pilot/questions.jsonl"
-    if config.diagnostic_manifest:
+    questions_path = context_questions or config.project_root / "data/pilot/questions.jsonl"
+    if config.diagnostic_manifest and context_questions is None:
         from ..experiment.diagnostics import DiagnosticManifest
         selected = DiagnosticManifest.model_validate_json(config.resolve(config.diagnostic_manifest).read_bytes())
         questions_path = selected.questions.verified_path(config.project_root)
@@ -106,6 +106,7 @@ def verify_backend(config: AppConfig, model_receipt: Path, compose_file: Path, c
                                 "output_reserve": config.inference.max_output_tokens, "safety_margin": config.inference.safety_margin_tokens,
                                 "prompt_sha256": prompt.prompt_sha256})
     record["pilot_context_checks"] = budgets
+    record["context_questions_sha256"] = sha256_bytes(questions_path.read_bytes())
     record["resource_observations"] = {
         "gpu": subprocess.run(["nvidia-smi", "--query-gpu=name,memory.total,memory.used,temperature.gpu", "--format=csv,noheader"], capture_output=True, text=True).stdout.strip(),
         "memory_kib": {key: int(value.split()[0]) for line in Path("/proc/meminfo").read_text().splitlines()

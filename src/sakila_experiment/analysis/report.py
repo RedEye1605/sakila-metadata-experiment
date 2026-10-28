@@ -106,6 +106,13 @@ def audit_run(directory: Path) -> tuple[dict, list[dict]]:
             raise IntegrityError("Diagnostic variant/repetition structure is incomplete")
         if manifest.get("benchmark_manifest_sha256") is None:
             raise IntegrityError("Diagnostic lacks its versioned benchmark binding")
+    elif manifest["mode"] == "engineering_smoke":
+        identifiers = {r["question_id"] for r in rows}
+        expected = {(q, s, 1) for q in identifiers for s in ("S0", "S1", "S2", "S3")}
+        if (len(rows) != 12 or len(identifiers) != 3 or any(not q.startswith("P") for q in identifiers)
+                or {(r["question_id"], r["scenario_id"], r["repetition_id"]) for r in rows} != expected
+                or not manifest.get("smoke_manifest_sha256")):
+            raise IntegrityError("Engineering smoke requires its complete separate3-by4design")
     elif manifest["mode"] not in {"pilot", "pilot_smoke", "preliminary_pilot"}:
         raise IntegrityError("Unknown run mode")
     if manifest["mode"].startswith("preliminary") or manifest["mode"] == "diagnostic":
@@ -173,6 +180,9 @@ def analyze_run(directory: Path, output: Path) -> dict:
     report["evaluation_status"] = manifest.get("evaluation_status", "engineering")
     report["gold_review_status"] = manifest.get("gold_review_status", ["unknown"])
     report["public_results_embargo"] = manifest.get("public_results_embargo", True)
+    if manifest.get("review_attestation"):
+        report["review_attestation"] = manifest["review_attestation"]
+        report["reviewer_identity_status"] = manifest["reviewer_identity_status"]
     events = [json.loads(line) for line in (directory / "events.jsonl").read_bytes().splitlines() if line.strip()]
     incidents = [e for e in events if e["kind"] == "infrastructure_failure"]
     report["infrastructure_accounting"] = {"assigned_trials": len(rows),
@@ -195,6 +205,8 @@ def analyze_run(directory: Path, output: Path) -> dict:
         report["note"] = "PROVISIONAL EX against draft references. External annotation pending. Statistical outputs are exploratory/conditional, not final thesis conclusions. Results remain local."
     elif manifest["mode"] != "main":
         report["note"] = "Engineering pilot only; no inferential tests or thesis metadata-effect conclusions"
+    elif manifest.get("evaluation_status") == "user_attested_review":
+        report["note"] = "Review completion declared by researcher; reviewer identities/date remain to be supplied. No independent signed-review claim."
     for group in report["descriptive"].values():
         for row in group:
             row["evaluation_status"] = report["evaluation_status"]
