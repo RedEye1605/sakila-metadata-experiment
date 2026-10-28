@@ -20,3 +20,6 @@ docs/private/
 snapshots/candidates/
 snapshots/candidates-v2/
 
+# Superseded, unused local freeze; active revision is final-02.
+data/benchmarks/revision-02/final/
+

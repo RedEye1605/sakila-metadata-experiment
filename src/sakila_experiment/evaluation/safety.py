@@ -21,6 +21,14 @@ SAFE_FUNCTIONS = frozenset({
     "GROUP_CONCAT", "GREATEST", "LEAST", "MOD", "POWER", "SQRT", "SIGN", "IFNULL", "EXISTS",
     "AND", "OR", "XOR",
 })
+# Native pure-function alternatives required by the versioned instrument.
+# Names are SQLGlot's normalized sql_name, checked against MySQL8.4 docs and
+# the pinned parser. Unknown/qualified functions still fail closed. ALL/ANY
+# are comparison AST nodes, not scalar functions to blanket-whitelist.
+SAFE_FUNCTIONS_V2 = SAFE_FUNCTIONS | frozenset({
+    "HOUR", "MINUTE", "SECOND", "DAYNAME", "FIND_IN_SET", "STR_POSITION",
+    "REGEXP_LIKE", "STR_TO_DATE", "LAST_DAY",
+})
 FORBIDDEN_NODES = frozenset({
     "Command", "Insert", "Update", "Delete", "Merge", "Create", "Drop", "Alter", "TruncateTable",
     "Into", "Lock", "Hint", "Parameter", "SessionParameter", "PropertyEQ", "Set", "Transaction",
@@ -46,9 +54,13 @@ def extract_sql(content: str) -> str:
     return text
 
 
-def validate_sql(sql: str, tables: frozenset[str], database: str = "sakila") -> ValidationResult:
+def validate_sql(sql: str, tables: frozenset[str], database: str = "sakila", *, policy_version: str = POLICY_VERSION) -> ValidationResult:
     def rejected(code: str) -> ValidationResult:
         return ValidationResult(False, code, sql)
+
+    if policy_version not in {"mysql-readonly-v1", "mysql-readonly-v2"}:
+        return rejected("unknown_sql_policy")
+    safe_functions = SAFE_FUNCTIONS_V2 if policy_version == "mysql-readonly-v2" else SAFE_FUNCTIONS
 
     if not sql.strip():
         return rejected("empty_output")
@@ -71,7 +83,7 @@ def validate_sql(sql: str, tables: frozenset[str], database: str = "sakila") -> 
                 return rejected("unsafe_construct")
             if isinstance(node, exp.Func):
                 name = node.name.upper() if isinstance(node, exp.Anonymous) else node.sql_name().upper()
-                if name not in SAFE_FUNCTIONS:
+                if name not in safe_functions:
                     return rejected("function_not_allowed")
                 if isinstance(node.parent, exp.Dot):
                     return rejected("qualified_function")

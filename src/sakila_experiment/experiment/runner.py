@@ -36,7 +36,7 @@ class RunError(RuntimeError):
 
 def source_version(root: Path) -> dict:
     files = []
-    for pattern in ("src/**/*.py", "infra/**/*.py", "tests/**/*.py", "prompts/*", "pyproject.toml", "uv.lock"):
+    for pattern in ("src/**/*.py", "infra/**/*.py", "research/**/*.py", "tests/**/*.py", "prompts/*", "pyproject.toml", "uv.lock"):
         for path in sorted(root.glob(pattern)):
             files.append({"path": str(path.relative_to(root)), "sha256": sha256_bytes(path.read_bytes())})
     git = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True)
@@ -46,14 +46,48 @@ def source_version(root: Path) -> dict:
 
 def _build_inputs(config: AppConfig, snapshots: Path, backend_path: Path, *, smoke: bool = False, mode: str = "pilot", allow_unreviewed: bool = False) -> tuple[dict, tuple, dict, dict]:
     root = config.project_root
-    if mode not in {"pilot", "main", "preliminary", "preliminary_pilot"} or (mode in {"main", "preliminary"} and smoke):
+    if mode not in {"pilot", "main", "preliminary", "preliminary_pilot", "diagnostic"} or (mode in {"main", "preliminary", "diagnostic"} and smoke):
         raise RunError("Unsupported run mode")
-    provisional = mode.startswith("preliminary")
+    provisional = mode.startswith("preliminary") or mode == "diagnostic"
     if provisional and not allow_unreviewed:
         raise RunError("Preliminary evaluation requires explicit --allow-unreviewed; references remain draft")
     benchmark = mode in {"main", "preliminary"}
     questions_path = root / ("data/public/main.questions.jsonl" if benchmark else "data/pilot/questions.jsonl")
     gold_path = root / ("data/private/main.gold.jsonl" if benchmark else "data/pilot/gold.jsonl")
+    specification_path = root / "data/annotations/specification.json"
+    analysis_path = root / "docs/analysis-plan.md"
+    instrument, instrument_paths, diagnostic, directories, selected_assignments, selected_validation = None, {}, None, {}, None, None
+    pilot_proof, context_proof = None, None
+    if config.benchmark_manifest:
+        if mode not in {"preliminary", "diagnostic"}:
+            raise RunError("Revision-02 remains exploratory; reviewed/legacy pilot routes cannot approve it")
+        from ..instrument import read_manifest, validate_instrument
+        instrument_path = config.resolve(config.benchmark_manifest)
+        validate_instrument(root, instrument_path)
+        instrument, instrument_paths = read_manifest(root, instrument_path)
+        if instrument.status != "frozen_exploratory":
+            raise RunError("A conditional draft proposal cannot enter generation; freeze the validated instrument first")
+        questions_path, gold_path = instrument_paths["questions"], instrument_paths["gold"]
+        specification_path, analysis_path = instrument_paths["annotation_specification"], instrument_paths["analysis_protocol"]
+        proof = json.loads(instrument_paths["reference_validation_lock"].read_bytes())
+        if proof.get("database_config") != config.database.model_dump(mode="json"):
+            raise RunError("Reference validation and generation evaluation use different database policies")
+        if config.resolve(config.prompt_template) != instrument_paths["prompt_template"]:
+            raise RunError("Configured prompt differs from the versioned instrument")
+        if mode == "diagnostic":
+            if not config.diagnostic_manifest:
+                raise RunError("A versioned 180-trial diagnostic manifest is required")
+            from .diagnostics import load_diagnostic
+            diagnostic, paths, _, _, selected_validation, directories, selected_assignments = load_diagnostic(root, config.resolve(config.diagnostic_manifest), config.experiment)
+            if diagnostic.benchmark_manifest.sha256 != sha256_bytes(instrument_path.read_bytes()):
+                raise RunError("Diagnostic refers to another frozen benchmark instrument")
+            questions_path, gold_path = paths["questions"], paths["gold"]
+            pilot_proof = json.loads(paths["semantic_validation_lock"].read_bytes())
+            context_proof = json.loads(paths["context_preflight"].read_bytes())
+            if pilot_proof.get("database_config") != config.database.model_dump(mode="json"):
+                raise RunError("Pilot reference validation and evaluation database policies differ")
+    elif mode == "diagnostic":
+        raise RunError("Diagnostic mode requires the versioned exploratory instrument")
     questions, references = load_questions(questions_path), load_gold(gold_path)
     if {q.question_id for q in questions} != references.keys():
         raise DatasetError("Pilot question and reference IDs differ")
@@ -63,21 +97,35 @@ def _build_inputs(config: AppConfig, snapshots: Path, backend_path: Path, *, smo
     if mode == "pilot" and any(r.review_status != "approved" for r in references.values()):
         raise RunError("Pilot gold remains draft; human semantic review is required before new scored pilot requests. Backend/context verification can run without generation")
     from ..evaluation.gold import structural_complexity
-    if any(structural_complexity(references[q.question_id].sql) != q.complexity for q in questions):
+    if instrument:
+        from ..evaluation.structure import profile_sql
+        classification = lambda sql: profile_sql(sql).complexity
+    else:
+        classification = structural_complexity
+    if any(classification(references[q.question_id].sql) != q.complexity for q in questions):
         raise DatasetError("Reference SQL no longer matches the declared complexity rubric; revalidate the reviewed dataset")
-    assignments = build_schedule(questions, config.experiment, pilot=not benchmark)
-    validation = validate_scenario_set(snapshots)
+    assignments = selected_assignments or build_schedule(questions, config.experiment, pilot=not benchmark)
+    canonical_validation = validate_scenario_set(snapshots)
+    if instrument and json.loads(instrument_paths["metadata_snapshots"].read_bytes())["snapshot_sha256"] != canonical_validation["snapshot_sha256"]:
+        raise RunError("Snapshot set differs from the selected instrument")
+    validation = selected_validation or canonical_validation
     evidence, backend = load_backend_evidence(backend_path)
     check_live_backend(config.inference, backend)
     if config.inference.model_id != evidence.model_id:
         raise RunError("Inference configuration differs from the verified model")
+    if context_proof is not None:
+        validate_context_backend(context_proof, evidence, backend, config.inference)
     expected_audit = json.loads((root / "runs/database/baseline.json").read_bytes())
     actual = inspect_database(config)
     verify_fingerprint(actual, expected_audit)
+    if instrument:
+        validate_reference_database(proof, actual)
+    if pilot_proof is not None:
+        validate_reference_database(pilot_proof, actual)
     manifest = {"manifest_version": 1, "mode": "pilot_smoke" if smoke else mode, "main_experiment_allowed": mode == "main",
                 "evaluation_status": "provisional" if provisional else "reviewed" if mode == "main" else "engineering",
                 "allow_unreviewed": provisional and allow_unreviewed, "public_results_embargo": True,
-                "annotation_review_status": json.loads((root / "data/annotations/specification.json").read_bytes()).get("status", "unknown"),
+                "annotation_review_status": json.loads(specification_path.read_bytes()).get("status", "unknown"),
                 "trial_count": len(assignments), "questions_sha256": sha256_bytes(questions_path.read_bytes()),
                 "gold_sha256": sha256_bytes(gold_path.read_bytes()), "gold_review_status": sorted({r.review_status for r in references.values()}),
                 "inference_config": config.inference.model_dump(mode="json"), "database_config": config.database.model_dump(mode="json"),
@@ -92,13 +140,42 @@ def _build_inputs(config: AppConfig, snapshots: Path, backend_path: Path, *, smo
                 "sampler_verification_sha256": sha256_bytes((backend_path.parent / "sampler-verification.json").read_bytes()) if benchmark else None,
                 "sampler_verification_status": "verified_for_selected_backend" if benchmark else "deferred_until_pilot_completion",
                 "model_id": evidence.model_id, "model_version_or_hash": evidence.model_sha256, "backend_revision": evidence.backend_revision,
-                "snapshots": validation, "snapshot_manifest_sha256": {s: sha256_bytes((snapshots / s / "manifest.json").read_bytes()) for s in ("S0", "S1", "S2", "S3")},
-                "prompt_template_sha256": sha256_bytes((root / "prompts/generation.txt").read_bytes()),
+                "snapshots": validation, "snapshot_manifest_sha256": {s: sha256_bytes(((root / directories[s]) if directories else (snapshots / s)).joinpath("manifest.json").read_bytes()) for s in validation["snapshot_sha256"]},
+                "prompt_template_sha256": sha256_bytes(config.resolve(config.prompt_template).read_bytes()),
                 "trial_plan_sha256": sha256_bytes(canonical_json([asdict(a) for a in assignments])), "comparator_version": COMPARATOR_VERSION,
                 "source_version": source_version(root), "metadata_provenance": [json.loads((snapshots / s / "manifest.json").read_bytes()) for s in ("S0", "S1", "S2", "S3")],
-                "analysis_protocol_sha256": sha256_bytes((root / "docs/analysis-plan.md").read_bytes()),
+                "analysis_protocol_sha256": sha256_bytes(analysis_path.read_bytes()),
                 "note": "Provisional EX against draft references; external annotation pending; results embargoed" if provisional else "Reviewed main experiment" if mode == "main" else "Engineering checks only; draft pilot EX must not be reported as main research results"}
+    if instrument:
+        manifest.update(instrument_id=instrument.benchmark_id, benchmark_manifest_sha256=sha256_bytes(config.resolve(config.benchmark_manifest).read_bytes()),
+                        instrument_paths={key: str(path.relative_to(root)) for key, path in instrument_paths.items()},
+                        canonical_snapshots=canonical_validation, comparator_version="ex-results-v2-column-contracts",
+                        analysis_protocol_id="paired-question-permutation-exact-v2", human_review_status="pending")
+        if benchmark:
+            contracts = {row["question_id"]: row for row in map(json.loads, instrument_paths["contracts"].read_bytes().splitlines())}
+            from ..evaluation.structure import profile_sql
+            manifest["question_attributes"] = {qid: {"primary_need": contracts[qid]["primary_need"],
+                "semantic_family": contracts[qid]["semantic_family"], "spider_level": profile_sql(references[qid].sql).spider_level}
+                for qid in questions}
+    if diagnostic:
+        manifest.update(diagnostic_manifest_sha256=sha256_bytes(config.resolve(config.diagnostic_manifest).read_bytes()),
+                        diagnostic_rendering_directories=directories, diagnostic_repetitions=3,
+                        diagnostic_rendering_provenance=[json.loads((root / directory / "manifest.json").read_bytes()) for directory in directories.values()])
     return manifest, assignments, {q.question_id: q for q in questions}, references
+
+
+def validate_reference_database(proof, actual):
+    if (any(proof.get("database_" + field) != actual[field] for field in ("schema_sha256", "data_sha256"))
+            or proof.get("mysql_version") != actual["server"]["version"]):
+        raise RunError("Reference validation and generation evaluation use different frozen database content or server version")
+
+
+def validate_context_backend(proof, evidence, backend, settings):
+    expected = {"model_id": evidence.model_id, "model_sha256": evidence.model_sha256,
+                "backend_revision": evidence.backend_revision, "backend_build_info": backend["build_info"],
+                "chat_template_sha256": backend["chat_template_sha256"], "context_tokens": settings.context_tokens}
+    if any(proof.get(key) != value for key, value in expected.items()):
+        raise RunError("Diagnostic tokenizer/context evidence differs from the selected model, backend or template")
 
 
 def pilot_inputs(config: AppConfig, snapshots: Path, backend_path: Path, *, smoke: bool = False):
@@ -136,6 +213,27 @@ def preliminary_inputs(config, snapshots, backend_path, pilot_directory, *, allo
     from ..analysis.report import audit_run
     manifest, assignments, questions, references = _build_inputs(config, snapshots, backend_path, mode="preliminary", allow_unreviewed=allow_unreviewed)
     pilot, records = audit_run(pilot_directory)
+    if config.benchmark_manifest:
+        if pilot.get("mode") != "diagnostic" or len(records) != 180:
+            raise RunError("Revision-02 requires its complete audited 180-trial diagnostic")
+        for key in ("model_version_or_hash", "backend_evidence_sha256", "inference_config", "prompt_template_sha256", "database_schema_sha256", "database_data_sha256", "source_version", "benchmark_manifest_sha256", "canonical_snapshots"):
+            if pilot.get(key) != manifest.get(key):
+                raise RunError("Diagnostic/benchmark input or source mismatch: " + key)
+        if pilot.get("diagnostic_manifest_sha256") != sha256_bytes(config.resolve(config.diagnostic_manifest).read_bytes()):
+            raise RunError("Diagnostic inputs changed after the diagnostic run")
+    else:
+        _check_legacy_preliminary_pilot(config, manifest, pilot, records)
+    sampler = json.loads((backend_path.parent / "sampler-verification.json").read_bytes())
+    if (sampler.get("status") != "sampler_seed_cache_verified" or sampler.get("model_sha256") != manifest["model_version_or_hash"]
+            or sampler.get("backend_evidence_sha256") != manifest["backend_evidence_sha256"]
+            or sampler.get("pilot_manifest_sha256") != sha256_bytes((pilot_directory / "manifest.json").read_bytes())):
+        raise RunError("Sampler proof does not match the preliminary pilot and backend")
+    manifest.update(complete_main_prompt_budgets=_prompt_budgets(config, backend_path, questions, snapshots),
+                    verified_pilot_manifest_sha256=sha256_bytes((pilot_directory / "manifest.json").read_bytes()))
+    return manifest, assignments, questions, references
+
+
+def _check_legacy_preliminary_pilot(config, manifest, pilot, records):
     if pilot.get("mode") != "preliminary_pilot" or len(records) != 36:
         raise RunError("A complete audited preliminary pilot is required")
     expected = {(q.question_id, s, 1) for q in load_questions(config.project_root / "data/pilot/questions.jsonl") for s in config.experiment.scenario_ids}
@@ -148,23 +246,20 @@ def preliminary_inputs(config, snapshots, backend_path, pilot_directory, *, allo
         raise RunError("Pilot reference version changed")
     if pilot["questions_sha256"] != sha256_bytes((config.project_root / "data/pilot/questions.jsonl").read_bytes()):
         raise RunError("Pilot questions changed")
-    sampler = json.loads((backend_path.parent / "sampler-verification.json").read_bytes())
-    if (sampler.get("status") != "sampler_seed_cache_verified" or sampler.get("model_sha256") != manifest["model_version_or_hash"]
-            or sampler.get("backend_evidence_sha256") != manifest["backend_evidence_sha256"]
-            or sampler.get("pilot_manifest_sha256") != sha256_bytes((pilot_directory / "manifest.json").read_bytes())):
-        raise RunError("Sampler proof does not match the preliminary pilot and backend")
+
+
+def _prompt_budgets(config, backend_path, questions, snapshots, directories=None):
     evidence, _ = load_backend_evidence(backend_path)
     budgets = []
     with LlamaClient(config.inference, evidence) as client:
         for q in questions.values():
-            for s in config.experiment.scenario_ids:
-                folder = snapshots / s
+            for s in (directories or config.experiment.scenario_ids):
+                folder = config.project_root / directories[s] if directories else snapshots / s
                 snapshot = json.loads((folder / "manifest.json").read_bytes())
-                prompt = build_prompt(q.generation_input(), json.loads((folder / snapshot["payload_file"]).read_bytes()), snapshot["snapshot_sha256"], config.project_root / "prompts/generation.txt")
+                prompt = build_prompt(q.generation_input(), json.loads((folder / snapshot["payload_file"]).read_bytes()), snapshot["snapshot_sha256"], config.resolve(config.prompt_template))
                 checked = client.prepare(prompt)
                 budgets.append({"question_id": q.question_id, "scenario_id": s, "input_tokens": checked.input_tokens, "prompt_sha256": prompt.prompt_sha256})
-    manifest.update(complete_main_prompt_budgets=budgets, verified_pilot_manifest_sha256=sha256_bytes((pilot_directory / "manifest.json").read_bytes()))
-    return manifest, assignments, questions, references
+    return budgets
 
 
 def evaluate_response(config, tables, response: GenerationResponse, reference, gold_execution):
@@ -174,8 +269,10 @@ def evaluate_response(config, tables, response: GenerationResponse, reference, g
               "inference_latency_ms": response.inference_latency_ms, "input_tokens": response.input_tokens,
               "output_tokens": response.output_tokens, "token_usage_source": response.token_usage_source,
               "model_response_valid": response.response_valid, "finish_reason": response.finish_reason,
+              "resolved_request_parameters": response.request_parameters,
               "gold_result_hash": gold_execution.result_sha256, "extracted_sql": None, "execution_result_hash": None,
               "sql_execution_latency_ms": None, "error_type": None, "error_message": None}
+    common["execution_error_code"] = None
     # Formatting cleanup has no semantic rewrite. Rejected raw outputs stay durable.
     extracted = extract_sql(response.text or "")
     if not response.response_valid or not extracted:
@@ -188,11 +285,11 @@ def evaluate_response(config, tables, response: GenerationResponse, reference, g
     common.update(validation_status=execution.validation_code, execution_status=execution.status,
                   sql_execution_latency_ms=execution.latency_ms, execution_result_hash=execution.result_sha256,
                   error_type="sql_model_error" if execution.status != "success" else None,
-                  error_message=execution.error_message)
+                  error_message=execution.error_message, execution_error_code=execution.error_code)
     if execution.status != "success":
         return {**common, "execution_accuracy": 0}, None
     comparison = compare_results(execution.result, gold_execution.result,
-                                 ComparisonSpec(reference.column_count, reference.ordered, reference.approximate_columns))
+                                 ComparisonSpec(reference.column_count, reference.ordered, reference.approximate_columns, date_columns=reference.date_columns))
     return {**common, "execution_accuracy": comparison.execution_accuracy, "comparison_reason": comparison.reason}, execution.result
 
 
@@ -213,6 +310,11 @@ def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path
         manifest, assignments, questions, references = preliminary_inputs(config, snapshots, backend_path, pilot_directory, allow_unreviewed=allow_unreviewed)
         if not freeze_only and not (directory / "freeze.json").is_file():
             raise RunError("Freeze preliminary inputs before generation")
+    elif mode == "diagnostic":
+        manifest, assignments, questions, references = _build_inputs(config, snapshots, backend_path, mode=mode, allow_unreviewed=allow_unreviewed)
+        manifest["complete_diagnostic_prompt_budgets"] = _prompt_budgets(config, backend_path, questions, snapshots, manifest["diagnostic_rendering_directories"])
+        if not freeze_only and not (directory / "freeze.json").is_file():
+            raise RunError("Freeze all 60 diagnostic prompts and references before generation")
     elif mode == "preliminary_pilot":
         manifest, assignments, questions, references = _build_inputs(config, snapshots, backend_path, mode=mode, allow_unreviewed=allow_unreviewed)
     else:
@@ -220,9 +322,9 @@ def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path
     manifest["experiment_id"] = experiment_id
     publish_artifact(directory / "manifest.json", canonical_json(manifest))
     publish_artifact(directory / "plan.json", canonical_json([asdict(a) for a in assignments]))
-    if mode in {"main", "preliminary"} and not freeze_only:
+    if mode in {"main", "preliminary", "diagnostic"} and not freeze_only:
         freeze = json.loads((directory / "freeze.json").read_bytes())
-        expected_status = "preliminary_manifest_frozen" if mode == "preliminary" else "main_manifest_frozen"
+        expected_status = mode + "_manifest_frozen"
         if freeze.get("status") != expected_status or freeze.get("manifest_sha256") != sha256_bytes(canonical_json(manifest)):
             raise RunError("Main freeze receipt differs from the current verified manifest")
     if dry_run:
@@ -235,13 +337,13 @@ def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path
         execution = execute_sql(config, reference.sql, tables)
         if execution.status != "success":
             raise RunError("Reference SQL preflight failed: " + question_id)
-        spec = ComparisonSpec(reference.column_count, reference.ordered, reference.approximate_columns)
+        spec = ComparisonSpec(reference.column_count, reference.ordered, reference.approximate_columns, date_columns=reference.date_columns)
         if compare_results(execution.result, execution.result, spec).execution_accuracy != 1:
             raise RunError("Reference SQL column/result contract failed")
         publish_artifact(directory / "gold-results" / f"{question_id}.json", canonical_json(execution.result.encoded()))
         gold_executions[question_id] = execution
     if freeze_only:
-        receipt = {"status": "preliminary_manifest_frozen" if mode == "preliminary" else "main_manifest_frozen", "trial_count": len(assignments), "generation_requests": 0,
+        receipt = {"status": mode + "_manifest_frozen", "trial_count": len(assignments), "generation_requests": 0,
                    "manifest_sha256": sha256_bytes(canonical_json(manifest)),
                    "validated_gold_results": {q: e.result_sha256 for q, e in gold_executions.items()}}
         publish_artifact(directory / "freeze.json", canonical_json(receipt))
@@ -252,13 +354,14 @@ def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path
         for assignment in assignments:
             if assignment.trial_id in completed:
                 continue
-            folder = snapshots / assignment.scenario_id
+            directories = manifest.get("diagnostic_rendering_directories")
+            folder = config.project_root / directories[assignment.scenario_id] if directories else snapshots / assignment.scenario_id
             snapshot_bytes = (folder / "manifest.json").read_bytes()
             if sha256_bytes(snapshot_bytes) != manifest["snapshot_manifest_sha256"][assignment.scenario_id]:
                 raise RunError("Snapshot manifest changed during the run")
             snapshot = json.loads(snapshot_bytes)
             payload = json.loads((folder / snapshot["payload_file"]).read_bytes())
-            prompt = build_prompt(questions[assignment.question_id].generation_input(), payload, snapshot["snapshot_sha256"], config.project_root / "prompts/generation.txt")
+            prompt = build_prompt(questions[assignment.question_id].generation_input(), payload, snapshot["snapshot_sha256"], config.resolve(config.prompt_template))
             if prompt.template_sha256 != manifest["prompt_template_sha256"]:
                 raise RunError("Prompt template changed during the run")
             prompt_path = directory / "prompts" / f"{prompt.prompt_sha256}.json"
@@ -303,7 +406,7 @@ def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path
             raise RunError("Completed trials do not match the fixed assignment plan")
         ledger.export_jsonl(experiment_id, directory / "events.jsonl")
         publish_artifact(directory / "trials.jsonl", b"".join(canonical_json(results[a.trial_id]) for a in assignments))
-        report = {"status": "preliminary_complete" if mode.startswith("preliminary") else "main_complete" if mode == "main" else "pilot_complete", "experiment_id": experiment_id, "mode": manifest["mode"],
+        report = {"status": "preliminary_complete" if mode.startswith("preliminary") else mode + "_complete" if mode in {"main", "diagnostic"} else "pilot_complete", "experiment_id": experiment_id, "mode": manifest["mode"],
                   "completed_trials": len(results), "main_experiment_allowed": mode == "main",
                   "database_unchanged": True, "manifest_sha256": sha256_bytes(canonical_json(manifest))}
         publish_artifact(directory / "completion.json", canonical_json(report))
@@ -324,3 +427,8 @@ def run_main(config: AppConfig, snapshots: Path, backend_path: Path, directory: 
 def run_preliminary(config, snapshots, backend_path, directory, experiment_id, *, pilot_directory=None, pilot=False, freeze_only=False, allow_unreviewed=False, progress=print):
     return _run(config, snapshots, backend_path, directory, experiment_id, mode="preliminary_pilot" if pilot else "preliminary",
                 pilot_directory=pilot_directory, freeze_only=freeze_only, allow_unreviewed=allow_unreviewed, progress=progress)
+
+
+def run_diagnostic(config, snapshots, backend_path, directory, experiment_id, *, freeze_only=False, allow_unreviewed=False, progress=print):
+    return _run(config, snapshots, backend_path, directory, experiment_id, mode="diagnostic",
+                freeze_only=freeze_only, allow_unreviewed=allow_unreviewed, progress=progress)

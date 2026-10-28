@@ -1,0 +1,20 @@
+{
+  "source_id": "spider-2018-hardness",
+  "repository": "https://github.com/taoyds/spider",
+  "commit": "cccfe7bc99c4f5b7229890bbff75bfed50f2b008",
+  "retrieved_at_utc": "2026-10-28T07:09:10.198091+00:00",
+  "files": [
+    {
+      "name": "evaluation.py",
+      "url": "https://raw.githubusercontent.com/taoyds/spider/cccfe7bc99c4f5b7229890bbff75bfed50f2b008/evaluation.py",
+      "sha256": "c61f18f40bec5af1984af0e8731e678f6cee7976611d910e6e5c144d757fd827"
+    },
+    {
+      "name": "process_sql.py",
+      "url": "https://raw.githubusercontent.com/taoyds/spider/cccfe7bc99c4f5b7229890bbff75bfed50f2b008/process_sql.py",
+      "sha256": "909833d02b64124f407b218bdfa7bf6d3b3ab17593ae9d2bd4ebc8f4ab498354"
+    }
+  ],
+  "paper": "https://aclanthology.org/D18-1425/",
+  "use": "Reference algorithm only. Full upstream code stays in ignored research cache; no upstream evaluator is used to grade MySQL EX."
+}

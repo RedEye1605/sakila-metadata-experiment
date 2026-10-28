@@ -2,6 +2,8 @@
 
 Dokumen ini mengarahkan penulis/AI pendamping; bukan sumber untuk mengarang hasil penelitian.
 
+**Pembaruan revision-02:** tabel dan penjelasan pendahuluan di bawah mengacu pada instrumen lama. Revisi setelah audit ada pada `docs/bab-iv.md` bagian 4.12 dan `docs/revision-02/`. Revisi memakai tiga kartu domain dan 12 pilot diagnostik, berbeda dari tujuh istilah/sembilan pilot lama. Input akhir `data/benchmarks/revision-02/final-02` berisi 30 soal dari pool 60 dengan rubric adaptasi Spider dan kebutuhan pengetahuan terpisah. Reference utama/pilot lolos sembilan database; source checkpoint lulus 228 tests dan driver dry-run tanpa generation. Tidak ada EX revisi pada checkpoint ini; jangan menyalin skor lama menjadi skor revisi. Gunakan run completion/laporan aktual nanti, bukan status source pra-run, untuk menulis hasil. Human review tetap pending; paket akhir berada di `annotations/round-02`.
+
 Judul wajib: **Analisis Pengaruh Metadata terhadap Execution Accuracy pada Sistem Text-to-SQL Berbasis Large Language Model (Studi Kasus: Basis Data Sakila)**.
 
 Gunakan delapan tahap metodologi yang disepakati: Studi Literatur; Penyusunan Anotasi Metadata; Penyusunan Dataset Pengujian; Perancangan Pipeline Text-to-SQL; Implementasi Pipeline Text-to-SQL; Pengujian Text-to-SQL; Analisis Hasil; Penarikan Kesimpulan dan Saran. Setup Sakila dan pemeriksaan model adalah kegiatan teknis, bukan tahap penelitian tambahan. EX dihitung dalam pengujian; statistik masuk analisis hasil.

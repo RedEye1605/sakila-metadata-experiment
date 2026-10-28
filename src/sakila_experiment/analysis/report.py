@@ -61,6 +61,14 @@ def audit_run(directory: Path) -> tuple[dict, list[dict]]:
             raise IntegrityError("Model or inference configuration changed")
         if row["snapshot_sha256"] != manifest["snapshots"]["snapshot_sha256"][row["scenario_id"]]:
             raise IntegrityError("Scenario snapshot changed")
+        if manifest.get("benchmark_manifest_sha256"):
+            settings = manifest["inference_config"]
+            expected_request = {"model": manifest["model_id"], "temperature": settings["temperature"],
+                                "top_p": settings["top_p"], "top_k": settings["top_k"],
+                                "max_tokens": settings["max_output_tokens"], "seed": row["inference_seed"],
+                                **manifest["fixed_request_parameters"], "messages_sha256": row["prompt_hash"]}
+            if row.get("resolved_request_parameters") != expected_request:
+                raise IntegrityError("Resolved request differs from frozen settings, seed or prompt")
         files = [(directory / "prompts" / f"{row['prompt_hash']}.json", row["prompt_hash"]),
                  (directory / "gold-results" / f"{row['question_id']}.json", row["gold_result_hash"])]
         if row["execution_result_hash"] is not None:
@@ -79,9 +87,19 @@ def audit_run(directory: Path) -> tuple[dict, list[dict]]:
         expected = {(q, s, r) for q in identifiers for s in ("S0", "S1", "S2", "S3") for r in range(1, 6)}
         if len(identifiers) != 30 or {(r["question_id"], r["scenario_id"], r["repetition_id"]) for r in rows} != expected:
             raise IntegrityError("Paired question/scenario/repetition structure is incomplete")
+    elif manifest["mode"] == "diagnostic":
+        from ..experiment.diagnostics import VARIANTS
+        identifiers = {r["question_id"] for r in rows}
+        expected = {(q, v, r) for q in identifiers for v in VARIANTS for r in range(1, 4)}
+        if len(rows) != 180 or len(identifiers) != 12 or any(not q.startswith("P") for q in identifiers):
+            raise IntegrityError("Diagnostic requires 12 separate pilot questions and 180 outcomes")
+        if {(r["question_id"], r["scenario_id"], r["repetition_id"]) for r in rows} != expected or any(r.get("variant_id") != r["scenario_id"] for r in rows):
+            raise IntegrityError("Diagnostic variant/repetition structure is incomplete")
+        if manifest.get("benchmark_manifest_sha256") is None:
+            raise IntegrityError("Diagnostic lacks its versioned benchmark binding")
     elif manifest["mode"] not in {"pilot", "pilot_smoke", "preliminary_pilot"}:
         raise IntegrityError("Unknown run mode")
-    if manifest["mode"].startswith("preliminary"):
+    if manifest["mode"].startswith("preliminary") or manifest["mode"] == "diagnostic":
         if manifest.get("main_experiment_allowed") is not False or manifest.get("evaluation_status") != "provisional" or manifest.get("allow_unreviewed") is not True:
             raise IntegrityError("Preliminary status/authorization is inconsistent")
     return manifest, rows
@@ -96,7 +114,9 @@ def descriptive(records: list[dict]) -> dict:
     def summarize(rows):
         result = {"trials": len(rows), "correct": sum(r["execution_accuracy"] for r in rows),
                   "execution_accuracy_percent": mean(r["execution_accuracy"] for r in rows) * 100,
-                  "execution_status_counts": dict(Counter(r["execution_status"] for r in rows))}
+                  "execution_status_counts": dict(Counter(r["execution_status"] for r in rows)),
+                  "validation_status_counts": dict(Counter(r.get("validation_status", "not_recorded") for r in rows)),
+                  "execution_error_code_counts": dict(Counter(str(r["execution_error_code"]) for r in rows if r.get("execution_error_code") is not None))}
         for key in ("inference_latency_ms", "sql_execution_latency_ms", "input_tokens", "output_tokens"):
             values = [r[key] for r in rows if r.get(key) is not None]
             result[key] = {"available": len(values), "missing": len(rows) - len(values),
@@ -121,6 +141,22 @@ def csv_bytes(rows: list[dict], columns: list[str]) -> bytes:
     return buffer.getvalue().encode("utf-8")
 
 
+def cohort_descriptives(records, attributes):
+    if set(attributes) != {r["question_id"] for r in records}:
+        raise IntegrityError("Question-profile coverage differs from the frozen outcomes")
+    output = {}
+    for key in ("primary_need", "spider_level", "semantic_family"):
+        groups = defaultdict(list)
+        for row in records:
+            groups[row["scenario_id"], attributes[row["question_id"]][key]].append(row)
+        output[key] = [{"scenario_id": scenario, "profile": profile,
+                        "questions": len({row["question_id"] for row in rows}), "trials": len(rows),
+                        "correct": sum(row["execution_accuracy"] for row in rows),
+                        "execution_accuracy_percent": mean(row["execution_accuracy"] for row in rows) * 100}
+                       for (scenario, profile), rows in sorted(groups.items())]
+    return output
+
+
 def analyze_run(directory: Path, output: Path) -> dict:
     manifest, rows = audit_run(directory)
     report = {"mode": manifest["mode"], "experiment_id": manifest["experiment_id"], "integrity_verified": True,
@@ -128,8 +164,23 @@ def analyze_run(directory: Path, output: Path) -> dict:
     report["evaluation_status"] = manifest.get("evaluation_status", "engineering")
     report["gold_review_status"] = manifest.get("gold_review_status", ["unknown"])
     report["public_results_embargo"] = manifest.get("public_results_embargo", True)
+    events = [json.loads(line) for line in (directory / "events.jsonl").read_bytes().splitlines() if line.strip()]
+    incidents = [e for e in events if e["kind"] == "infrastructure_failure"]
+    report["infrastructure_accounting"] = {"assigned_trials": len(rows),
+        "request_attempts_started": sum(e["kind"] == "request_started" for e in events),
+        "infrastructure_incidents": len(incidents),
+        "incident_types": dict(Counter(e["payload"].get("error_type", "unknown") for e in incidents)),
+        "policy": "Infrastructure incidents remain separate from completed binary EX; stored responses are reused, never semantically repaired."}
+    if manifest.get("question_attributes"):
+        report["cohort_descriptive"] = cohort_descriptives(rows, manifest["question_attributes"])
+    if manifest["mode"] == "diagnostic":
+        from .diagnostics import diagnostic_analysis
+        report["diagnostic_analysis"] = diagnostic_analysis(rows, seed=manifest["experiment_config"]["analysis_seed"])
     if manifest["mode"] in {"main", "preliminary"}:
-        from .statistics import paired_analysis
+        if manifest.get("analysis_protocol_id") == "paired-question-permutation-exact-v2":
+            from .exact import paired_analysis_v2 as paired_analysis
+        else:
+            from .statistics import paired_analysis
         report["paired_analysis"] = paired_analysis(rows, seed=manifest["experiment_config"]["analysis_seed"])
     if manifest["mode"].startswith("preliminary"):
         report["note"] = "PROVISIONAL EX against draft references. External annotation pending. Statistical outputs are exploratory/conditional, not final thesis conclusions. Results remain local."
@@ -145,17 +196,33 @@ def analyze_run(directory: Path, output: Path) -> dict:
     measurements = [{"evaluation_status": report["evaluation_status"], "scenario_id": r["scenario_id"], "measurement": key, **r[key]}
                     for r in report["descriptive"]["by_scenario"] for key in ("inference_latency_ms", "sql_execution_latency_ms", "input_tokens", "output_tokens")]
     publish_artifact(output / "measurements.csv", csv_bytes(measurements, ["evaluation_status", "scenario_id", "measurement", "available", "missing", "mean", "median"]))
+    for profile, group in report.get("cohort_descriptive", {}).items():
+        publish_artifact(output / (profile + ".csv"), csv_bytes(group, ["scenario_id", "profile", "questions", "trials", "correct", "execution_accuracy_percent"]))
     if "paired_analysis" in report:
         contrast_rows = [{"evaluation_status": report["evaluation_status"], **r} for r in report["paired_analysis"]["contrasts"]]
         publish_artifact(output / "paired-contrasts.csv", csv_bytes(contrast_rows, ["evaluation_status", "contrast", "difference_pp", "p_value", "p_value_holm", "confidence_interval_95_pp"]))
         from .figures import plot_statistics, plot_descriptive
         plot_statistics(report["paired_analysis"], output, label="EX pendahuluan — draft gold" if manifest["mode"] == "preliminary" else "Pengaruh kondisi metadata terhadap EX")
         plot_descriptive(report["descriptive"], output, label="Pendahuluan — draft gold" if manifest["mode"] == "preliminary" else "Reviewed benchmark")
+    if "diagnostic_analysis" in report:
+        publish_artifact(output / "diagnostic-contrasts.csv", csv_bytes(report["diagnostic_analysis"]["contrasts"],
+                         ["contrast", "difference_pp", "pointwise_bootstrap_interval_95_pp"]))
     lines = ["# Laporan EX Pendahuluan" if manifest["mode"].startswith("preliminary") else "# Laporan Execution Accuracy", "",
              report.get("note", "Reviewed reference evaluation."), "", f"Experiment: {manifest['experiment_id']}; evaluable trials: {len(rows)}.", "",
              "| Kondisi | Benar | Trial | EX (%) |", "|---|---:|---:|---:|"]
     for row in report["descriptive"]["by_scenario"]:
         lines.append(f"| {row['scenario_id']} | {row['correct']} | {row['trials']} | {row['execution_accuracy_percent']:.2f} |")
+    if report.get("cohort_descriptive"):
+        lines += ["", "| Kondisi | Kebutuhan informasi | Pertanyaan | Trial | EX (%) |", "|---|---|---:|---:|---:|"]
+        for row in report["cohort_descriptive"]["primary_need"]:
+            lines.append(f"| {row['scenario_id']} | {row['profile']} | {row['questions']} | {row['trials']} | {row['execution_accuracy_percent']:.2f} |")
+        lines += ["", "Profil kebutuhan/keluarga berasal dari instrumen yang dibekukan. Subkelompok bersifat deskriptif, berkaitan dengan complexity, dan bukan tambahan pertanyaan independen."]
+    if "diagnostic_analysis" in report:
+        lines += ["", "Diagnostik terpisah; bukan perbandingan utama S0–S3. Gold tetap draft.", "",
+                  "| Kontras terencana | Selisih EX (pp) | 95% pointwise composition interval (pp) |", "|---|---:|---|"]
+        for contrast in report["diagnostic_analysis"]["contrasts"]:
+            lines.append(f"| {contrast['contrast']} | {contrast['difference_pp']:.2f} | {contrast['pointwise_bootstrap_interval_95_pp']} |")
+        lines += ["", report["diagnostic_analysis"]["limits"]]
     if "paired_analysis" in report:
         stats = report["paired_analysis"]
         lines += ["", "Unit berpasangan adalah pertanyaan; lima pengulangan diagregasi per question–scenario.", "",

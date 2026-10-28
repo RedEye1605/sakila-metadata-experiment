@@ -6,7 +6,7 @@ import os
 import re
 import tomllib
 from pathlib import Path
-from typing import Self
+from typing import Literal, Self
 from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, Field, SecretStr, ValidationError, field_validator, model_validator
@@ -34,6 +34,8 @@ class DatabaseConfig(StrictModel):
     max_result_bytes: int = Field(default=67108864, ge=1)
     sql_mode: str = "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
     time_zone: str = "+00:00"
+    sql_policy_version: Literal["mysql-readonly-v1", "mysql-readonly-v2"] = "mysql-readonly-v1"
+    time_names_locale: Literal["en_US"] | None = None
 
     @field_validator("database", "username")
     @classmethod
@@ -129,6 +131,9 @@ class ExperimentConfig(StrictModel):
 
 class AppConfig(StrictModel):
     project_root: Path = Path("..")
+    benchmark_manifest: str | None = None
+    diagnostic_manifest: str | None = None
+    prompt_template: str = "prompts/generation.txt"
     database: DatabaseConfig = Field(default_factory=DatabaseConfig)
     datahub: DataHubConfig = Field(default_factory=DataHubConfig)
     inference: InferenceConfig = Field(default_factory=InferenceConfig)

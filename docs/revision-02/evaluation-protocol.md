@@ -1,0 +1,19 @@
+# EX dan semantic fixtures — revision 02
+
+Primary EX tetap denotation pada frozen official Sakila. Kolom dinilai menurut posisi yang diminta; aliases diabaikan. Unordered memakai multiset whole rows dengan duplicate multiplicity. Ordered memakai sequence dengan ties deterministik yang ditulis dalam soal. NULL, string, numeric dan date/time granularity tetap berbeda.
+
+Count dan monetary sums exact. Common output instruction pada seluruh kondisi meminta rerata/rasio empat angka desimal dan membandingkan threshold sebelum pembulatan; definisi formatting ini tidak diulang sebagai hints pada setiap soal. Numeric scale 1.2 versus 1.2000 bukan perbedaan nilai. Tidak ada global tolerance/rounding untuk menyelamatkan jawaban. Approximate comparison hanya pada indeks kolom average/ratio yang dideklarasikan sebelum generation, dengan absolute 1e-9 dan relative 1e-12 untuk perbedaan representasi binary float. Nilai kurang presisi yang berbeda 0.0001 tetap gagal. Mean nominal juga termasuk average; monetary SUM tetap exact. MySQL exact-value rounding dan session precision dicatat.
+
+Representasi tanggal hanya disetarakan pada declared calendar-date columns: Python DATE dan string ISO canonical YYYY-MM-DD boleh sama. DATETIME, waktu dalam hari, numeric strings, text longgar dan NULL tidak dicoerce. Uji memastikan granularity/multiplicity tetap berbeda. Comparatorv2 hanya dipakai pada instrumen revisi; skor lama tidak dihitung ulang secara diam-diam.
+
+Gold execution dan self-comparison tidak membuktikan semantic correctness. Dua reference ditulis secara terpisah dan dicek terhadap requirement serta expected fixture behavior. Wrong variants ditulis dari requirement, tanpa melihat experimental predictions. Minimal satu variant dibedakan per soal, seluruh targeted critical branches harus punya witness. Intended empty fixture results boleh; empty baseline memerlukan explicit justification.
+
+Population mengikuti common instruction yang tetap: setiap entitas yang diminta dipertahankan, termasuk zero counts; all-missing numeric SUM tetap NULL kecuali definisi domain eksplisit menetapkan nol. Kandidat dengan population/ties/text conventions yang masih ambigu ditahan atau dikeluarkan. Untuk rewards, uji batas strict masing-masing threshold, optional rental reference dan inactive customers. Untuk late component, uji calendar versus elapsed days, open return, cutoff inclusive tepat midnight, akhir hari yang keliru, dan pengembalian sesudah cutoff. Source field rental_duration UNSIGNED memerlukan guarded/cast arithmetic pada reference; exception 1690 bukan hasil model.
+
+Delapan fixture variations di instance terisolasi mempertahankan installed DDL, FK/PK/domain validity; primary tidak dimodifikasi. Reader terpisah, SELECT-only dan timeout yang sama berlaku ketika grading. Builder admin tidak dipakai executor. Primary hashes sebelum/sesudah harus sama.
+
+Primary EX=1 mensyaratkan query valid/safe, execution success dan equivalent result pada baseline. SQL errors/unsafe/model deadline/resource limits EX=0 sesuai kebijakan beku. Service, configuration, evaluator atau unavailable result EX=null dan menghentikan completeness analysis. Formatting cleanup tetap hanya whitespace dan satu enclosing SQL fence; no semantic repair.
+
+Auxiliary robustness menilai SQL yang sama terhadap seluruh kasus applicable yang ditetapkan sebelum generation. Laporkan per-case dan all-required-cases pass; primary EX tidak diganti. Jangan hanya memilih predictions yang sudah lulus baseline. Missing infrastructure results tetap null. Main baseline EX dan auxiliary tidak dicampur.
+
+Sumber presisi: https://dev.mysql.com/doc/refman/8.4/en/precision-math-examples.html dan https://dev.mysql.com/doc/refman/8.4/en/mathematical-functions.html. Sumber test-suite motivation: https://aclanthology.org/2020.emnlp-main.29/.

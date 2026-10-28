@@ -19,7 +19,8 @@ if __name__ == "__main__":
     parser.add_argument("--scenario", choices=("S0", "S1", "S2", "S3"), required=True)
     parser.add_argument("--output-directory", type=Path, required=True)
     parser.add_argument("--page-size", type=int, default=100)
+    parser.add_argument("--spec", type=Path, help="Versioned authoring specification whose glossary scope is retrieved")
     args = parser.parse_args()
-    bundle = asyncio.run(export_metadata(ROOT, args.scenario, args.output_directory.resolve(), page_size=args.page_size))
+    bundle = asyncio.run(export_metadata(ROOT, args.scenario, args.output_directory.resolve(), page_size=args.page_size, specification_path=args.spec))
     print(json.dumps({"status": "mcp_export_complete", "scenario": args.scenario, "datasets": len(bundle["dataset_urns"]), "tool_calls": len(bundle["calls"])}))
 

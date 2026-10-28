@@ -12,10 +12,14 @@ from .artifacts import canonical_json, publish_artifact, sha256_bytes
 
 
 def add_commands(subcommands):
-    for name in ("model", "backend", "metadata", "review", "experiment"):
+    for name in ("model", "backend", "metadata", "review", "experiment", "instrument"):
         parser = subcommands.add_parser(name, help=f"Auditable {name} operations")
         children = parser.add_subparsers(dest="operation", required=True)
-        if name == "model":
+        if name == "instrument":
+            command = children.add_parser("validate", help="Verify a versioned instrument without inference or review approval")
+            command.add_argument("--manifest", type=Path, required=True)
+            command.add_argument("--output", type=Path, required=True)
+        elif name == "model":
             command = children.add_parser("fetch")
             command.add_argument("--spec", type=Path, required=True)
             command.add_argument("--receipt", type=Path, required=True)
@@ -70,6 +74,10 @@ def add_commands(subcommands):
             command.add_argument("--a02", type=Path, required=True)
             command.add_argument("--output-directory", type=Path, required=True)
         else:
+            command = children.add_parser("replay-fixtures", help="Evaluate existing revision-02 SQL on isolated auxiliary data; no inference")
+            command.add_argument("--source-run", type=Path, required=True)
+            command.add_argument("--output-directory", type=Path, required=True)
+            command.add_argument("--config", type=Path, default=Path("configs/local.toml"))
             command = children.add_parser("reevaluate")
             command.add_argument("--source-run", type=Path, required=True)
             command.add_argument("--gold", type=Path, required=True)
@@ -90,6 +98,10 @@ def add_commands(subcommands):
 
 
 def dispatch(args, config) -> dict:
+    if args.command == "instrument":
+        from .instrument import validate_instrument
+        report = validate_instrument(config.project_root, args.manifest, args.output)
+        return {key: report[key] for key in ("status", "benchmark_id", "question_count", "generation_requests", "main_experiment_allowed")}
     if args.command == "model":
         from .generation.model_assets import fetch_model
         try:
@@ -115,6 +127,13 @@ def dispatch(args, config) -> dict:
         record = build_review_package(config.project_root, args.output_directory, main_results=args.main_results, pilot_results=args.pilot_results)
         return {key: record[key] for key in ("status", "questions", "annotations", "business_terms")}
     if args.command == "experiment":
+        if args.operation == "replay-fixtures":
+            from .evaluation.robustness import RobustnessError, replay_fixtures
+            from .evaluation.fixtures import FixtureError
+            try:
+                return replay_fixtures(config, args.source_run, args.output_directory, progress=lambda text: print(text, flush=True))
+            except (RobustnessError, FixtureError) as exc:
+                raise ValueError(str(exc)) from None
         if args.operation == "reevaluate":
             from .evaluation.reevaluate import reevaluate
             return reevaluate(config, args.source_run, args.gold, args.questions, args.snapshot_root, args.receipt,

@@ -22,11 +22,11 @@ from sakila_experiment.artifacts import canonical_json, publish_artifact
 from sakila_experiment.metadata.mcp_client import registry_from_events
 
 
-def apply(scenario: str, receipt: Path | None = None) -> dict:
+def apply(scenario: str, receipt: Path | None = None, specification_path: Path | None = None) -> dict:
     receipt = receipt or ROOT / f"runs/metadata/annotation-writes/{scenario}.json"
     if receipt.exists():
         raise FileExistsError("Annotation receipt already exists; use a new --receipt path before changing the catalog")
-    spec_path = ROOT / "data/annotations/specification.json"
+    spec_path = specification_path or ROOT / "data/annotations/specification.json"
     specification = json.loads(spec_path.read_text())
     registry = registry_from_events(json.loads((ROOT / "runs/metadata/validated-ingestion.json").read_text()))
     by_table = {urn.split(",")[-2].split(".")[-1]: urn for urn in registry}
@@ -72,7 +72,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--scenario", required=True, choices=("S0", "S1", "S2", "S3"))
     parser.add_argument("--receipt", type=Path, help="New immutable receipt path when intentionally rebuilding a condition")
+    parser.add_argument("--spec", type=Path, help="Explicit versioned authoring specification; default preserves the original")
     args = parser.parse_args()
-    report = apply(args.scenario, args.receipt)
+    report = apply(args.scenario, args.receipt, args.spec)
     print(json.dumps({"status": "catalog_annotations_applied", "scenario": args.scenario, "aspect_writes": len(report["writes"])}))
 

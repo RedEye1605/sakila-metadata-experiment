@@ -9,7 +9,7 @@ from __future__ import annotations
 import math
 from collections import Counter, defaultdict, deque
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from fractions import Fraction
 
@@ -30,12 +30,17 @@ class ComparisonSpec:
     approximate_columns: tuple[int, ...] = ()
     absolute_tolerance: str = "1e-9"
     relative_tolerance: str = "1e-12"
+    date_columns: tuple[int, ...] = ()
 
     def __post_init__(self):
         if self.column_count < 1:
             raise EvaluationError("Comparison requires a positive column count")
         if len(set(self.approximate_columns)) != len(self.approximate_columns) or any(i < 0 or i >= self.column_count for i in self.approximate_columns):
             raise EvaluationError("Invalid approximate-column contract")
+        if len(set(self.date_columns)) != len(self.date_columns) or any(type(i) is not int or i < 0 or i >= self.column_count for i in self.date_columns):
+            raise EvaluationError("Invalid date-column contract")
+        if set(self.date_columns) & set(self.approximate_columns):
+            raise EvaluationError("A column cannot be both numeric-approximate and date")
         for value in (self.absolute_tolerance, self.relative_tolerance):
             try:
                 if not Decimal(value).is_finite() or Decimal(value) < 0:
@@ -72,6 +77,22 @@ def cell_key(value):
         raise EvaluationError("Unsupported result value") from exc
 
 
+def contracted_key(value, column: int, spec: ComparisonSpec):
+    # Opt-in ISO calendar-date representation; do not coerce timestamps,
+    # arbitrary strings, NULL, or numeric text. Legacy comparisons unchanged.
+    if column in spec.date_columns:
+        if type(value) is date:
+            return ("calendar_date", value.isoformat())
+        if isinstance(value, str):
+            try:
+                parsed = date.fromisoformat(value)
+                if parsed.isoformat() == value:
+                    return ("calendar_date", value)
+            except ValueError:
+                pass
+    return cell_key(value)
+
+
 def rows_match(actual: tuple, gold: tuple, spec: ComparisonSpec) -> bool:
     approximate = set(spec.approximate_columns)
     for column, (left, right) in enumerate(zip(actual, gold, strict=True)):
@@ -82,7 +103,7 @@ def rows_match(actual: tuple, gold: tuple, spec: ComparisonSpec) -> bool:
                 if abs(a - b) > tolerance:
                     return False
                 continue
-        if cell_key(left) != cell_key(right):
+        if contracted_key(left, column, spec) != contracted_key(right, column, spec):
             return False
     return True
 
@@ -137,14 +158,14 @@ def compare_results(actual: ResultTable, gold: ResultTable, spec: ComparisonSpec
     if spec.ordered:
         equivalent = all(rows_match(left, right, spec) for left, right in zip(actual.rows, gold.rows, strict=True))
     elif not spec.approximate_columns:
-        equivalent = Counter(tuple(map(cell_key, row)) for row in actual.rows) == Counter(tuple(map(cell_key, row)) for row in gold.rows)
+        equivalent = Counter(tuple(contracted_key(value, i, spec) for i, value in enumerate(row)) for row in actual.rows) == Counter(tuple(contracted_key(value, i, spec) for i, value in enumerate(row)) for row in gold.rows)
     else:
         # Exact columns partition rows without collapsing their multiplicities.
         exact_indices = [i for i in range(spec.column_count) if i not in spec.approximate_columns]
         def grouped(rows):
             groups = defaultdict(list)
             for row in rows:
-                groups[tuple(cell_key(row[i]) for i in exact_indices)].append(row)
+                groups[tuple(contracted_key(row[i], i, spec) for i in exact_indices)].append(row)
             return groups
         actual_groups, gold_groups = grouped(actual.rows), grouped(gold.rows)
         equivalent = actual_groups.keys() == gold_groups.keys()

@@ -14,9 +14,11 @@ Investigate how metadata annotation changes the execution accuracy of one fixed 
 
 [BAB IV](docs/bab-iv.md) · [Runbook](docs/runbook.md) · [Annotator guide](annotations/round-01/GUIDE.md) · [AI handoff](docs/ai-handoff.md) · [Decisions](docs/decisions.md)
 
-A full preliminary run has completed and passed integrity checks. The latest source passes 144 local and isolated-reconstruction tests; actual scores remain embargoed pending review.
+A full preliminary run has completed and passed integrity checks. Its archived release passed 144 local and isolated-reconstruction tests; actual scores remain embargoed pending review.
 
-## Experimental design
+**Revision-02 inputs are frozen after independent audit.** The revised design uses a pinned Spider complexity adapter, three source-based domain rules, a separate 180-trial diagnostic and isolated semantic witnesses. All 30 selected and 12 pilot references pass nine database cases; 228 local tests including MySQL integration pass. No revised EX exists at this pre-generation source checkpoint. Read the [revision status](docs/revision-02/implementation-status.md), [dataset methodology](docs/revision-02/dataset-methodology.md), [runbook](docs/revision-02/runbook.md), and [blank review packet](annotations/round-02/review-guide.md). The design does not require richer metadata to win.
+
+## Original experimental design — preliminary-01
 
 | Condition | Metadata received by the model | Coverage |
 |---|---|---|

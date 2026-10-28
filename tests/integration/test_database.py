@@ -87,3 +87,14 @@ def test_connection_outage_is_infrastructure_not_model_error(config, tables):
 def test_audit_remains_identical_after_execution_checks(config, inventory):
     verify_fingerprint(inspect_database(config), inventory)
 
+
+def test_v2_native_functions_work_with_fixed_locale_and_unchanged_database(config, inventory, tables):
+    from datetime import date
+    revised = config.model_copy(update={"database": config.database.model_copy(update={
+        "sql_policy_version": "mysql-readonly-v2", "time_names_locale": "en_US"})})
+    result = execute_sql(revised, "SELECT HOUR('2005-07-01 23:00:00'),FIND_IN_SET('b','a,b'),DAYNAME('2007-02-03'),LOCATE('b','abc'),REGEXP_LIKE('ABC','^A'),STR_TO_DATE('2005-07-01','%Y-%m-%d'),LAST_DAY('2005-07-01')", tables)
+    assert result.status == "success"
+    assert result.result.rows == ((23, 2, "Saturday", 2, 1, date(2005, 7, 1), date(2005, 7, 31)),)
+    assert execute_sql(revised, "SELECT 1 WHERE 1>=ALL(SELECT 1)", tables).result.rows == ((1,),)
+    verify_fingerprint(inspect_database(revised), inventory)
+

@@ -89,13 +89,18 @@ def verify_backend(config: AppConfig, model_receipt: Path, compose_file: Path, c
     evidence = BackendEvidence(config.inference.model_id, candidate["model_sha256"], revision,
                                config.inference.context_tokens, sha256_bytes(canonical_json(record)))
     budgets = []
+    questions_path = config.project_root / "data/pilot/questions.jsonl"
+    if config.diagnostic_manifest:
+        from ..experiment.diagnostics import DiagnosticManifest
+        selected = DiagnosticManifest.model_validate_json(config.resolve(config.diagnostic_manifest).read_bytes())
+        questions_path = selected.questions.verified_path(config.project_root)
     with LlamaClient(config.inference, evidence) as client:
-        for question in load_questions(config.project_root / "data/pilot/questions.jsonl"):
+        for question in load_questions(questions_path):
             for scenario in ("S0", "S1", "S2", "S3"):
                 folder = snapshots / scenario
                 manifest = json.loads((folder / "manifest.json").read_bytes())
                 prompt = build_prompt(question.generation_input(), json.loads((folder / manifest["payload_file"]).read_bytes()),
-                                      manifest["snapshot_sha256"], config.project_root / "prompts/generation.txt")
+                                      manifest["snapshot_sha256"], config.resolve(config.prompt_template))
                 checked = client.prepare(prompt)
                 budgets.append({"question_id": question.question_id, "scenario_id": scenario, "input_tokens": checked.input_tokens,
                                 "output_reserve": config.inference.max_output_tokens, "safety_margin": config.inference.safety_margin_tokens,

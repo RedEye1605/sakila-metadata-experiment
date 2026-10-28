@@ -48,6 +48,13 @@ Thesis: **Analisis Pengaruh Metadata terhadap Execution Accuracy pada Sistem Tex
 | D42 | Bind rescore to exact adjudicated gold and frozen evaluation policy | Preserve six submission hashes, reject unrecorded corrections/complexity changes and database/comparator/protocol drift; no new inference |
 | D43 | Compare integer sampler parameters exactly | Postrun inspection exposed float32 serialization differences; floats retain defined tolerance, large neighboring integer seeds must fail verification; actual final seed matched exactly |
 | D44 | Latest reconstruction tests archived MCP replay in a new database/environment | publication-01 verified schema/data and all payload hashes with 144 tests; does not claim fresh catalog ingestion or regenerated model outputs |
+| D45 | Preserve preliminary-01 and create a separate exploratory revision | User requested independent audit and redesigned questions/metadata; outcomes must not be selected for richer metadata to win |
+| D46 | Use pinned Spider component rules and a separate information-need profile | Canonical structure gives 10/10/5/5 raw levels; source-feasible domain coverage is 0/2/4 across simple/medium/complex |
+| D47 | Ground three S3 rule cards in executable official Sakila semantics | Stock, rewards and late component have global definitions; local field meanings remain in S1/S2; full customer balance is excluded |
+| D48 | Exclude unresolved public targets and require independent reference witnesses | Final 30 and 12 pilot references agree on primary plus 8 fixture cases; home-store population ambiguities remain excluded rather than hidden in private gold |
+| D49 | Complete 180 diagnostic trials before the fixed 600-trial exploratory benchmark | Five controlled metadata renderings, three repetitions, no score-based tuning or extra generation probes |
+| D50 | Bind run evidence to selected model/database/source and use versioned SQL policy | Four independent gate findings closed; v2 native-function alternatives tested before generation; v1 and old scores preserved |
+| D51 | Fix source/Git commit for both revised runs and keep results local | Append-only logs, explicit resume, exact paired contrasts and auxiliary replay; human review remains pending |
 
 ## Verified observations
 

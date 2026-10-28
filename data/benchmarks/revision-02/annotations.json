@@ -1,0 +1,1008 @@
+{
+  "specification_version": "revision-02-draft-03",
+  "status": "draft",
+  "language": "id",
+  "database_schema_sha256": "0d2f73e266f5e31f0da33caaf65838625bf305012e1b876a7afc1b9f501f9e20",
+  "policy": "Source-grounded local descriptions and cross-entity contexts; no gold, SQL recipes, IDs, answer thresholds or implicit reporting policies. Trivial fields may have equal short/detailed text. Semantic review pending.",
+  "annotations": [
+    {
+      "detailed": "Daftar pemeran film.",
+      "element_id": "actor",
+      "kind": "table",
+      "short": "Daftar pemeran film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-actor.html",
+      "table": "actor"
+    },
+    {
+      "column": "actor_id",
+      "detailed": "ID unik aktor.",
+      "element_id": "actor.actor_id",
+      "kind": "column",
+      "short": "ID unik aktor.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-actor.html",
+      "table": "actor"
+    },
+    {
+      "column": "first_name",
+      "detailed": "Nama depan aktor.",
+      "element_id": "actor.first_name",
+      "kind": "column",
+      "short": "Nama depan aktor.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-actor.html",
+      "table": "actor"
+    },
+    {
+      "column": "last_name",
+      "detailed": "Nama belakang aktor.",
+      "element_id": "actor.last_name",
+      "kind": "column",
+      "short": "Nama belakang aktor.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-actor.html",
+      "table": "actor"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "actor.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-actor.html",
+      "table": "actor"
+    },
+    {
+      "detailed": "Alamat pelanggan, staf, dan toko. Setiap rekaman menyimpan satu alamat yang dapat dirujuk entitas lain.",
+      "element_id": "address",
+      "kind": "table",
+      "short": "Alamat pelanggan, staf, dan toko.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html",
+      "table": "address"
+    },
+    {
+      "column": "address",
+      "detailed": "Baris utama alamat.",
+      "element_id": "address.address",
+      "kind": "column",
+      "short": "Baris utama alamat.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html",
+      "table": "address"
+    },
+    {
+      "column": "address2",
+      "detailed": "Baris tambahan alamat. Nilai tambahan dapat tidak diisi.",
+      "element_id": "address.address2",
+      "kind": "column",
+      "short": "Baris tambahan alamat.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html",
+      "table": "address"
+    },
+    {
+      "column": "address_id",
+      "detailed": "ID unik alamat.",
+      "element_id": "address.address_id",
+      "kind": "column",
+      "short": "ID unik alamat.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html",
+      "table": "address"
+    },
+    {
+      "column": "city_id",
+      "detailed": "ID kota terkait.",
+      "element_id": "address.city_id",
+      "kind": "column",
+      "short": "ID kota terkait.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html",
+      "table": "address"
+    },
+    {
+      "column": "district",
+      "detailed": "Distrik atau wilayah alamat. Wilayah ini disimpan terpisah dari nama kota dan negara.",
+      "element_id": "address.district",
+      "kind": "column",
+      "short": "Distrik atau wilayah alamat.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html",
+      "table": "address"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "address.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html",
+      "table": "address"
+    },
+    {
+      "column": "location",
+      "detailed": "Geometri lokasi alamat.",
+      "element_id": "address.location",
+      "kind": "column",
+      "short": "Geometri lokasi alamat.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html",
+      "table": "address"
+    },
+    {
+      "column": "phone",
+      "detailed": "Nomor telepon alamat.",
+      "element_id": "address.phone",
+      "kind": "column",
+      "short": "Nomor telepon alamat.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html",
+      "table": "address"
+    },
+    {
+      "column": "postal_code",
+      "detailed": "Kode pos alamat. Kode disimpan sebagai teks; nol di awal merupakan bagian dari kode.",
+      "element_id": "address.postal_code",
+      "kind": "column",
+      "short": "Kode pos alamat.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html",
+      "table": "address"
+    },
+    {
+      "detailed": "Daftar kategori film.",
+      "element_id": "category",
+      "kind": "table",
+      "short": "Daftar kategori film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-category.html",
+      "table": "category"
+    },
+    {
+      "column": "category_id",
+      "detailed": "ID unik kategori.",
+      "element_id": "category.category_id",
+      "kind": "column",
+      "short": "ID unik kategori.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-category.html",
+      "table": "category"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "category.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-category.html",
+      "table": "category"
+    },
+    {
+      "column": "name",
+      "detailed": "Nama kategori film.",
+      "element_id": "category.name",
+      "kind": "column",
+      "short": "Nama kategori film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-category.html",
+      "table": "category"
+    },
+    {
+      "detailed": "Daftar kota.",
+      "element_id": "city",
+      "kind": "table",
+      "short": "Daftar kota.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-city.html",
+      "table": "city"
+    },
+    {
+      "column": "city",
+      "detailed": "Nama kota.",
+      "element_id": "city.city",
+      "kind": "column",
+      "short": "Nama kota.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-city.html",
+      "table": "city"
+    },
+    {
+      "column": "city_id",
+      "detailed": "ID unik kota.",
+      "element_id": "city.city_id",
+      "kind": "column",
+      "short": "ID unik kota.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-city.html",
+      "table": "city"
+    },
+    {
+      "column": "country_id",
+      "detailed": "ID negara terkait.",
+      "element_id": "city.country_id",
+      "kind": "column",
+      "short": "ID negara terkait.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-city.html",
+      "table": "city"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "city.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-city.html",
+      "table": "city"
+    },
+    {
+      "detailed": "Daftar negara.",
+      "element_id": "country",
+      "kind": "table",
+      "short": "Daftar negara.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-country.html",
+      "table": "country"
+    },
+    {
+      "column": "country",
+      "detailed": "Nama negara.",
+      "element_id": "country.country",
+      "kind": "column",
+      "short": "Nama negara.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-country.html",
+      "table": "country"
+    },
+    {
+      "column": "country_id",
+      "detailed": "ID unik negara.",
+      "element_id": "country.country_id",
+      "kind": "column",
+      "short": "ID unik negara.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-country.html",
+      "table": "country"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "country.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-country.html",
+      "table": "country"
+    },
+    {
+      "detailed": "Daftar pelanggan penyewaan. Setiap baris merepresentasikan satu pelanggan yang terdaftar.",
+      "element_id": "customer",
+      "kind": "table",
+      "short": "Daftar pelanggan penyewaan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html",
+      "table": "customer"
+    },
+    {
+      "column": "active",
+      "detailed": "Penanda pelanggan aktif. Menonaktifkan rekaman merupakan alternatif menghapus pelanggan; status yang tercatat tidak menggambarkan status historis setiap transaksi.",
+      "element_id": "customer.active",
+      "kind": "column",
+      "short": "Penanda pelanggan aktif.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html",
+      "table": "customer"
+    },
+    {
+      "column": "address_id",
+      "detailed": "ID alamat terkait.",
+      "element_id": "customer.address_id",
+      "kind": "column",
+      "short": "ID alamat terkait.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html",
+      "table": "customer"
+    },
+    {
+      "column": "create_date",
+      "detailed": "Waktu pencatatan pelanggan. Tanggal dan waktu saat pelanggan ditambahkan ke sistem; berbeda dari tanggal transaksi pelanggan.",
+      "element_id": "customer.create_date",
+      "kind": "column",
+      "short": "Waktu pencatatan pelanggan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html",
+      "table": "customer"
+    },
+    {
+      "column": "customer_id",
+      "detailed": "ID unik pelanggan.",
+      "element_id": "customer.customer_id",
+      "kind": "column",
+      "short": "ID unik pelanggan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html",
+      "table": "customer"
+    },
+    {
+      "column": "email",
+      "detailed": "Alamat email pelanggan.",
+      "element_id": "customer.email",
+      "kind": "column",
+      "short": "Alamat email pelanggan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html",
+      "table": "customer"
+    },
+    {
+      "column": "first_name",
+      "detailed": "Nama depan pelanggan.",
+      "element_id": "customer.first_name",
+      "kind": "column",
+      "short": "Nama depan pelanggan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html",
+      "table": "customer"
+    },
+    {
+      "column": "last_name",
+      "detailed": "Nama belakang pelanggan.",
+      "element_id": "customer.last_name",
+      "kind": "column",
+      "short": "Nama belakang pelanggan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html",
+      "table": "customer"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "customer.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html",
+      "table": "customer"
+    },
+    {
+      "column": "store_id",
+      "detailed": "ID home store pelanggan. Menunjuk home store tempat pelanggan umumnya berbelanja; pelanggan dapat menyewa dari toko lain.",
+      "element_id": "customer.store_id",
+      "kind": "column",
+      "short": "ID home store pelanggan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html",
+      "table": "customer"
+    },
+    {
+      "detailed": "Katalog judul film. Satu rekaman merepresentasikan satu judul dalam katalog.",
+      "element_id": "film",
+      "kind": "table",
+      "short": "Katalog judul film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+      "table": "film"
+    },
+    {
+      "column": "description",
+      "detailed": "Ringkasan cerita film. Teks memuat sinopsis atau ringkasan alur cerita.",
+      "element_id": "film.description",
+      "kind": "column",
+      "short": "Ringkasan cerita film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+      "table": "film"
+    },
+    {
+      "column": "film_id",
+      "detailed": "ID unik film.",
+      "element_id": "film.film_id",
+      "kind": "column",
+      "short": "ID unik film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+      "table": "film"
+    },
+    {
+      "column": "language_id",
+      "detailed": "ID bahasa film. Mengacu pada bahasa versi film yang tercatat dalam katalog.",
+      "element_id": "film.language_id",
+      "kind": "column",
+      "short": "ID bahasa film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+      "table": "film"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "film.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+      "table": "film"
+    },
+    {
+      "column": "length",
+      "detailed": "Durasi film dalam menit.",
+      "element_id": "film.length",
+      "kind": "column",
+      "short": "Durasi film dalam menit.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+      "table": "film"
+    },
+    {
+      "column": "original_language_id",
+      "detailed": "ID bahasa asli film. Dipakai ketika versi film dialihsuarakan ke bahasa baru; referensi bahasa asal dapat tidak diisi.",
+      "element_id": "film.original_language_id",
+      "kind": "column",
+      "short": "ID bahasa asli film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+      "table": "film"
+    },
+    {
+      "column": "rating",
+      "detailed": "Klasifikasi rating penonton film. Kode yang tersedia adalah G, PG, PG-13, R, dan NC-17.",
+      "element_id": "film.rating",
+      "kind": "column",
+      "short": "Klasifikasi rating penonton film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+      "table": "film"
+    },
+    {
+      "column": "release_year",
+      "detailed": "Tahun rilis film.",
+      "element_id": "film.release_year",
+      "kind": "column",
+      "short": "Tahun rilis film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+      "table": "film"
+    },
+    {
+      "column": "rental_duration",
+      "detailed": "Periode sewa film dalam hari.",
+      "element_id": "film.rental_duration",
+      "kind": "column",
+      "short": "Periode sewa film dalam hari.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+      "table": "film"
+    },
+    {
+      "column": "rental_rate",
+      "detailed": "Tarif sewa film per periode. Tarif berlaku untuk periode yang ditentukan pada rental_duration, bukan jumlah pembayaran yang telah diterima.",
+      "element_id": "film.rental_rate",
+      "kind": "column",
+      "short": "Tarif sewa film per periode.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+      "table": "film"
+    },
+    {
+      "column": "replacement_cost",
+      "detailed": "Nilai penggantian film. Biaya yang ditetapkan bila film tidak dikembalikan atau dikembalikan rusak; nilai konfigurasi bukan bukti pembayaran telah terjadi.",
+      "element_id": "film.replacement_cost",
+      "kind": "column",
+      "short": "Nilai penggantian film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+      "table": "film"
+    },
+    {
+      "column": "special_features",
+      "detailed": "Fitur tambahan DVD film. Satu DVD dapat mencantumkan beberapa fitur dari Trailers, Commentaries, Deleted Scenes, dan Behind the Scenes.",
+      "element_id": "film.special_features",
+      "kind": "column",
+      "short": "Fitur tambahan DVD film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+      "table": "film"
+    },
+    {
+      "column": "title",
+      "detailed": "Judul film.",
+      "element_id": "film.title",
+      "kind": "column",
+      "short": "Judul film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+      "table": "film"
+    },
+    {
+      "detailed": "Hubungan film dengan pemerannya. Setiap pasangan film dan aktor mencatat keterlibatan aktor pada film tersebut.",
+      "element_id": "film_actor",
+      "kind": "table",
+      "short": "Hubungan film dengan pemerannya.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_actor.html",
+      "table": "film_actor"
+    },
+    {
+      "column": "actor_id",
+      "detailed": "ID aktor terkait.",
+      "element_id": "film_actor.actor_id",
+      "kind": "column",
+      "short": "ID aktor terkait.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_actor.html",
+      "table": "film_actor"
+    },
+    {
+      "column": "film_id",
+      "detailed": "ID film terkait.",
+      "element_id": "film_actor.film_id",
+      "kind": "column",
+      "short": "ID film terkait.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_actor.html",
+      "table": "film_actor"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "film_actor.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_actor.html",
+      "table": "film_actor"
+    },
+    {
+      "detailed": "Hubungan film dengan kategori. Setiap pasangan film dan kategori mencatat keanggotaan kategori film.",
+      "element_id": "film_category",
+      "kind": "table",
+      "short": "Hubungan film dengan kategori.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_category.html",
+      "table": "film_category"
+    },
+    {
+      "column": "category_id",
+      "detailed": "ID kategori terkait.",
+      "element_id": "film_category.category_id",
+      "kind": "column",
+      "short": "ID kategori terkait.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_category.html",
+      "table": "film_category"
+    },
+    {
+      "column": "film_id",
+      "detailed": "ID film terkait.",
+      "element_id": "film_category.film_id",
+      "kind": "column",
+      "short": "ID film terkait.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_category.html",
+      "table": "film_category"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "film_category.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_category.html",
+      "table": "film_category"
+    },
+    {
+      "detailed": "Teks film untuk pencarian. Berisi teks yang digunakan untuk pencarian judul dan sinopsis film.",
+      "element_id": "film_text",
+      "kind": "table",
+      "short": "Teks film untuk pencarian.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_text.html",
+      "table": "film_text"
+    },
+    {
+      "column": "description",
+      "detailed": "Ringkasan pada teks pencarian film.",
+      "element_id": "film_text.description",
+      "kind": "column",
+      "short": "Ringkasan pada teks pencarian film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_text.html",
+      "table": "film_text"
+    },
+    {
+      "column": "film_id",
+      "detailed": "ID film pada teks pencarian.",
+      "element_id": "film_text.film_id",
+      "kind": "column",
+      "short": "ID film pada teks pencarian.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_text.html",
+      "table": "film_text"
+    },
+    {
+      "column": "title",
+      "detailed": "Judul pada teks pencarian film.",
+      "element_id": "film_text.title",
+      "kind": "column",
+      "short": "Judul pada teks pencarian film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_text.html",
+      "table": "film_text"
+    },
+    {
+      "detailed": "Salinan film pada toko. Satu rekaman merepresentasikan satu salinan fisik dari satu judul pada satu toko.",
+      "element_id": "inventory",
+      "kind": "table",
+      "short": "Salinan film pada toko.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-inventory.html",
+      "table": "inventory"
+    },
+    {
+      "column": "film_id",
+      "detailed": "ID film terkait.",
+      "element_id": "inventory.film_id",
+      "kind": "column",
+      "short": "ID film terkait.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-inventory.html",
+      "table": "inventory"
+    },
+    {
+      "column": "inventory_id",
+      "detailed": "ID unik salinan inventaris.",
+      "element_id": "inventory.inventory_id",
+      "kind": "column",
+      "short": "ID unik salinan inventaris.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-inventory.html",
+      "table": "inventory"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "inventory.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-inventory.html",
+      "table": "inventory"
+    },
+    {
+      "column": "store_id",
+      "detailed": "ID toko salinan inventaris.",
+      "element_id": "inventory.store_id",
+      "kind": "column",
+      "short": "ID toko salinan inventaris.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-inventory.html",
+      "table": "inventory"
+    },
+    {
+      "detailed": "Daftar bahasa film.",
+      "element_id": "language",
+      "kind": "table",
+      "short": "Daftar bahasa film.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-language.html",
+      "table": "language"
+    },
+    {
+      "column": "language_id",
+      "detailed": "ID unik bahasa.",
+      "element_id": "language.language_id",
+      "kind": "column",
+      "short": "ID unik bahasa.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-language.html",
+      "table": "language"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "language.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-language.html",
+      "table": "language"
+    },
+    {
+      "column": "name",
+      "detailed": "Nama bahasa.",
+      "element_id": "language.name",
+      "kind": "column",
+      "short": "Nama bahasa.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-language.html",
+      "table": "language"
+    },
+    {
+      "detailed": "Catatan pembayaran pelanggan. Satu rekaman merepresentasikan satu kejadian pembayaran oleh pelanggan.",
+      "element_id": "payment",
+      "kind": "table",
+      "short": "Catatan pembayaran pelanggan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html",
+      "table": "payment"
+    },
+    {
+      "column": "amount",
+      "detailed": "Nilai pembayaran pelanggan.",
+      "element_id": "payment.amount",
+      "kind": "column",
+      "short": "Nilai pembayaran pelanggan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html",
+      "table": "payment"
+    },
+    {
+      "column": "customer_id",
+      "detailed": "ID pelanggan pemilik pembayaran. Pelanggan yang saldonya dikenai pembayaran ini.",
+      "element_id": "payment.customer_id",
+      "kind": "column",
+      "short": "ID pelanggan pemilik pembayaran.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html",
+      "table": "payment"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "payment.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html",
+      "table": "payment"
+    },
+    {
+      "column": "payment_date",
+      "detailed": "Waktu pembayaran diproses. Memuat tanggal dan waktu pemrosesan kejadian pembayaran.",
+      "element_id": "payment.payment_date",
+      "kind": "column",
+      "short": "Waktu pembayaran diproses.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html",
+      "table": "payment"
+    },
+    {
+      "column": "payment_id",
+      "detailed": "ID unik pembayaran.",
+      "element_id": "payment.payment_id",
+      "kind": "column",
+      "short": "ID unik pembayaran.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html",
+      "table": "payment"
+    },
+    {
+      "column": "rental_id",
+      "detailed": "ID penyewaan terkait pembayaran. Referensi rental bersifat opsional; pembayaran dapat terkait biaya belum dilunasi tanpa alokasi langsung ke satu rental. Referensi kosong sendiri tidak menentukan jenis pembayaran.",
+      "element_id": "payment.rental_id",
+      "kind": "column",
+      "short": "ID penyewaan terkait pembayaran.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html",
+      "table": "payment"
+    },
+    {
+      "column": "staff_id",
+      "detailed": "ID staf pemroses pembayaran.",
+      "element_id": "payment.staff_id",
+      "kind": "column",
+      "short": "ID staf pemroses pembayaran.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html",
+      "table": "payment"
+    },
+    {
+      "detailed": "Catatan transaksi penyewaan. Satu rekaman merepresentasikan satu kejadian penyewaan atas satu salinan inventaris.",
+      "element_id": "rental",
+      "kind": "table",
+      "short": "Catatan transaksi penyewaan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html",
+      "table": "rental"
+    },
+    {
+      "column": "customer_id",
+      "detailed": "ID pelanggan terkait.",
+      "element_id": "rental.customer_id",
+      "kind": "column",
+      "short": "ID pelanggan terkait.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html",
+      "table": "rental"
+    },
+    {
+      "column": "inventory_id",
+      "detailed": "ID salinan yang disewa.",
+      "element_id": "rental.inventory_id",
+      "kind": "column",
+      "short": "ID salinan yang disewa.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html",
+      "table": "rental"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "rental.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html",
+      "table": "rental"
+    },
+    {
+      "column": "rental_date",
+      "detailed": "Waktu transaksi penyewaan. Memuat tanggal dan waktu awal kejadian penyewaan.",
+      "element_id": "rental.rental_date",
+      "kind": "column",
+      "short": "Waktu transaksi penyewaan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html",
+      "table": "rental"
+    },
+    {
+      "column": "rental_id",
+      "detailed": "ID unik penyewaan.",
+      "element_id": "rental.rental_id",
+      "kind": "column",
+      "short": "ID unik penyewaan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html",
+      "table": "rental"
+    },
+    {
+      "column": "return_date",
+      "detailed": "Waktu pengembalian tercatat. Nilai dapat kosong jika waktu pengembalian belum dicatat.",
+      "element_id": "rental.return_date",
+      "kind": "column",
+      "short": "Waktu pengembalian tercatat.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html",
+      "table": "rental"
+    },
+    {
+      "column": "staff_id",
+      "detailed": "ID staf pemroses penyewaan.",
+      "element_id": "rental.staff_id",
+      "kind": "column",
+      "short": "ID staf pemroses penyewaan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html",
+      "table": "rental"
+    },
+    {
+      "detailed": "Daftar staf penyewaan. Setiap baris merepresentasikan satu anggota staf.",
+      "element_id": "staff",
+      "kind": "table",
+      "short": "Daftar staf penyewaan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html",
+      "table": "staff"
+    },
+    {
+      "column": "active",
+      "detailed": "Penanda staf aktif. Rekaman staf yang meninggalkan pekerjaan dipertahankan dengan status tidak aktif; ini status yang tercatat, bukan rekonstruksi masa lalu.",
+      "element_id": "staff.active",
+      "kind": "column",
+      "short": "Penanda staf aktif.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html",
+      "table": "staff"
+    },
+    {
+      "column": "address_id",
+      "detailed": "ID alamat terkait.",
+      "element_id": "staff.address_id",
+      "kind": "column",
+      "short": "ID alamat terkait.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html",
+      "table": "staff"
+    },
+    {
+      "column": "email",
+      "detailed": "Alamat email staf.",
+      "element_id": "staff.email",
+      "kind": "column",
+      "short": "Alamat email staf.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html",
+      "table": "staff"
+    },
+    {
+      "column": "first_name",
+      "detailed": "Nama depan staf.",
+      "element_id": "staff.first_name",
+      "kind": "column",
+      "short": "Nama depan staf.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html",
+      "table": "staff"
+    },
+    {
+      "column": "last_name",
+      "detailed": "Nama belakang staf.",
+      "element_id": "staff.last_name",
+      "kind": "column",
+      "short": "Nama belakang staf.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html",
+      "table": "staff"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "staff.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html",
+      "table": "staff"
+    },
+    {
+      "column": "password",
+      "detailed": "Nilai autentikasi akun staf.",
+      "element_id": "staff.password",
+      "kind": "column",
+      "short": "Nilai autentikasi akun staf.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html",
+      "table": "staff"
+    },
+    {
+      "column": "picture",
+      "detailed": "Data foto staf.",
+      "element_id": "staff.picture",
+      "kind": "column",
+      "short": "Data foto staf.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html",
+      "table": "staff"
+    },
+    {
+      "column": "staff_id",
+      "detailed": "ID unik staf.",
+      "element_id": "staff.staff_id",
+      "kind": "column",
+      "short": "ID unik staf.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html",
+      "table": "staff"
+    },
+    {
+      "column": "store_id",
+      "detailed": "ID home store staf. Menunjuk home store penugasan staf; staf dapat bekerja di toko lain.",
+      "element_id": "staff.store_id",
+      "kind": "column",
+      "short": "ID home store staf.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html",
+      "table": "staff"
+    },
+    {
+      "column": "username",
+      "detailed": "Nama akun login staf. Digunakan untuk login staf ke sistem penyewaan.",
+      "element_id": "staff.username",
+      "kind": "column",
+      "short": "Nama akun login staf.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html",
+      "table": "staff"
+    },
+    {
+      "detailed": "Daftar toko penyewaan.",
+      "element_id": "store",
+      "kind": "table",
+      "short": "Daftar toko penyewaan.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-store.html",
+      "table": "store"
+    },
+    {
+      "column": "address_id",
+      "detailed": "ID alamat terkait.",
+      "element_id": "store.address_id",
+      "kind": "column",
+      "short": "ID alamat terkait.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-store.html",
+      "table": "store"
+    },
+    {
+      "column": "last_update",
+      "detailed": "Waktu pembaruan rekaman.",
+      "element_id": "store.last_update",
+      "kind": "column",
+      "short": "Waktu pembaruan rekaman.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-store.html",
+      "table": "store"
+    },
+    {
+      "column": "manager_staff_id",
+      "detailed": "ID staf manajer toko. Staf yang ditetapkan sebagai manajer untuk rekaman toko ini.",
+      "element_id": "store.manager_staff_id",
+      "kind": "column",
+      "short": "ID staf manajer toko.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-store.html",
+      "table": "store"
+    },
+    {
+      "column": "store_id",
+      "detailed": "ID unik toko.",
+      "element_id": "store.store_id",
+      "kind": "column",
+      "short": "ID unik toko.",
+      "source_url": "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-store.html",
+      "table": "store"
+    }
+  ],
+  "business_terms": [
+    {
+      "term_id": "inventory-availability",
+      "name": "Ketersediaan salinan inventaris Sakila",
+      "definition": "Salinan inventaris tersedia apabila belum pernah disewa atau semua catatan penyewaannya sudah mempunyai waktu pengembalian. Adanya satu catatan penyewaan tanpa waktu pengembalian membuat salinan itu tidak tersedia. Ini keadaan menurut catatan snapshot; tidak merekonstruksi ketersediaan pada tanggal historis. Judul yang tidak memiliki inventaris berbeda dari salinan yang sedang tidak tersedia.",
+      "applies_to": [
+        "inventory",
+        "rental.return_date"
+      ],
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-functions-inventory_in_stock.html",
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-inventory.html",
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html"
+      ],
+      "urn": "urn:li:glossaryTerm:sakila.revision02.inventory-availability",
+      "executable_source": {
+        "path": "downloads/sakila/sakila-schema.sql",
+        "sha256": "b32170e1e2ad5828749b61a5ec896155bcd143104b076e5ee8a3a3b013f44915",
+        "authority": "Executable official Sakila1.5 body; prose/comments alone may be incomplete. Fixed reporting date is an explicit experimental adapter."
+      }
+    },
+    {
+      "term_id": "monthly-rewards",
+      "name": "Kelayakan rewards bulanan Sakila",
+      "definition": "Kelayakan rewards dinilai untuk satu bulan kalender penuh sebelum tanggal acuan laporan. Frekuensi yang dinilai adalah banyaknya kejadian pembayaran, termasuk pembayaran yang tidak terkait langsung dengan rental, dan ukuran nominalnya adalah total nilai pembayaran. Kedua ukuran masing-masing harus lebih besar daripada ambang yang diberikan; sama dengan ambang belum memenuhi syarat. Status aktif pelanggan bukan syarat tambahan pada definisi ini. Kelayakan tidak berarti pemeringkatan pelanggan. Tanggal acuan eksplisit membekukan tanggal sistem laporan untuk eksperimen; routine asli menggunakan tanggal sistem.",
+      "applies_to": [
+        "customer",
+        "payment"
+      ],
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-procedures-rewards_report.html",
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html"
+      ],
+      "urn": "urn:li:glossaryTerm:sakila.revision02.monthly-rewards",
+      "executable_source": {
+        "path": "downloads/sakila/sakila-schema.sql",
+        "sha256": "b32170e1e2ad5828749b61a5ec896155bcd143104b076e5ee8a3a3b013f44915",
+        "authority": "Executable official Sakila1.5 body; prose/comments alone may be incomplete. Fixed reporting date is an explicit experimental adapter."
+      }
+    },
+    {
+      "term_id": "returned-rental-late-component",
+      "name": "Komponen keterlambatan menurut rutin Sakila",
+      "definition": "Komponen keterlambatan yang dihitung rutin Sakila memberi satu unit nominal untuk setiap kelebihan hari kalender pengembalian atas periode sewa katalog. Selisih hari memakai tanggal kalender yang tersimpan, bukan pembulatan durasi jam. Kontribusi tidak negatif; penyewaan tanpa waktu pengembalian menyumbang nol pada komponen ini. Awal penyewaan yang tepat pada tanggal dan waktu acuan ikut dihitung; tanggal acuan tanpa jam berarti pukul 00:00:00. Batas ini tidak memotong waktu pengembalian. Komponen pelanggan adalah total kontribusi rental yang masuk cakupan; pelanggan tanpa rental yang masuk cakupan mendapat komponen nol. Komponen ini bukan saldo lengkap, bukan nominal yang sudah dibayar, dan tidak memuat biaya penggantian film. Ini definisi komponen executable rutin sampel, bukan kebijakan penagihan umum.",
+      "applies_to": [
+        "rental",
+        "film.rental_duration"
+      ],
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-functions-get_customer_balance.html",
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html",
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html"
+      ],
+      "urn": "urn:li:glossaryTerm:sakila.revision02.returned-rental-late-component",
+      "executable_source": {
+        "path": "downloads/sakila/sakila-schema.sql",
+        "sha256": "b32170e1e2ad5828749b61a5ec896155bcd143104b076e5ee8a3a3b013f44915",
+        "authority": "Executable official Sakila1.5 body; prose/comments alone may be incomplete. Fixed reporting date is an explicit experimental adapter."
+      }
+    }
+  ]
+}
