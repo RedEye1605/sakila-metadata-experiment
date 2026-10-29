@@ -91,3 +91,16 @@ Peneliti secara eksplisit menyatakan input telah direview serta meminta600trial 
 ### D57 — Smoke teknis sebelum600trial
 
 Pakai3pertanyaan terpisah×4snapshot=12request untuk memastikan jalur source/model/API/safety/evaluator/sampler yang sama bekerja. References/mutants diperiksa independen pada9database cases. Tidak ada score threshold; diagnostic180lama tetap arsip dan tidak diulang. Manuscript builder hanya menerima600primary+4800auxiliary outcomes lengkap.
+
+
+### D58 — Bounded local model capability extension
+
+After revision03 main results were shown, the researcher authorized a new local-model pilot. Preserve the completed600trial run and its manuscripts as a completed main experiment, not a retrospectively relabelled pilot. Test at most two pre-pinned candidates in declared order on12separate P301–P312 tasks ×4conditions ×2requests. Selection never uses the main30questions, significance or the largest condition gap. Any later main replication requires a disclosed amendment and existing main/smoke freezes.
+
+### D59 — Capability admission and reasoning budget
+
+Freeze engineering thresholds before candidate generation: S3≥18/24correct, domain≥6/12correct, at least one correct trial in each of3families and S3SQLsuccess≥23/24, plus complete context/infrastructure/sampler/source checks. First passing candidate is preferred; neither candidate is guaranteed to pass. Reasoning on, server-separated reasoning_content, thinking budget2048 and total output4096 remain identical across conditions. Raw reasoning/final response is stored, final SQL alone evaluated, without DB feedback or semantic repair. Pilot evidence cannot impersonate human review or authorize main execution.
+
+### D60 — Independent interpretations and reference execution optimization
+
+Original A/B inputs and blind B receipt are retained. B signed arithmetic was corrected after pre-generation MySQL1690. P309A planner timeouts were resolved by materializing eligible customer IDs before monthly event summation; this optimization occurred after B was visible and is not claimed as fresh blind authorship. The original canonical A remains the explicit structural-profile source. All12pairs then agree on primary+9isolated variations and all33declared mutants have successful semantic witnesses. Some new domain targets are derivative reports over the same3rules. New-pilot human review remains pending; no identity/approval is fabricated.

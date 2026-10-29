@@ -1,0 +1,158 @@
+{
+  "P301": [
+    {
+      "mutation_id": "store-address-instead-of-residence",
+      "sql": "SELECT c.customer_id,c.first_name,c.email FROM customer c JOIN store s ON s.store_id=c.store_id JOIN address a ON a.address_id=s.address_id JOIN city ci ON ci.city_id=a.city_id WHERE ci.city='London'"
+    }
+  ],
+  "P302": [
+    {
+      "mutation_id": "rental-days-instead-of-film-length",
+      "sql": "SELECT film_id,title FROM film WHERE rental_duration BETWEEN 90 AND 110 ORDER BY replacement_cost ASC,film_id ASC LIMIT 5"
+    },
+    {
+      "mutation_id": "highest-instead-of-lowest",
+      "sql": "SELECT film_id,title FROM film WHERE length BETWEEN 90 AND 110 ORDER BY replacement_cost DESC,film_id ASC LIMIT 5"
+    },
+    {
+      "mutation_id": "missing-top-five",
+      "sql": "SELECT film_id,title FROM film WHERE length BETWEEN 90 AND 110 ORDER BY replacement_cost ASC,film_id ASC"
+    }
+  ],
+  "P303": [
+    {
+      "mutation_id": "month-without-year",
+      "sql": "SELECT DATE_FORMAT(payment_date,'%m'),COUNT(*) FROM payment GROUP BY DATE_FORMAT(payment_date,'%m')"
+    },
+    {
+      "mutation_id": "distinct-days-instead-of-payment-events",
+      "sql": "SELECT DATE_FORMAT(payment_date,'%Y-%m'),COUNT(DISTINCT DATE(payment_date)) FROM payment GROUP BY DATE_FORMAT(payment_date,'%Y-%m')"
+    }
+  ],
+  "P304": [
+    {
+      "mutation_id": "inventory-store-instead-of-home-store",
+      "sql": "SELECT i.store_id,ROUND(AVG(p.amount),4) FROM payment p JOIN rental r ON r.rental_id=p.rental_id JOIN inventory i ON i.inventory_id=r.inventory_id GROUP BY i.store_id"
+    },
+    {
+      "mutation_id": "customer-weighting-instead-of-event-weighting",
+      "sql": "SELECT store_id,ROUND(AVG(customer_mean),4) FROM (SELECT c.store_id,c.customer_id,AVG(p.amount) customer_mean FROM customer c JOIN payment p ON p.customer_id=c.customer_id GROUP BY c.customer_id,c.store_id) t GROUP BY store_id"
+    }
+  ],
+  "P305": [
+    {
+      "mutation_id": "drop-actors-without-G-titles",
+      "sql": "SELECT a.actor_id,COUNT(*) FROM actor a JOIN film_actor fa ON fa.actor_id=a.actor_id JOIN film f ON f.film_id=fa.film_id WHERE f.rating='G' GROUP BY a.actor_id ORDER BY COUNT(*) ASC,a.actor_id ASC"
+    },
+    {
+      "mutation_id": "count-all-ratings",
+      "sql": "SELECT a.actor_id,COUNT(fa.film_id) FROM actor a LEFT JOIN film_actor fa ON fa.actor_id=a.actor_id LEFT JOIN film f ON f.film_id=fa.film_id GROUP BY a.actor_id ORDER BY COUNT(fa.film_id) ASC,a.actor_id ASC"
+    },
+    {
+      "mutation_id": "descending-instead-of-ascending",
+      "sql": "SELECT a.actor_id,COUNT(CASE WHEN f.rating='G' THEN fa.film_id END) FROM actor a LEFT JOIN film_actor fa ON fa.actor_id=a.actor_id LEFT JOIN film f ON f.film_id=fa.film_id GROUP BY a.actor_id ORDER BY COUNT(CASE WHEN f.rating='G' THEN fa.film_id END) DESC,a.actor_id ASC"
+    }
+  ],
+  "P306": [
+    {
+      "mutation_id": "copies-instead-of-distinct-titles",
+      "sql": "SELECT store_id,COUNT(film_id),COUNT(*) FROM inventory GROUP BY store_id"
+    }
+  ],
+  "P307": [
+    {
+      "mutation_id": "available-instead-of-unavailable",
+      "sql": "SELECT COUNT(*) FROM inventory i WHERE NOT EXISTS(SELECT 1 FROM rental r WHERE r.inventory_id=i.inventory_id AND r.return_date IS NULL)"
+    },
+    {
+      "mutation_id": "any-rental-instead-of-open-rental",
+      "sql": "SELECT COUNT(*) FROM inventory i WHERE EXISTS(SELECT 1 FROM rental r WHERE r.inventory_id=i.inventory_id)"
+    }
+  ],
+  "P308": [
+    {
+      "mutation_id": "ignore-availability",
+      "sql": "SELECT store_id,COUNT(DISTINCT film_id) FROM inventory GROUP BY store_id"
+    },
+    {
+      "mutation_id": "copy-count-instead-of-title-count",
+      "sql": "SELECT i.store_id,COUNT(*) FROM inventory i WHERE NOT EXISTS(SELECT 1 FROM rental r WHERE r.inventory_id=i.inventory_id AND r.return_date IS NULL) GROUP BY i.store_id"
+    }
+  ],
+  "P309": [
+    {
+      "mutation_id": "inclusive-frequency-threshold",
+      "sql": "SELECT SUM(p.amount) FROM payment p WHERE p.payment_date>='2005-08-01' AND p.payment_date<'2005-09-01' AND EXISTS(SELECT 1 FROM payment qualifying WHERE qualifying.customer_id=p.customer_id AND qualifying.payment_date>='2005-08-01' AND qualifying.payment_date<'2005-09-01' GROUP BY qualifying.customer_id HAVING COUNT(*)>=5 AND SUM(qualifying.amount)>15.00)"
+    },
+    {
+      "mutation_id": "inclusive-amount-threshold",
+      "sql": "SELECT SUM(p.amount) FROM payment p WHERE p.payment_date>='2005-08-01' AND p.payment_date<'2005-09-01' AND EXISTS(SELECT 1 FROM payment qualifying WHERE qualifying.customer_id=p.customer_id AND qualifying.payment_date>='2005-08-01' AND qualifying.payment_date<'2005-09-01' GROUP BY qualifying.customer_id HAVING COUNT(*)>5 AND SUM(qualifying.amount)>=15.00)"
+    },
+    {
+      "mutation_id": "incomplete-last-day",
+      "sql": "SELECT SUM(p.amount) FROM payment p WHERE p.payment_date>='2005-08-01' AND p.payment_date<='2005-08-31' AND EXISTS(SELECT 1 FROM payment qualifying WHERE qualifying.customer_id=p.customer_id AND qualifying.payment_date>='2005-08-01' AND qualifying.payment_date<='2005-08-31' GROUP BY qualifying.customer_id HAVING COUNT(*)>5 AND SUM(qualifying.amount)>15.00)"
+    },
+    {
+      "mutation_id": "active-customer-restriction",
+      "sql": "SELECT SUM(p.amount) FROM payment p WHERE p.payment_date>='2005-08-01' AND p.payment_date<'2005-09-01' AND EXISTS(SELECT 1 FROM payment qualifying WHERE qualifying.customer_id=p.customer_id AND qualifying.payment_date>='2005-08-01' AND qualifying.payment_date<'2005-09-01' AND qualifying.customer_id IN(SELECT customer_id FROM customer WHERE active=1) GROUP BY qualifying.customer_id HAVING COUNT(*)>5 AND SUM(qualifying.amount)>15.00)"
+    },
+    {
+      "mutation_id": "all-time-payment-total",
+      "sql": "SELECT SUM(p.amount) FROM payment p WHERE EXISTS(SELECT 1 FROM payment qualifying WHERE qualifying.customer_id=p.customer_id AND qualifying.payment_date>='2005-08-01' AND qualifying.payment_date<'2005-09-01' GROUP BY qualifying.customer_id HAVING COUNT(*)>5 AND SUM(qualifying.amount)>15.00)"
+    }
+  ],
+  "P310": [
+    {
+      "mutation_id": "inclusive-frequency-threshold",
+      "sql": "SELECT COUNT(*) FROM customer c WHERE c.store_id=1 AND c.customer_id IN(SELECT customer_id FROM payment WHERE payment_date>='2005-08-01' AND payment_date<'2005-09-01' GROUP BY customer_id HAVING COUNT(*)>=5 AND SUM(amount)>15.00)"
+    },
+    {
+      "mutation_id": "inclusive-amount-threshold",
+      "sql": "SELECT COUNT(*) FROM customer c WHERE c.store_id=1 AND c.customer_id IN(SELECT customer_id FROM payment WHERE payment_date>='2005-08-01' AND payment_date<'2005-09-01' GROUP BY customer_id HAVING COUNT(*)>5 AND SUM(amount)>=15.00)"
+    },
+    {
+      "mutation_id": "incomplete-last-day",
+      "sql": "SELECT COUNT(*) FROM customer c WHERE c.store_id=1 AND c.customer_id IN(SELECT customer_id FROM payment WHERE payment_date>='2005-08-01' AND payment_date<='2005-08-31' GROUP BY customer_id HAVING COUNT(*)>5 AND SUM(amount)>15.00)"
+    },
+    {
+      "mutation_id": "active-customer-restriction",
+      "sql": "SELECT COUNT(*) FROM customer c WHERE c.store_id=1 AND c.customer_id IN(SELECT customer_id FROM payment WHERE payment_date>='2005-08-01' AND payment_date<'2005-09-01' AND customer_id IN(SELECT customer_id FROM customer WHERE active=1) GROUP BY customer_id HAVING COUNT(*)>5 AND SUM(amount)>15.00)"
+    },
+    {
+      "mutation_id": "wrong-home-store",
+      "sql": "SELECT COUNT(*) FROM customer c WHERE c.store_id=2 AND c.customer_id IN(SELECT customer_id FROM payment WHERE payment_date>='2005-08-01' AND payment_date<'2005-09-01' GROUP BY customer_id HAVING COUNT(*)>5 AND SUM(amount)>15.00)"
+    }
+  ],
+  "P311": [
+    {
+      "mutation_id": "elapsed-days-instead-of-calendar-days",
+      "sql": "SELECT f.film_id,f.title FROM film f JOIN inventory i ON i.film_id=f.film_id JOIN rental r ON r.inventory_id=i.inventory_id WHERE r.rental_date<='2005-07-01 00:00:00' GROUP BY f.film_id HAVING SUM(GREATEST(COALESCE(TIMESTAMPDIFF(DAY,r.rental_date,r.return_date)-CAST(f.rental_duration AS SIGNED),0),0))>0 ORDER BY SUM(GREATEST(COALESCE(TIMESTAMPDIFF(DAY,r.rental_date,r.return_date)-CAST(f.rental_duration AS SIGNED),0),0)) DESC,f.film_id ASC LIMIT 3"
+    },
+    {
+      "mutation_id": "end-of-day-instead-of-midnight-cutoff",
+      "sql": "SELECT f.film_id,f.title FROM film f JOIN inventory i ON i.film_id=f.film_id JOIN rental r ON r.inventory_id=i.inventory_id WHERE r.rental_date<='2005-07-01 23:59:59' GROUP BY f.film_id HAVING SUM(GREATEST(COALESCE(DATEDIFF(r.return_date,r.rental_date)-CAST(f.rental_duration AS SIGNED),0),0))>0 ORDER BY SUM(GREATEST(COALESCE(DATEDIFF(r.return_date,r.rental_date)-CAST(f.rental_duration AS SIGNED),0),0)) DESC,f.film_id ASC LIMIT 3"
+    },
+    {
+      "mutation_id": "wrong-rank-direction",
+      "sql": "SELECT f.film_id,f.title FROM film f JOIN inventory i ON i.film_id=f.film_id JOIN rental r ON r.inventory_id=i.inventory_id WHERE r.rental_date<='2005-07-01 00:00:00' GROUP BY f.film_id HAVING SUM(GREATEST(COALESCE(DATEDIFF(r.return_date,r.rental_date)-CAST(f.rental_duration AS SIGNED),0),0))>0 ORDER BY SUM(GREATEST(COALESCE(DATEDIFF(r.return_date,r.rental_date)-CAST(f.rental_duration AS SIGNED),0),0)) ASC,f.film_id ASC LIMIT 3"
+    },
+    {
+      "mutation_id": "top-two-instead-of-three",
+      "sql": "SELECT f.film_id,f.title FROM film f JOIN inventory i ON i.film_id=f.film_id JOIN rental r ON r.inventory_id=i.inventory_id WHERE r.rental_date<='2005-07-01 00:00:00' GROUP BY f.film_id HAVING SUM(GREATEST(COALESCE(DATEDIFF(r.return_date,r.rental_date)-CAST(f.rental_duration AS SIGNED),0),0))>0 ORDER BY SUM(GREATEST(COALESCE(DATEDIFF(r.return_date,r.rental_date)-CAST(f.rental_duration AS SIGNED),0),0)) DESC,f.film_id ASC LIMIT 2"
+    }
+  ],
+  "P312": [
+    {
+      "mutation_id": "elapsed-days-instead-of-calendar-days",
+      "sql": "SELECT MAX(GREATEST(COALESCE(TIMESTAMPDIFF(DAY,r.rental_date,r.return_date)-CAST(f.rental_duration AS SIGNED),0),0)) FROM rental r JOIN inventory i ON i.inventory_id=r.inventory_id JOIN film f ON f.film_id=i.film_id WHERE r.rental_date<='2005-07-01 00:00:00'"
+    },
+    {
+      "mutation_id": "end-of-day-instead-of-midnight-cutoff",
+      "sql": "SELECT MAX(GREATEST(COALESCE(DATEDIFF(r.return_date,r.rental_date)-CAST(f.rental_duration AS SIGNED),0),0)) FROM rental r JOIN inventory i ON i.inventory_id=r.inventory_id JOIN film f ON f.film_id=i.film_id WHERE r.rental_date<='2005-07-01 23:59:59'"
+    },
+    {
+      "mutation_id": "open-rental-accrues-until-cutoff",
+      "sql": "SELECT MAX(GREATEST(COALESCE(DATEDIFF(COALESCE(r.return_date,'2005-07-01'),r.rental_date)-CAST(f.rental_duration AS SIGNED),0),0)) FROM rental r JOIN inventory i ON i.inventory_id=r.inventory_id JOIN film f ON f.film_id=i.film_id WHERE r.rental_date<='2005-07-01 00:00:00'"
+    }
+  ]
+}

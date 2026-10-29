@@ -363,10 +363,18 @@ def evaluate_response(config, tables, response: GenerationResponse, reference, g
 
 def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path, experiment_id: str,
          *, smoke: bool = False, dry_run: bool = False, mode: str = "pilot", pilot_directory: Path | None = None,
-         freeze_only: bool = False, allow_unreviewed: bool = False, progress=print) -> dict:
+         freeze_only: bool = False, allow_unreviewed: bool = False, progress=print,
+         candidate_manifest: Path | None = None) -> dict:
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,79}", experiment_id):
         raise RunError("Experiment ID is not a safe identifier")
-    if mode == "main":
+    if mode == "candidate_pilot":
+        from .candidate_pilot import candidate_inputs
+        if candidate_manifest is None or smoke or config.benchmark_manifest or config.diagnostic_manifest:
+            raise RunError("Candidate pilot requires its separate manifest, never a main instrument")
+        manifest, assignments, questions, references = candidate_inputs(config, snapshots, backend_path, candidate_manifest)
+        if not freeze_only and not (directory / "freeze.json").is_file():
+            raise RunError("Freeze the separate capability pilot before generation")
+    elif mode == "main":
         if pilot_directory is None:
             raise RunError("A verified complete pilot is required")
         manifest, assignments, questions, references = main_inputs(config, snapshots, backend_path, pilot_directory)
@@ -395,7 +403,7 @@ def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path
     manifest["experiment_id"] = experiment_id
     publish_artifact(directory / "manifest.json", canonical_json(manifest))
     publish_artifact(directory / "plan.json", canonical_json([asdict(a) for a in assignments]))
-    if mode in {"main", "preliminary", "diagnostic", "engineering_smoke"} and not freeze_only:
+    if mode in {"main", "preliminary", "diagnostic", "engineering_smoke", "candidate_pilot"} and not freeze_only:
         freeze = json.loads((directory / "freeze.json").read_bytes())
         expected_status = mode + "_manifest_frozen"
         if freeze.get("status") != expected_status or freeze.get("manifest_sha256") != sha256_bytes(canonical_json(manifest)):
@@ -512,3 +520,10 @@ def run_diagnostic(config, snapshots, backend_path, directory, experiment_id, *,
 def run_engineering_smoke(config, snapshots, backend_path, directory, experiment_id, *, freeze_only=False, progress=print):
     return _run(config, snapshots, backend_path, directory, experiment_id, mode="engineering_smoke",
                 freeze_only=freeze_only, progress=progress)
+
+
+def run_candidate_pilot(config, snapshots, backend_path, directory, experiment_id, candidate_manifest,
+                        *, freeze_only=False, progress=print):
+    """Separate, explicitly draft-reference model feasibility evidence; never main approval."""
+    return _run(config, snapshots, backend_path, directory, experiment_id, mode="candidate_pilot",
+                candidate_manifest=candidate_manifest, freeze_only=freeze_only, progress=progress)

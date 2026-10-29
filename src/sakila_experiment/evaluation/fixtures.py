@@ -102,7 +102,8 @@ def setup_fixture_database(root: Path) -> AppConfig:
 
 def prepare_fixture(root: Path, fixture_id: str, output: Path, *, definition: Path | None = None) -> tuple[AppConfig, dict]:
     definition = (definition or root / "research/revision-02/fixture_cases.json").resolve()
-    allowed = {(root / f"research/{version}/fixture_cases.json").resolve() for version in ("revision-02", "revision-03")}
+    allowed = {(root / f"research/{version}/fixture_cases.json").resolve()
+               for version in ("revision-02", "revision-03", "model-pilot-01")}
     if definition not in allowed:
         raise FixtureError("Fixture definition must be a versioned research artifact")
     cases = json.loads(definition.read_bytes())

@@ -1,0 +1,13 @@
+{
+  "order": [
+    {
+      "path": "configs/models/qwen3-8b-q4km.json",
+      "sha256": "18ac1b0a58457360facb9e797cf06f897900ca899c6ef004f41d72014e4ab184"
+    },
+    {
+      "path": "configs/models/qwen35-4b-q4km.json",
+      "sha256": "3d29dee81613a2ee1bc18822ee98babcfee8fa72c4ecd21f63bd208f3127d9b5"
+    }
+  ],
+  "status": "pinned_before_any_candidate_generation"
+}

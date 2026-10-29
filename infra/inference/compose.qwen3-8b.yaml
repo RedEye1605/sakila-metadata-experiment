@@ -1,0 +1,59 @@
+name: sakila-model-selection
+services:
+  llama:
+    image: ghcr.io/ggml-org/llama.cpp@sha256:91ac61def9ed19af96b9b2d2a0c1570a0903046f4e2dcbac7e3d965e5917b4ba
+    container_name: sakila-candidate-llama
+    ports:
+      - "127.0.0.1:18082:8080"
+    volumes:
+      - ../../downloads/models/7c41481f57cb95916b40956ab2f0b139b296d974:/models:ro
+    command:
+      - --model
+      - /models/Qwen3-8B-Q4_K_M.gguf
+      - --alias
+      - sakila-qwen3-8b-q4km
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8080"
+      - --ctx-size
+      - "16384"
+      - --parallel
+      - "1"
+      - --n-gpu-layers
+      - "24"
+      - --threads
+      - "6"
+      - --batch-size
+      - "512"
+      - --ubatch-size
+      - "128"
+      - --flash-attn
+      - "on"
+      - --fit
+      - "off"
+      - --cache-ram
+      - "0"
+      - --no-cache-prompt
+      - --no-context-shift
+      - --no-cont-batching
+      - --jinja
+      - --reasoning
+      - "on"
+      - --reasoning-format
+      - deepseek
+      - --reasoning-budget
+      - "2048"
+    mem_limit: 8g
+    pids_limit: 256
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

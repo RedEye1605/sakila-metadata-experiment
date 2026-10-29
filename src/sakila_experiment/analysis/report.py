@@ -70,7 +70,7 @@ def audit_run(directory: Path) -> tuple[dict, list[dict]]:
                 if (not isinstance(mapping, list) or any(type(i) is not int for i in mapping)
                         or sorted(mapping) != list(range(width))):
                     raise IntegrityError("Correct v3 outcome lacks a complete global column bijection")
-        if manifest.get("benchmark_manifest_sha256"):
+        if manifest.get("benchmark_manifest_sha256") or manifest.get("candidate_manifest_sha256"):
             settings = manifest["inference_config"]
             expected_request = {"model": manifest["model_id"], "temperature": settings["temperature"],
                                 "top_p": settings["top_p"], "top_k": settings["top_k"],
@@ -106,6 +106,15 @@ def audit_run(directory: Path) -> tuple[dict, list[dict]]:
             raise IntegrityError("Diagnostic variant/repetition structure is incomplete")
         if manifest.get("benchmark_manifest_sha256") is None:
             raise IntegrityError("Diagnostic lacks its versioned benchmark binding")
+    elif manifest["mode"] == "candidate_pilot":
+        identifiers = {r["question_id"] for r in rows}
+        expected = {(q, s, r) for q in identifiers for s in ("S0", "S1", "S2", "S3") for r in (1, 2)}
+        if (len(rows) != 96 or len(identifiers) != 12 or any(not q.startswith("P3") for q in identifiers)
+                or {(r["question_id"], r["scenario_id"], r["repetition_id"]) for r in rows} != expected
+                or manifest.get("main_experiment_allowed") is not False
+                or manifest.get("evaluation_status") != "engineering_draft_reference"
+                or not manifest.get("candidate_manifest_sha256")):
+            raise IntegrityError("Capability pilot must retain its separate complete12-by4-by2design")
     elif manifest["mode"] == "engineering_smoke":
         identifiers = {r["question_id"] for r in rows}
         expected = {(q, s, 1) for q in identifiers for s in ("S0", "S1", "S2", "S3")}

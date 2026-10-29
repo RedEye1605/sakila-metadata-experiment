@@ -1,0 +1,13 @@
+{
+  "files": {
+    "gold-b-v2.jsonl": "d7cf0ea401982ff42b1797645d6de43a4ef975bf7741f2fb30cd0295e8e2e54d",
+    "gold-b.jsonl": "23cbe2e1846380477dfe4a2ac8557a26e99c9510d923dc92abba617401b9e895",
+    "intents.jsonl": "cc70779f2781af216cc790f8c5c207839ce02f0afa56ca659d046802841319e1",
+    "receipt-blind-lock.json": "64410722895ec019e5baec0b7ce0aedd808704be8b561dca967f1d317898604c",
+    "receipt-v2.json": "05572c913ade3f60c43f6ff9835ce1bee9f8eef22208562ce43015daf5b9659c",
+    "receipt.json": "7f8413b542242e7a3135afc0d6dfdffa40989685205481fb3225414e9738edc4"
+  },
+  "human_review_complete": false,
+  "model_generation_requests": 0,
+  "purpose": "Source distribution copies, byte-identical to original independent author artifacts; generation continues to use hash-bound original paths"
+}

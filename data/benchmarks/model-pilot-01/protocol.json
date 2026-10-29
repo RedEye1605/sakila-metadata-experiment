@@ -1,0 +1,56 @@
+{
+  "assigned_trials_per_candidate": 96,
+  "candidate_order": [
+    "Qwen/Qwen3-8B-GGUF:Q4_K_M",
+    "Qwen/Qwen3.5-4B:verified-GGUF-Q4_K_M"
+  ],
+  "comparator_version": "ex-results-v3-column-permutation",
+  "context_tokens": 16384,
+  "criterion_rationale": "Engineering minimum for a capable metadata-informed instrument, not a statistical rejection threshold or estimate of main EX. Frozen before any candidate generation. Failures/truncation retained, never repaired.",
+  "fixed_request_parameters": {
+    "cache_prompt": false,
+    "min_p": 0.0,
+    "n": 1,
+    "repeat_penalty": 1.0,
+    "stream": false
+  },
+  "human_review_status": "pending_for_new_pilot",
+  "inference_seed_base": 2026102903,
+  "main_results_use": "Do not evaluate30main questions for selection. Prior600-trial main remains preserved and reported. Any subsequent main is a disclosed post-first-run replication, not retroactive model selection.",
+  "max_output_tokens": 4096,
+  "maximum_candidates": 2,
+  "min_p": 0.0,
+  "order_seed": 2026102901,
+  "prompt_template": "prompts/generation-v3.txt",
+  "protocol_id": "local-model-capability-pilot-v1",
+  "question_count": 12,
+  "reasoning_format": "deepseek",
+  "reasoning_handling": "One API request; server separates reasoning_content from final message.content. Raw response including reasoning retained, final content evaluated as SQL. No DB/MCP/tool access, execution feedback or semantic repair.",
+  "reasoning_mode": "on",
+  "reasoning_token_budget": 2048,
+  "recorded_at_utc": "2026-10-29T06:17:00.876850+00:00",
+  "reference_basis": "AI-assisted A/B agreement with predeclared semantic witnesses before generation",
+  "repeat_penalty": 1.0,
+  "repetitions": 2,
+  "scenario_ids": [
+    "S0",
+    "S1",
+    "S2",
+    "S3"
+  ],
+  "selection_conditions": [
+    "All96 outcomes evaluable; no unresolved infrastructure incident",
+    "All48 question/scenario contexts fit without truncation",
+    "S3 total correct>=18/24 (75%)",
+    "S3 domain correct>=6/12 (50%)",
+    "S3 has>=1correct trial in each of3rule families",
+    "S3 execution_status success>=23/24",
+    "Backend/model/hash/template/sampler/source identity verified"
+  ],
+  "selection_rule": "Use first candidate in declared order satisfying all conditions; test second only if first is infeasible or fails. Do not choose by largest metadata gap or p-value. No candidate if both fail.",
+  "snapshot_directory": "runs/revision-02/metadata/preparation-03/snapshots",
+  "status": "engineering_only_no_main_authorization",
+  "temperature": 0.6,
+  "top_k": 20,
+  "top_p": 0.95
+}
