@@ -125,22 +125,26 @@ class BenchmarkManifest(StrictModel):
     human_review_status: Literal["pending", "user_attested_complete"] = "pending"
     execution_review: ArtifactReference | None = None
     smoke_test: ArtifactReference | None = None
+    execution_amendment: ArtifactReference | None = None
 
     @model_validator(mode="after")
     def review_state(self):
         if self.status == "frozen_user_attested":
             if (not self.main_experiment_allowed or self.human_review_status != "user_attested_complete"
-                    or self.execution_review is None or self.smoke_test is None):
-                raise ValueError("User-attested execution needs its review and separate smoke evidence")
+                    or self.execution_review is None
+                    or (self.smoke_test is None) == (self.execution_amendment is None)):
+                raise ValueError("User-attested execution needs its review and exactly one smoke definition or explicit amendment")
         elif self.main_experiment_allowed or self.human_review_status != "pending" or self.execution_review is not None:
             raise ValueError("main_experiment_allowed requires a hash-bound user review statement")
+        elif self.execution_amendment is not None:
+            raise ValueError("A direct-execution amendment requires user-attested reviewed inputs")
         return self
 
     def paths(self, root: Path) -> dict[str, Path]:
         paths = {name: getattr(self, name).verified_path(root) for name in (
             "questions", "gold", "contracts", "annotation_specification", "fact_inventory",
             "analysis_protocol", "evaluation_protocol", "source_lock", "selection_receipt", "prompt_template", "information_audit", "metadata_snapshots", "reference_validation", "reference_validation_lock", "fixture_specification")}
-        for name in ("execution_review", "smoke_test"):
+        for name in ("execution_review", "smoke_test", "execution_amendment"):
             if getattr(self, name) is not None:
                 paths[name] = getattr(self, name).verified_path(root)
         return paths
@@ -318,7 +322,11 @@ def validate_instrument(root: Path, manifest_path: Path, output: Path | None = N
     if manifest.status == "frozen_user_attested":
         from .experiment.execution_review import validate_execution_review, load_smoke
         validate_execution_review(root, manifest, paths)
-        load_smoke(root, manifest, paths)
+        if manifest.execution_amendment is not None:
+            from .experiment.direct_main import validate_direct_amendment
+            validate_direct_amendment(root, manifest, paths)
+        else:
+            load_smoke(root, manifest, paths)
     report = {"status": "offline_instrument_validated", "benchmark_id": manifest.benchmark_id,
               "manifest_sha256": sha256_bytes(manifest_path.read_bytes()), "rubric_version": RUBRIC_VERSION,
               "profiles": profiles, "question_count": 30,

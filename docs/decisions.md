@@ -104,3 +104,11 @@ Freeze engineering thresholds before candidate generation: S3≥18/24correct, do
 ### D60 — Independent interpretations and reference execution optimization
 
 Original A/B inputs and blind B receipt are retained. B signed arithmetic was corrected after pre-generation MySQL1690. P309A planner timeouts were resolved by materializing eligible customer IDs before monthly event summation; this optimization occurred after B was visible and is not claimed as fresh blind authorship. The original canonical A remains the explicit structural-profile source. All12pairs then agree on primary+9isolated variations and all33declared mutants have successful semantic witnesses. Some new domain targets are derivative reports over the same3rules. New-pilot human review remains pending; no identity/approval is fabricated.
+
+### D61 — Researcher locks Qwen3.5-9B and explicitly waives further pilot generation
+
+After the earlier main and Qwen3-8B capability results were disclosed, the researcher selected Qwen3.5-9B, requested600main trials directly and asked to monitor the job personally. Bind the exact statement to the unchanged reviewed30question stimulus, selected model/config/Compose and preserved prior history. The unexecuted4Bfallback is superseded, not silently treated as evaluated. Record a disclosed researcher-selected replication; do not claim prospective capability admission, retrospective preregistration or guaranteed statistical significance.
+
+### D62 — Zero-generation preflight and sampler observations from actual main responses
+
+The explicit amendment waives capability pilot and generation smoke, while retaining model-byte/backend/source/context/database/reference/safety/evaluator checks. Revalidate all30reference pairs and56mutants on primary+8variants under current code. Check all120main contexts without generation. Observe actual sampler/seed/cache after each durable main response using GET only; bind every proof to the frozen manifest and outcome. Preserve terminal outcomes if post-completion observation fails. The fixed600trial controller retains append-only logging, stop-on-infrastructure behavior and no automatic repair/retry. Run through a locked systemd user service with sleep inhibition; no Codex monitor loop after launch. Reports/statistics/BABIV/V are generated after complete evidence and remain local.

@@ -23,7 +23,7 @@ def num(value, digits=2):
     return "tidak tersedia" if value is None else f"{value:.{digits}f}"
 
 
-def build_thesis(root: Path, run: Path, output: Path):
+def build_thesis(root: Path, run: Path, output: Path, *, include_frozen_context: bool = False):
     manifest, records = audit_run(run / "benchmark")
     report = json.loads((run / "analysis/report.json").read_bytes())
     auxiliary = json.loads((run / "auxiliary/report.json").read_bytes())
@@ -41,6 +41,18 @@ def build_thesis(root: Path, run: Path, output: Path):
     row_counts = {r["table"]: r["row_count"] for r in baseline["table_content"]}
     review = manifest["review_attestation"]
     source = manifest["source_version"]
+    amendment = manifest.get("execution_amendment")
+    execution_description = (
+        "Peneliti memilih Qwen3.5-9B secara langsung setelah hasil eksperimen sebelumnya diketahui, dan secara eksplisit meniadakan pilot capability serta generation smoke tambahan. Tidak ada request pilot atau smoke untuk run ini. Preflight tanpa generation memeriksa120prompt lengkap, bobot model, backend, database, reference dan evaluator. Sampler, seed serta cache diperiksa setelah setiap respons main tersimpan, memakai GET pada backend tanpa generation tambahan. Kegagalan pemeriksaan menghentikan run dan mempertahankan respons yang sudah tersimpan."
+        if amendment else
+        "Smoke terpisah terdiri3 pertanyaan P×4 snapshot=12 requests. Smoke memeriksa transport, sampler, source identity, database access dan evaluator; tidak ada threshold EX untuk memilih model atau menyeleksi soal. Setelah smoke lengkap, source/model/backend/prompt/snapshot/policy serta sampler evidence harus sama sebelum main freeze."
+    )
+    request_accounting = ("Tidak ada request pilot atau smoke tambahan; seluruh generation yang dijadwalkan adalah600trial utama."
+                          if amendment else "Dua belas smoke requests berada terpisah dan tidak masuk denominator600.")
+    extension_disclosure = (
+        f"\n## 4.11 Amendment pemilihan model dan batas interpretasi\n\nRun ini merupakan replikasi dengan model pilihan peneliti sesudah hasil main sebelumnya dan pilot Qwen3-8B diketahui. Model upstream ialah `{amendment['upstream_model']}`; publisher GGUF, revision dan hash bobot tercantum dalam manifest. Pernyataan peneliti dicatat pada `{amendment['recorded_at_utc']}`. Pemilihan model tidak diklaim sebagai kelulusan capability pilot atau seleksi prospektif sebelum semua hasil terdahulu. Instrumen30soal, metadata, gold, evaluator dan rencana analisis berpasangan tetap dipertahankan. Hasil lama tetap diarsipkan dan tidak ditimpa. Selisih antar-run mencakup perbedaan model/inference package, sehingga tidak dapat diatribusikan pada ukuran parameter saja.\n"
+        if amendment else ""
+    )
     snapshot_rows = [[s, manifest["snapshots"]["snapshot_sha256"][s]] for s in ("S0", "S1", "S2", "S3")]
     software = [["Python", manifest["python_version"]], ["MySQL", manifest["mysql_version"]],
                 ["Model", backend["model_repository"]], ["Model revision", backend["model_repository_revision"]],
@@ -83,7 +95,7 @@ Fase persiapan metadata menggunakan DataHub sebagai katalog dan MCP sebagai jalu
 
 {table(['Komponen','Versi/nilai aktual'], software)}
 
-GPU yang dicatat saat verifikasi backend: `{backend.get('resource_observations', {}).get('gpu', 'lihat verification.json')}`. Observasi memori host tercantum dalam verification artifact; jangan menggantinya dengan spesifikasi laptop perkiraan. Metadata/catalog dan inference dijalankan bergantian agar tidak bersaing pada RAM. Model file SHA-256: `{manifest['model_version_or_hash']}`. Source commit yang dipakai smoke dan benchmark: `{source['git_commit']}`. Source tree hash: `{source['source_tree_sha256']}`. Versi image DataHub dan bukti ingestion/MCP disimpan melalui hash runtime/provenance pada manifest; image yang sedang populer bukan pengganti versi yang benar-benar dipakai.
+GPU yang dicatat saat verifikasi backend: `{backend.get('resource_observations', {}).get('gpu', 'lihat verification.json')}`. Observasi memori host tercantum dalam verification artifact; jangan menggantinya dengan spesifikasi laptop perkiraan. Metadata/catalog dan inference dijalankan bergantian agar tidak bersaing pada RAM. Model file SHA-256: `{manifest['model_version_or_hash']}`. Source commit benchmark: `{source['git_commit']}`. Source tree hash: `{source['source_tree_sha256']}`. Versi image DataHub dan bukti ingestion/MCP disimpan melalui hash runtime/provenance pada manifest; image yang sedang populer bukan pengganti versi yang benar-benar dipakai.
 
 ## 4.4 Objek database dan kontrol isi
 
@@ -127,13 +139,14 @@ EX trial bernilai1bila SQL berhasil dan hasil ekuivalen sesuai kontrak; invalid/
 
 Trial ID deterministic memakai question/scenario/repetition. Urutan randomized dalam repetition blocks dengan seed{plan['order_seed']}. Ledger SQLite append-only menyimpan dispatch, durable response, incident dan terminal outcome. Restart menggunakan respons tersimpan untuk evaluasi, tidak meregenerasi model errors atau completed trials. Dispatch ambigu memerlukan rekonsiliasi operator tercatat dan tidak diklaim exactly-once inference.
 
-Smoke terpisah terdiri3 pertanyaan P×4 snapshot=12 requests. Smoke memeriksa transport, sampler, source identity, database access dan evaluator; tidak ada threshold EX untuk memilih model atau menyeleksi soal. Setelah smoke lengkap, source/model/backend/prompt/snapshot/policy serta sampler evidence harus sama sebelum main freeze. Benchmark600 trial dijalankan sekali per assignment. Sesudah hasil lengkap, semua SQL tersimpan, termasuk primary failures, dieksekusi pada8 auxiliary cases tanpa generation baru. Hasil auxiliary tidak mengganti EX primer.
+{execution_description} Benchmark600 trial dijalankan sekali per assignment. Sesudah hasil lengkap, semua SQL tersimpan, termasuk primary failures, dieksekusi pada8 auxiliary cases tanpa generation baru. Hasil auxiliary tidak mengganti EX primer.
 
 ## 4.10 Rencana analisis dan reproduksibilitas
 
 EX kondisi=jumlah benar/150×100%. Perhitungan tambahan memakai question dan complexity; skor per question/scenario ialah successes/5. Analisis menggunakan30 question blocks. Omnibus memakai100.000 within-question permutations; enam pairwise contrasts memakai exact sign-flip dan koreksi Holm. Effect size dinyatakan sebagai percentage points. Bootstrap10.000 whole-question samples distratifikasi menurut complexity untuk pointwise95%interval. Analysis seed={plan['analysis_seed']}. Exchangeability/swap invariance adalah asumsi statistik; randomisasi urutan request tidak otomatis membuktikannya. Nonsignificance tidak membuktikan equivalence.
 
 Manifest mencatat Git/source hashes, Python/packages, MySQL/data hashes, model/image/template, snapshots, questions/gold, prompt hashes, settings dan seeds. Logging mencakup latency inference/SQL terpisah, input/output tokens dari backend, validation/execution status, result/gold hashes dan EX. Keseluruhan evidence dipertahankan; output laporan tidak mengarang token atau skor yang hilang. Sumber metode: [Spider](https://aclanthology.org/D18-1425/),[BIRD](https://arxiv.org/html/2305.03111v3),dan [semantic test-suite evaluation](https://aclanthology.org/2020.emnlp-main.29/). Penelitian ini tetap studi satu database dan tidak mengklaim cakupan benchmark cross-domain tersebut.
+{extension_disclosure}
 """
     desc = report["descriptive"]
     scores = {r["scenario_id"]: r for r in desc["by_scenario"]}
@@ -183,7 +196,7 @@ Manifest mencatat Git/source hashes, Python/packages, MySQL/data hashes, model/i
 
 Bab ini disusun dari hasil aktual `{manifest['experiment_id']}`,bukan simulasi atau hasil versi terdahulu. Seluruh600 assigned trials mempunyai terminal EX biner,150per kondisi, 200per complexity,30 pertanyaan dan 5 repetitions. Audit ledger/export, assignments, prompt/result hashes, request settings, model/source/snapshot identity serta fingerprint database berhasil. Primary database tidak berubah. Waktu outcome pertama `{timestamps[0]}` dan terakhir `{timestamps[-1]}` memakai timestamp UTC.
 
-Terdapat{incidents['request_attempts_started']} dispatch attempts dan{incidents['infrastructure_incidents']} infrastructure incidents pada benchmark. Incident tidak otomatis masuk EX nol. Jenis incident: `{json.dumps(incidents['incident_types'],ensure_ascii=False)}`. Dua belas smoke requests berada terpisah dan tidak masuk denominator600. Review completion dilaporkan oleh peneliti; nama/tanggal reviewer masih perlu dilengkapi sesuai BAB IV. Tidak mengklaim dokumen review independen yang belum tersedia.
+Terdapat{incidents['request_attempts_started']} dispatch attempts dan{incidents['infrastructure_incidents']} infrastructure incidents pada benchmark. Incident tidak otomatis masuk EX nol. Jenis incident: `{json.dumps(incidents['incident_types'],ensure_ascii=False)}`. {request_accounting} Review completion dilaporkan oleh peneliti; nama/tanggal reviewer masih perlu dilengkapi sesuai BAB IV. Tidak mengklaim dokumen review independen yang belum tersedia.
 
 ## 5.2 Execution Accuracy menurut kondisi metadata
 
@@ -270,6 +283,19 @@ Sumber tabel: `analysis/report.json`,CSV pendamping,benchmark manifest/ledger da
             shutil.copyfile(pth, figure_dir / pth.name)
             figure_links.append(f"- [{pth.name}](figures/{pth.name})")
     (output / "FIGURES.md").write_text("# Gambar hasil aktual\n\n" + "\n".join(figure_links) + "\n")
+    if include_frozen_context:
+        appendix = ["# Metadata snapshots dan prompt aktual", ""]
+        snapshot_root = root / "runs/revision-02/metadata/preparation-03/snapshots"
+        for scenario in ("S0", "S1", "S2", "S3"):
+            folder = snapshot_root / scenario
+            snapshot = json.loads((folder / "manifest.json").read_bytes())
+            payload = json.loads((folder / snapshot["payload_file"]).read_bytes())
+            appendix += [f"## {scenario}", "", f"SHA-256: `{snapshot['snapshot_sha256']}`", "", "```json",
+                         json.dumps(payload, ensure_ascii=False, indent=2), "```", ""]
+        appendix += ["## Common prompt template", "", "```text", paths["prompt_template"].read_text(), "```", ""]
+        (output / "LAMPIRAN_METADATA_PROMPT.md").write_text("\n".join(appendix))
+        names = ["BAB_IV.md", "BAB_V.md", "LAMPIRAN_QUESTIONS_GOLD.md", "LAMPIRAN_SCHEMA.md", "LAMPIRAN_METADATA_PROMPT.md"]
+        (output / "NASKAH_BAB_IV_V_LENGKAP.md").write_text("\n\n".join((output / name).read_text() for name in names))
     files = {str(p.relative_to(output)): hashlib.sha256(p.read_bytes()).hexdigest() for p in output.rglob("*") if p.is_file()}
     (output / "source-and-output-hashes.json").write_text(json.dumps({"experiment_id":manifest['experiment_id'],
         "source_commit":source['git_commit'], "files":files, "reviewer_identity_status":"pending_user_entry",

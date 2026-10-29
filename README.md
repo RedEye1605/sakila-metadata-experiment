@@ -6,7 +6,7 @@
 
 Investigate how metadata annotation changes the execution accuracy of one fixed local LLM on the official MySQL Sakila database. DataHub and MCP prepare auditable metadata snapshots; Python runs independent inference requests, safe SQL execution, result comparison and question-paired analysis.
 
-> **Research status:** benchmark and metadata are drafts awaiting independent annotation. Preliminary evaluation is explicitly supported and labelled provisional. Actual model predictions, EX scores and statistical outputs remain local until review. Richer metadata is not assumed to improve accuracy.
+> **Research status:** review completion for the revision03 stimulus was declared by the researcher; reviewer names/date remain to be entered. Earlier main and engineering results are preserved locally. The researcher has now selected Qwen3.5-9B for a separate600trial replication with an explicit no-additional-pilot amendment. Actual predictions, EX scores and statistical outputs remain local. Richer metadata is not assumed to improve accuracy.
 
 ![Two-phase experimental architecture](docs/figures/architecture.svg)
 
@@ -18,7 +18,7 @@ A full preliminary run has completed and passed integrity checks. Its archived r
 
 **Revision-02 inputs are frozen after independent audit.** The revised design uses a pinned Spider complexity adapter, three source-based domain rules, a separate 180-trial diagnostic and isolated semantic witnesses. All 30 selected and 12 pilot references pass nine database cases; 228 local tests including MySQL integration pass. No revised EX exists at this pre-generation source checkpoint. Read the [revision status](docs/revision-02/implementation-status.md), [dataset methodology](docs/revision-02/dataset-methodology.md), [runbook](docs/revision-02/runbook.md), and [blank review packet](annotations/round-02/review-guide.md). The design does not require richer metadata to win.
 
-**Revision-03 is the current instrument.** Questions now use natural business requests without technical output footers. The30-question benchmark retains10/10/10 complexity and adds three ordered tasks, including two top-k tasks. EX accepts one global column permutation while preserving row associations, duplicates and requested row order. Independent references agree on the primary database plus eight isolated variations; human review remains pending. No revision03 model outputs exist. Read the [revision03 design](docs/revision-03/README.md), [evaluation policy](docs/revision-03/evaluation-protocol.md) and [current questions](data/benchmarks/revision-03/final-02/questions.md) and [updated reviewer packet](annotations/round-03/review-guide.md). Older sections below describe archived versions.
+**Revision-03 is the current instrument.** Questions use natural business requests without technical output footers. The30-question benchmark retains10/10/10 complexity and three ordered tasks, including two top-k tasks. S3 adds three sourced domain rules. EX accepts one global column permutation while preserving row associations, duplicates and requested row order. Independent references agree on the primary database plus eight isolated variations. The prior main run is complete and retained; its review status is researcher-attested. Read the [Qwen3.5-9B replication protocol](docs/qwen35-9b-main.md), [revision03 design](docs/revision-03/README.md), [evaluation policy](docs/revision-03/evaluation-protocol.md), [current questions](data/benchmarks/revision-03/final-02/questions.md), and [reviewer packet](annotations/round-03/review-guide.md). Older sections below describe archived versions.
 
 ## Original experimental design — preliminary-01
 
@@ -42,7 +42,7 @@ Database, schema scope, questions, prompt template, model, inference settings an
 - Freeze deterministic JSON snapshots with SHA-256 provenance and cross-condition validation.
 - Send one stateless request per trial to local llama.cpp. No tools, database, gold SQL or previous results reach the model.
 - Validate MySQL ASTs; execute through a SELECT-only account with timeouts and result bounds.
-- Compare typed execution results, preserving duplicates, NULL, column position and explicit ordering contracts.
+- Compare typed execution results using a global column bijection, preserving whole-row duplicates, NULL and explicit row-order contracts.
 - Persist responses before evaluation; resume without silently regenerating completed model failures.
 - Audit complete logs before descriptive EX and question-paired permutation/Holm/bootstrap analysis.
 
@@ -74,9 +74,11 @@ See the [full reconstruction guide](docs/reproduction.md) for fresh DataHub prep
 
 ## Running an experiment
 
-Follow the [runbook](docs/runbook.md). Complete database/snapshot/reference checks, backend context verification, a separate pilot and sampler verification before freezing 600 trials.
+The current researcher-selected replication uses **Qwen3.5-9B Q4_K_M** with a hash-bound [execution amendment](data/amendments/qwen35-9b-direct-main-01.json). Follow its [protocol and monitoring commands](docs/qwen35-9b-main.md). This specific amendment waives additional capability-pilot and smoke generation, retains zero-generation engineering checks, and verifies sampler/seed/cache from each actual main response. It does not claim prospective model selection or guaranteed significance.
 
-Selected preliminary configuration: **Qwen2.5-Coder-7B-Instruct Q4_K_M**, llama.cpp b11206, context 16,384, 24 GPU layers, temperature 0.2, top-p 0.95, top-k 40, output limit 1,024. [Model revision/hash](models/qwen25-coder-7b-q4km.json) are pinned. This is an engineering choice, not a multi-model benchmark; no fine-tuning is performed.
+For archived/default execution, follow the [runbook](docs/runbook.md). Its database/snapshot/reference, context, separate pilot and sampler requirements remain enforced for unamended runs.
+
+Archived preliminary configuration: **Qwen2.5-Coder-7B-Instruct Q4_K_M**, llama.cpp b11206, context 16,384, 24 GPU layers, temperature 0.2, top-p 0.95, top-k 40, output limit 1,024. [Model revision/hash](models/qwen25-coder-7b-q4km.json) are retained. This is an engineering choice, not a primary multi-model benchmark; no fine-tuning is performed.
 
 The inspected machine has an **RTX 3060 Laptop GPU with 6 GiB VRAM**, i9-12900H and 16 GB RAM. These are observed resources, not universal minimums. Recheck available resources on another host. DataHub and inference use separate operational phases.
 

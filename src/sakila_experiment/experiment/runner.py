@@ -153,8 +153,8 @@ def _build_inputs(config: AppConfig, snapshots: Path, backend_path: Path, *, smo
                 "backend_evidence": backend,
                 "sakila_import_manifest_sha256": sha256_bytes((root / "runs/database/import-manifest.json").read_bytes()),
                 "datahub_runtime_images_sha256": sha256_bytes((root / "runs/metadata/runtime-images.json").read_bytes()),
-                "sampler_verification_sha256": sha256_bytes((backend_path.parent / "sampler-verification.json").read_bytes()) if benchmark else None,
-                "sampler_verification_status": "verified_for_selected_backend" if benchmark else "deferred_until_pilot_completion",
+                "sampler_verification_sha256": sha256_bytes((backend_path.parent / "sampler-verification.json").read_bytes()) if benchmark and not (instrument and instrument.execution_amendment) else None,
+                "sampler_verification_status": "verify_each_main_response_under_user_amendment" if instrument and instrument.execution_amendment else "verified_for_selected_backend" if benchmark else "deferred_until_pilot_completion",
                 "model_id": evidence.model_id, "model_version_or_hash": evidence.model_sha256, "backend_revision": evidence.backend_revision,
                 "snapshots": validation, "snapshot_manifest_sha256": {s: sha256_bytes(((root / directories[s]) if directories else (snapshots / s)).joinpath("manifest.json").read_bytes()) for s in validation["snapshot_sha256"]},
                 "prompt_template_sha256": sha256_bytes(config.resolve(config.prompt_template).read_bytes()),
@@ -172,7 +172,7 @@ def _build_inputs(config: AppConfig, snapshots: Path, backend_path: Path, *, smo
             review = validate_execution_review(root, instrument, instrument_paths)
             manifest.update(review_attestation_sha256=instrument.execution_review.sha256,
                             review_attestation=review, reviewer_identity_status=review["reviewer_identity_status"],
-                            smoke_manifest_sha256=instrument.smoke_test.sha256)
+                            smoke_manifest_sha256=instrument.smoke_test.sha256 if instrument.smoke_test else None)
             if mode == "main":
                 manifest.update(evaluation_status="user_attested_review", gold_file_review_labels=manifest["gold_review_status"],
                                 gold_review_status=["user_attested_complete"], annotation_review_status="user_attested_complete",
@@ -214,8 +214,17 @@ def pilot_inputs(config: AppConfig, snapshots: Path, backend_path: Path, *, smok
     return _build_inputs(config, snapshots, backend_path, smoke=smoke)
 
 
-def main_inputs(config: AppConfig, snapshots: Path, backend_path: Path, pilot_directory: Path):
+def main_inputs(config: AppConfig, snapshots: Path, backend_path: Path, pilot_directory: Path | None):
     if config.benchmark_manifest:
+        from ..instrument import read_manifest
+        instrument, _ = read_manifest(config.project_root, config.resolve(config.benchmark_manifest))
+        if instrument.execution_amendment is not None:
+            if pilot_directory is not None:
+                raise RunError("Direct main execution cannot claim a matching generation pilot")
+            from .direct_main import direct_main_inputs
+            inputs = _build_inputs(config, snapshots, backend_path, mode="main")
+            direct_main_inputs(config, inputs[0], inputs[2], backend_path)
+            return inputs
         return _attested_main_inputs(config, snapshots, backend_path, pilot_directory)
     from .readiness import main_readiness
     readiness = main_readiness(config, snapshots, backend_path, pilot_directory)
@@ -376,7 +385,9 @@ def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path
             raise RunError("Freeze the separate capability pilot before generation")
     elif mode == "main":
         if pilot_directory is None:
-            raise RunError("A verified complete pilot is required")
+            from ..instrument import read_manifest
+            if not config.benchmark_manifest or read_manifest(config.project_root, config.resolve(config.benchmark_manifest))[0].execution_amendment is None:
+                raise RunError("A verified complete pilot or explicit user-authorized execution amendment is required")
         manifest, assignments, questions, references = main_inputs(config, snapshots, backend_path, pilot_directory)
         if not freeze_only and not (directory / "freeze.json").is_file():
             raise RunError("Freeze and review the concrete main manifest before running main trials")
@@ -473,7 +484,6 @@ def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path
                 if manifest.get("evaluation_status") == "user_attested_review":
                     outcome.update(reference_file_label=outcome["reference_review_status"], reference_review_status="user_attested_complete")
                 ledger.finish_trial(experiment_id, assignment.trial_id, attempt, outcome)
-                progress(canonical_json({"trial_id": assignment.trial_id, "status": "completed", "execution_accuracy": outcome["execution_accuracy"]}).decode().strip())
             except (LLMServiceError, RunError, EvaluationError) as error:
                 if attempt is not None:
                     ledger.record_infrastructure_failure(experiment_id, assignment.trial_id, attempt,
@@ -481,6 +491,9 @@ def _run(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path
                                                           "stored_response_preserved": ledger.latest_response(experiment_id, assignment.trial_id) is not None})
                 # Stop, never silently generate again. Resume requires an explicit rerun.
                 raise RunError("Pilot interrupted by infrastructure/evaluation issue: " + str(error)) from None
+            # A post-completion observer must not relabel a durable model outcome
+            # as an infrastructure failure or cause that response to regenerate.
+            progress(canonical_json({"trial_id": assignment.trial_id, "status": "completed", "execution_accuracy": outcome["execution_accuracy"]}).decode().strip())
         final_audit = inspect_database(config)
         baseline = json.loads((config.project_root / "runs/database/baseline.json").read_bytes())
         verify_fingerprint(final_audit, baseline)
@@ -502,7 +515,7 @@ def run_pilot(config: AppConfig, snapshots: Path, backend_path: Path, directory:
 
 
 def run_main(config: AppConfig, snapshots: Path, backend_path: Path, directory: Path, experiment_id: str,
-             pilot_directory: Path, *, freeze_only: bool = False, progress=print) -> dict:
+             pilot_directory: Path | None, *, freeze_only: bool = False, progress=print) -> dict:
     return _run(config, snapshots, backend_path, directory, experiment_id, mode="main", pilot_directory=pilot_directory,
                 freeze_only=freeze_only, progress=progress)
 

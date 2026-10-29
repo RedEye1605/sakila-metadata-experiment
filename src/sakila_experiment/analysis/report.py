@@ -96,6 +96,11 @@ def audit_run(directory: Path) -> tuple[dict, list[dict]]:
         expected = {(q, s, r) for q in identifiers for s in ("S0", "S1", "S2", "S3") for r in range(1, 6)}
         if len(identifiers) != 30 or {(r["question_id"], r["scenario_id"], r["repetition_id"]) for r in rows} != expected:
             raise IntegrityError("Paired question/scenario/repetition structure is incomplete")
+        if manifest.get("execution_amendment_sha256"):
+            from ..experiment.direct_main import validate_main_sampler
+            for row in rows:
+                proof = json.loads((directory / "sampler" / f"{row['trial_id']}.json").read_bytes())
+                validate_main_sampler(proof, manifest, row, sha256_bytes(manifest_bytes))
     elif manifest["mode"] == "diagnostic":
         from ..experiment.diagnostics import VARIANTS
         identifiers = {r["question_id"] for r in rows}
@@ -216,6 +221,10 @@ def analyze_run(directory: Path, output: Path) -> dict:
         report["note"] = "Engineering pilot only; no inferential tests or thesis metadata-effect conclusions"
     elif manifest.get("evaluation_status") == "user_attested_review":
         report["note"] = "Review completion declared by researcher; reviewer identities/date remain to be supplied. No independent signed-review claim."
+    if manifest.get("execution_amendment_sha256"):
+        report["execution_amendment"] = manifest["execution_amendment"]
+        report["model_selection_status"] = manifest["model_selection_status"]
+        report["note"] += " Researcher-selected Qwen3.5-9B replication after prior results; additional capability pilot and generation smoke explicitly waived. No retrospective preregistration or significant-result selection claim."
     for group in report["descriptive"].values():
         for row in group:
             row["evaluation_status"] = report["evaluation_status"]
