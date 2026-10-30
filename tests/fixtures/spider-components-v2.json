@@ -1,0 +1,1476 @@
+{
+  "source_commit": "cccfe7bc99c4f5b7229890bbff75bfed50f2b008",
+  "source_sha256": "c61f18f40bec5af1984af0e8731e678f6cee7976611d910e6e5c144d757fd827",
+  "method": "Manually paired SQL/Spider IR; expected counts and labels evaluated by hash-verified upstream routines, not the MySQL adapter.",
+  "cases": [
+    {
+      "name": "simple_projection",
+      "sql": "SELECT film_id FROM film",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [],
+        "groupBy": [],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 0,
+      "component2": 0,
+      "others": 0,
+      "spider_level": "easy"
+    },
+    {
+      "name": "one_filter_aggregate",
+      "sql": "SELECT COUNT(*) FROM film WHERE length > 120",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              3,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [
+          [
+            false,
+            2,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            1,
+            null
+          ]
+        ],
+        "groupBy": [],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 1,
+      "component2": 0,
+      "others": 0,
+      "spider_level": "easy"
+    },
+    {
+      "name": "multiple_columns",
+      "sql": "SELECT film_id,title FROM film",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ],
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [],
+        "groupBy": [],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 0,
+      "component2": 0,
+      "others": 1,
+      "spider_level": "medium"
+    },
+    {
+      "name": "two_filters",
+      "sql": "SELECT film_id FROM film WHERE length>120 AND rental_rate>2",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [
+          [
+            false,
+            2,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            1,
+            null
+          ],
+          "and",
+          [
+            false,
+            2,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            1,
+            null
+          ]
+        ],
+        "groupBy": [],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 1,
+      "component2": 0,
+      "others": 1,
+      "spider_level": "medium"
+    },
+    {
+      "name": "or_component",
+      "sql": "SELECT film_id FROM film WHERE length>120 OR rental_rate>2",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [
+          [
+            false,
+            2,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            1,
+            null
+          ],
+          "or",
+          [
+            false,
+            2,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            1,
+            null
+          ]
+        ],
+        "groupBy": [],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 2,
+      "component2": 0,
+      "others": 1,
+      "spider_level": "medium"
+    },
+    {
+      "name": "like_component",
+      "sql": "SELECT film_id FROM film WHERE title LIKE 'A%'",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [
+          [
+            false,
+            9,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            1,
+            null
+          ]
+        ],
+        "groupBy": [],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 2,
+      "component2": 0,
+      "others": 0,
+      "spider_level": "medium"
+    },
+    {
+      "name": "group_join_medium",
+      "sql": "SELECT c.category_id,COUNT(fc.film_id) FROM category c JOIN film_category fc ON c.category_id=fc.category_id GROUP BY c.category_id",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              3,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ],
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ],
+            [
+              "table_unit",
+              1
+            ]
+          ],
+          "conds": []
+        },
+        "where": [],
+        "groupBy": [
+          [
+            0,
+            "column",
+            false
+          ]
+        ],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 2,
+      "component2": 0,
+      "others": 1,
+      "spider_level": "medium"
+    },
+    {
+      "name": "group_two_columns_edge",
+      "sql": "SELECT c.category_id,c.name,COUNT(fc.film_id) FROM category c JOIN film_category fc ON c.category_id=fc.category_id GROUP BY c.category_id,c.name",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              3,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ],
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ],
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ],
+            [
+              "table_unit",
+              1
+            ]
+          ],
+          "conds": []
+        },
+        "where": [],
+        "groupBy": [
+          [
+            0,
+            "column",
+            false
+          ],
+          [
+            0,
+            "column",
+            false
+          ]
+        ],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 2,
+      "component2": 0,
+      "others": 2,
+      "spider_level": "extra"
+    },
+    {
+      "name": "order_limit",
+      "sql": "SELECT film_id FROM film ORDER BY film_id LIMIT 5",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [],
+        "groupBy": [],
+        "orderBy": [
+          "asc",
+          [
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ]
+          ]
+        ],
+        "limit": 5,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 2,
+      "component2": 0,
+      "others": 0,
+      "spider_level": "medium"
+    },
+    {
+      "name": "three_components",
+      "sql": "SELECT film_id FROM film WHERE length>120 ORDER BY film_id LIMIT 5",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [
+          [
+            false,
+            2,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            1,
+            null
+          ]
+        ],
+        "groupBy": [],
+        "orderBy": [
+          "asc",
+          [
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ]
+          ]
+        ],
+        "limit": 5,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 3,
+      "component2": 0,
+      "others": 0,
+      "spider_level": "hard"
+    },
+    {
+      "name": "four_components",
+      "sql": "SELECT f.film_id FROM film f JOIN inventory i ON f.film_id=i.film_id WHERE f.length>120 ORDER BY f.film_id LIMIT 5",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ],
+            [
+              "table_unit",
+              1
+            ]
+          ],
+          "conds": []
+        },
+        "where": [
+          [
+            false,
+            2,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            1,
+            null
+          ]
+        ],
+        "groupBy": [],
+        "orderBy": [
+          "asc",
+          [
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ]
+          ]
+        ],
+        "limit": 5,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 4,
+      "component2": 0,
+      "others": 0,
+      "spider_level": "extra"
+    },
+    {
+      "name": "nested_simple_outer",
+      "sql": "SELECT film_id FROM film WHERE rental_rate > (SELECT AVG(rental_rate) FROM film)",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [
+          [
+            false,
+            2,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            {
+              "select": [
+                false,
+                [
+                  [
+                    0,
+                    [
+                      0,
+                      [
+                        0,
+                        "column",
+                        false
+                      ],
+                      null
+                    ]
+                  ]
+                ]
+              ],
+              "from": {
+                "table_units": [
+                  [
+                    "table_unit",
+                    0
+                  ]
+                ],
+                "conds": []
+              },
+              "where": [],
+              "groupBy": [],
+              "orderBy": [],
+              "limit": null,
+              "having": [],
+              "intersect": null,
+              "except": null,
+              "union": null
+            },
+            null
+          ]
+        ],
+        "groupBy": [],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 1,
+      "component2": 1,
+      "others": 0,
+      "spider_level": "hard"
+    },
+    {
+      "name": "nested_multiple_projection",
+      "sql": "SELECT film_id,title FROM film WHERE rental_rate > (SELECT AVG(rental_rate) FROM film)",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ],
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [
+          [
+            false,
+            2,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            {
+              "select": [
+                false,
+                [
+                  [
+                    0,
+                    [
+                      0,
+                      [
+                        0,
+                        "column",
+                        false
+                      ],
+                      null
+                    ]
+                  ]
+                ]
+              ],
+              "from": {
+                "table_units": [
+                  [
+                    "table_unit",
+                    0
+                  ]
+                ],
+                "conds": []
+              },
+              "where": [],
+              "groupBy": [],
+              "orderBy": [],
+              "limit": null,
+              "having": [],
+              "intersect": null,
+              "except": null,
+              "union": null
+            },
+            null
+          ]
+        ],
+        "groupBy": [],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 1,
+      "component2": 1,
+      "others": 1,
+      "spider_level": "extra"
+    },
+    {
+      "name": "two_nested",
+      "sql": "SELECT film_id FROM film WHERE length>(SELECT AVG(length) FROM film) AND rental_rate>(SELECT AVG(rental_rate) FROM film)",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [
+          [
+            false,
+            2,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            {
+              "select": [
+                false,
+                [
+                  [
+                    0,
+                    [
+                      0,
+                      [
+                        0,
+                        "column",
+                        false
+                      ],
+                      null
+                    ]
+                  ]
+                ]
+              ],
+              "from": {
+                "table_units": [
+                  [
+                    "table_unit",
+                    0
+                  ]
+                ],
+                "conds": []
+              },
+              "where": [],
+              "groupBy": [],
+              "orderBy": [],
+              "limit": null,
+              "having": [],
+              "intersect": null,
+              "except": null,
+              "union": null
+            },
+            null
+          ],
+          "and",
+          [
+            false,
+            2,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            {
+              "select": [
+                false,
+                [
+                  [
+                    0,
+                    [
+                      0,
+                      [
+                        0,
+                        "column",
+                        false
+                      ],
+                      null
+                    ]
+                  ]
+                ]
+              ],
+              "from": {
+                "table_units": [
+                  [
+                    "table_unit",
+                    0
+                  ]
+                ],
+                "conds": []
+              },
+              "where": [],
+              "groupBy": [],
+              "orderBy": [],
+              "limit": null,
+              "having": [],
+              "intersect": null,
+              "except": null,
+              "union": null
+            },
+            null
+          ]
+        ],
+        "groupBy": [],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 1,
+      "component2": 2,
+      "others": 1,
+      "spider_level": "extra"
+    },
+    {
+      "name": "union",
+      "sql": "SELECT film_id FROM film UNION SELECT film_id FROM inventory",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [],
+        "groupBy": [],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": {
+          "select": [
+            false,
+            [
+              [
+                0,
+                [
+                  0,
+                  [
+                    0,
+                    "column",
+                    false
+                  ],
+                  null
+                ]
+              ]
+            ]
+          ],
+          "from": {
+            "table_units": [
+              [
+                "table_unit",
+                0
+              ]
+            ],
+            "conds": []
+          },
+          "where": [],
+          "groupBy": [],
+          "orderBy": [],
+          "limit": null,
+          "having": [],
+          "intersect": null,
+          "except": null,
+          "union": null
+        }
+      },
+      "component1": 0,
+      "component2": 1,
+      "others": 0,
+      "spider_level": "hard"
+    },
+    {
+      "name": "multiple_aggregates",
+      "sql": "SELECT MIN(length),MAX(length) FROM film",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              3,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ],
+            [
+              3,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [],
+        "groupBy": [],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 0,
+      "component2": 0,
+      "others": 2,
+      "spider_level": "medium"
+    },
+    {
+      "name": "not_flag_quirk",
+      "sql": "SELECT COUNT(*) FROM film WHERE NOT length=120",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              3,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [
+          [
+            true,
+            2,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            1,
+            null
+          ]
+        ],
+        "groupBy": [],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 1,
+      "component2": 0,
+      "others": 1,
+      "spider_level": "medium"
+    },
+    {
+      "name": "ordered_aggregate",
+      "sql": "SELECT customer_id,SUM(amount) FROM payment GROUP BY customer_id ORDER BY SUM(amount)",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              3,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ],
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [],
+        "groupBy": [
+          [
+            0,
+            "column",
+            false
+          ]
+        ],
+        "orderBy": [
+          "asc",
+          [
+            [
+              0,
+              [
+                4,
+                "column",
+                false
+              ],
+              null
+            ]
+          ]
+        ],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 2,
+      "component2": 0,
+      "others": 2,
+      "spider_level": "extra"
+    },
+    {
+      "name": "three_other_flags",
+      "sql": "SELECT customer_id,staff_id,SUM(amount),MAX(amount) FROM payment WHERE amount>1 AND staff_id=1 GROUP BY customer_id,staff_id",
+      "upstream_ir": {
+        "select": [
+          false,
+          [
+            [
+              3,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ],
+            [
+              3,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ],
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ],
+            [
+              0,
+              [
+                0,
+                [
+                  0,
+                  "column",
+                  false
+                ],
+                null
+              ]
+            ]
+          ]
+        ],
+        "from": {
+          "table_units": [
+            [
+              "table_unit",
+              0
+            ]
+          ],
+          "conds": []
+        },
+        "where": [
+          [
+            false,
+            2,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            1,
+            null
+          ],
+          "and",
+          [
+            false,
+            2,
+            [
+              0,
+              [
+                0,
+                "column",
+                false
+              ],
+              null
+            ],
+            1,
+            null
+          ]
+        ],
+        "groupBy": [
+          [
+            0,
+            "column",
+            false
+          ],
+          [
+            0,
+            "column",
+            false
+          ]
+        ],
+        "orderBy": [],
+        "limit": null,
+        "having": [],
+        "intersect": null,
+        "except": null,
+        "union": null
+      },
+      "component1": 2,
+      "component2": 0,
+      "others": 4,
+      "spider_level": "hard"
+    }
+  ]
+}

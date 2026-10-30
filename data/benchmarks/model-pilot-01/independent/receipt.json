@@ -1,0 +1,225 @@
+{
+  "SQL_executions": 0,
+  "blind_lock_receipt_sha256": "64410722895ec019e5baec0b7ce0aedd808704be8b561dca967f1d317898604c",
+  "completed_at_utc": "2026-10-29T06:21:37.691499+00:00",
+  "contracts_A_read": false,
+  "engineering_review_complete": true,
+  "execution_readiness": {
+    "SQL_reference_execution_validated": false,
+    "human_review_complete": false,
+    "human_review_status": "pending",
+    "low_priority_contract_edges_to_reconcile_before_scoring": [
+      "P309 empty eligible SUM remains NULL",
+      "P312 no eligible rental MAX remains NULL"
+    ],
+    "main_experiment_allowed": false,
+    "material_wording_ambiguity_found": false
+  },
+  "gold_A_read": false,
+  "human_review_complete": false,
+  "human_review_status": "pending",
+  "independence_scope": {
+    "contracts_A_read": false,
+    "gold_A_read": false,
+    "old_gold_or_old_results_read_for_this_task": false,
+    "old_public_questions_read_only_after_reference_lock": true,
+    "parent_source_scripts_read": false,
+    "pilot_model_predictions_or_results_read": false,
+    "prior_context_limit": "This auditor previously reviewed the old revision03 project in the same conversation; blind authoring here did not open or consult old gold/source/results files. Full historical amnesia is not claimed."
+  },
+  "input_sha256": {
+    "data/benchmarks/model-pilot-01/questions.jsonl": "8ba328f7c381da3036f15d90ddde4cfa9fe638d2a9859b2a1b5349190d1ae5f4",
+    "prompts/generation-v3.txt": "4691bd1a0e4f64b4e4a5f013d2f7e376428da6f7f7df0f5591831429782b088e",
+    "runs/revision-02/metadata/preparation-03/snapshots/S3/5fa53258f6f777801b3b3e3610d7ba60a1cd9b8b2af8f7d8584e9e6452098020.json": "5fa53258f6f777801b3b3e3610d7ba60a1cd9b8b2af8f7d8584e9e6452098020",
+    "runs/revision-02/metadata/preparation-03/snapshots/S3/manifest.json": "cdf55d2ae6f8f518bc012473ad99291a5110eccb832b4713897b6179b70ef171"
+  },
+  "installed_schema_source": "runs/database/baseline.json technical_schema only; database rows/results not inspected",
+  "installed_technical_schema_canonical_sha256": "0d2f73e266f5e31f0da33caaf65838625bf305012e1b876a7afc1b9f501f9e20",
+  "intent_file_snapshot_note": "intents.jsonl preserves the pre-comparison interpretation snapshot and therefore says novelty pending at authoring time. Final per-question novelty assessments are in this receipt; the locked semantic interpretations and their hashes were not altered.",
+  "main_experiment_allowed": false,
+  "model_generation_requests": 0,
+  "model_predictions_or_results_read_for_this_task": false,
+  "novelty_assessments": [
+    {
+      "concerns": [
+        "Reuses the same customer-address-city relationship; not a new schema family."
+      ],
+      "nearest_old_ids": [
+        "Q133"
+      ],
+      "novel_target": "Customer IDs/names/emails from a specified residence city; old task requested distinct city names of inactive customers. Population, projection and direction of filtering differ.",
+      "novelty_level": "moderate",
+      "question_id": "P301"
+    },
+    {
+      "concerns": [
+        "Shares film catalog attributes with old tasks; parameter changes alone are not the basis for novelty."
+      ],
+      "nearest_old_ids": [
+        "Q128",
+        "Q114",
+        "Q155"
+      ],
+      "novel_target": "Top five lowest replacement costs among length-bounded films, with film identity output and deterministic ties; old tasks used rental-rate ordering, overall replacement-cost average or a length count.",
+      "novelty_level": "substantive_new_population_measure_ranking",
+      "question_id": "P302"
+    },
+    {
+      "concerns": [],
+      "nearest_old_ids": [
+        "Q102",
+        "Q159"
+      ],
+      "novel_target": "Counts events within each year-month rather than a global distinct-calendar-date count or amount-filtered count.",
+      "novelty_level": "substantive_new_grouping_grain",
+      "question_id": "P303"
+    },
+    {
+      "concerns": [
+        "Still tests the already supplied home-store meaning and payment event grain."
+      ],
+      "nearest_old_ids": [
+        "Q121",
+        "Q112"
+      ],
+      "novel_target": "Per-customer-home-store event-weighted payment mean rather than status-based payment sums or a count of home stores.",
+      "novelty_level": "substantive_new_group_and_measure",
+      "question_id": "P304"
+    },
+    {
+      "concerns": [
+        "The zero-parent/child counting pattern is structurally related to old all-population summaries."
+      ],
+      "nearest_old_ids": [
+        "Q116",
+        "Q119",
+        "Q154",
+        "Q160"
+      ],
+      "novel_target": "Full actor population, distinct G-film counts including zeros, ascending count order and actor-ID tie break. Old questions requested category counts, staff/customer counts, actor-category pairs or an ungrouped rating-filtered film list.",
+      "novelty_level": "substantive_composition_with_new_population_measure_order",
+      "question_id": "P305"
+    },
+    {
+      "concerns": [
+        "Reuses inventory film/copy distinction; not an independent domain-policy family."
+      ],
+      "nearest_old_ids": [
+        "Q105"
+      ],
+      "novel_target": "Per-store dual measures of distinct film titles and physical copies rather than one global distinct-title count.",
+      "novelty_level": "moderate_new_group_and_additional_measure",
+      "question_id": "P306"
+    },
+    {
+      "concerns": [
+        "This is the closest derivative task: same availability predicate with complement plus COUNT. It is not an exact paraphrase but should not be presented as a wholly novel semantic family."
+      ],
+      "nearest_old_ids": [
+        "Q146"
+      ],
+      "novel_target": "Scalar count of unavailable copies, the complement population of the old available-copy listing.",
+      "novelty_level": "limited_derivative_complement_and_aggregation",
+      "question_id": "P307"
+    },
+    {
+      "concerns": [
+        "Same underlying availability definition is intentionally reused."
+      ],
+      "nearest_old_ids": [
+        "Q148",
+        "Q146"
+      ],
+      "novel_target": "Store-grain count of distinct available titles across copies, restricted to stores with at least one available copy; old task was film-grain available-copy counts in one specified store over every film.",
+      "novelty_level": "substantive_new_grain_and_distinct_measure",
+      "question_id": "P308"
+    },
+    {
+      "concerns": [
+        "Rewards rule is shared with the old benchmark; changed dates/thresholds alone would not constitute novelty.",
+        "Empty eligible SUM contract must remain consistent with the locked interpretation."
+      ],
+      "nearest_old_ids": [
+        "Q147",
+        "Q149"
+      ],
+      "novel_target": "Total assessment-month payment amount contributed by qualifying customers, not a list of eligible IDs or counts of recipients by country.",
+      "novelty_level": "substantive_new_post_qualification_measure",
+      "question_id": "P309"
+    },
+    {
+      "concerns": [
+        "Composes two already tested predicates and changes output to COUNT; not a new business rule."
+      ],
+      "nearest_old_ids": [
+        "Q147",
+        "Q157"
+      ],
+      "novel_target": "Customer count of the intersection of home-store-1 population and monthly rewards eligibility, not either old listing alone.",
+      "novelty_level": "moderate_derivative_composition_and_aggregation",
+      "question_id": "P310"
+    },
+    {
+      "concerns": [
+        "Late-component formula and temporal convention are shared; changed cutoff alone is not the novelty claim."
+      ],
+      "nearest_old_ids": [
+        "Q150",
+        "Q151"
+      ],
+      "novel_target": "Film-level late-component sums, positive-only selection, top three and film-ID tie break, instead of per-customer totals or a rental-level positive list.",
+      "novelty_level": "substantive_new_aggregation_grain_and_ranking",
+      "question_id": "P311"
+    },
+    {
+      "concerns": [
+        "Same rental-level component is reused with MAX; not a new policy or independent semantic family.",
+        "Empty rental MAX contract must remain consistent with the locked interpretation."
+      ],
+      "nearest_old_ids": [
+        "Q151"
+      ],
+      "novel_target": "Maximum component among individual rentals, not a projection/list of positive rentals and their customers.",
+      "novelty_level": "limited_to_moderate_derivative_extreme_measure",
+      "question_id": "P312"
+    }
+  ],
+  "novelty_comparison_status": "completed only after blind gold B/intents files and blind-lock receipt existed",
+  "novelty_findings": {
+    "business_rule_families_are_shared_with_old_instrument": true,
+    "claim_limit": "Twelve new target queries/populations/measures do not constitute twelve new semantic-policy families. P307 is particularly derivative of old availability; P310 and P312 also need a measured novelty claim. No novelty claim is based only on changed dates, numeric thresholds or entity literals.",
+    "exact_public_question_duplicates": [],
+    "limited_or_moderately_derivative_items": [
+      "P307",
+      "P310",
+      "P312"
+    ],
+    "same_complete_task_paraphrases_identified": []
+  },
+  "novelty_public_source": {
+    "path": "data/benchmarks/revision-03/final-02/questions.jsonl",
+    "sha256": "cd6213e4e66492688e8b17d7b80bb77e8205e1575032b9f1d763269537ebf74e"
+  },
+  "old_public_questions_read_for_this_task_before_reference_lock": false,
+  "parent_source_scripts_read": false,
+  "prior_context_limit": "This auditor previously reviewed the old revision03 project in the same conversation; blind authoring here did not open or consult old gold/source/results files. Full historical amnesia is not claimed.",
+  "question_count": 12,
+  "recorded_at_utc": "2026-10-29T06:18:47.335969+00:00",
+  "reference_artifact_sha256": {
+    "gold-b.jsonl": "23cbe2e1846380477dfe4a2ac8557a26e99c9510d923dc92abba617401b9e895",
+    "intents.jsonl": "cc70779f2781af216cc790f8c5c207839ce02f0afa56ca659d046802841319e1"
+  },
+  "reference_artifacts_unchanged_since_blind_lock": true,
+  "reference_author": "independent Codex audit agent; AI-assisted, not a human reviewer",
+  "reference_execution_or_A_B_agreement_verified": false,
+  "review_kind": "independent_engineering_reference_authoring",
+  "semantic_findings": {
+    "low_priority_contract_edges": [
+      "P309 empty eligible SUM = NULL",
+      "P312 no eligible rental MAX = NULL"
+    ],
+    "material_unresolved_ambiguities": []
+  },
+  "source_routines_read": false,
+  "status": "independent_reference_B_semantic_and_public_question_novelty_audit_complete_before_execution"
+}

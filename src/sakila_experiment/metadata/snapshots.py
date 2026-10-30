@@ -69,6 +69,8 @@ def read_export(directory: Path) -> tuple[dict, dict, dict, dict]:
 
 def normalize_export(directory: Path, audit: dict, specification: dict) -> dict:
     bundle, datasets, fields, terms = read_export(directory)
+    if bundle.get("annotation_specification_canonical_sha256", sha256_bytes(canonical_json(specification))) != sha256_bytes(canonical_json(specification)):
+        raise SnapshotError("MCP export was retrieved for a different annotation specification")
     scenario = bundle["scenario_id"]
     urn_names = {urn: entity["schemaMetadata"]["name"].rsplit(".", 1)[-1] for urn, entity in datasets.items()}
     database_names = {entity["schemaMetadata"]["name"].rsplit(".", 1)[0] for entity in datasets.values()}
@@ -208,4 +210,25 @@ def validate_scenario_set(root: Path) -> dict:
         raise SnapshotError("S3 lacks business context")
     return {"status": "candidate_set_validated", "technical_schema_sha256": manifests["S0"]["technical_schema_sha256"],
             "snapshot_sha256": {s: m["snapshot_sha256"] for s, m in manifests.items()}, "main_experiment_allowed": False}
+
+
+def validate_mcp_provenance(project_root: Path, directory: Path, specification: dict, audit: dict) -> None:
+    """Recheck actual paired MCP receipts, not just a provenance status flag."""
+    manifest = json.loads((directory / "manifest.json").read_bytes())
+    content = (directory / manifest["payload_file"]).read_bytes()
+    if sha256_bytes(content) != manifest["snapshot_sha256"]:
+        raise SnapshotError("Snapshot content changed")
+    if manifest["annotation_spec_sha256"] != sha256_bytes(canonical_json(specification)):
+        raise SnapshotError("Snapshot provenance belongs to another authoring specification")
+    sources = manifest.get("source_exports", [])
+    if len(sources) != 2 or len({source["path"] for source in sources}) != 2:
+        raise SnapshotError("Two distinct audited MCP exports are required")
+    for source in sources:
+        folder = Path(source["path"]).resolve()
+        if not folder.is_relative_to(project_root.resolve()):
+            raise SnapshotError("Local MCP provenance escapes the project")
+        if sha256_bytes((folder / "export.json").read_bytes()) != source["sha256"]:
+            raise SnapshotError("MCP source export changed")
+        if canonical_json(normalize_export(folder, audit, specification)) != content:
+            raise SnapshotError("Snapshot is not the normalized content of its MCP export")
 

@@ -32,6 +32,11 @@ def read_connection(config: AppConfig):
             cursor.execute("SET SESSION time_zone=%s", (settings.time_zone,))
             cursor.execute("SET SESSION sql_mode=%s", (settings.sql_mode,))
             cursor.execute("SET SESSION max_execution_time=%s", (settings.query_timeout_ms,))
+            if settings.time_names_locale is not None:
+                cursor.execute("SET SESSION lc_time_names=%s", (settings.time_names_locale,))
+                cursor.execute("SELECT @@session.lc_time_names")
+                if cursor.fetchone() != (settings.time_names_locale,):
+                    raise DatabasePolicyError("Database time-name locale differs from the configured experiment")
             cursor.execute("SET SESSION TRANSACTION READ ONLY")
             cursor.execute("SELECT CURRENT_USER(), @@global.read_only, @@global.super_read_only")
             account, read_only, super_read_only = cursor.fetchone()

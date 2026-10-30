@@ -1,0 +1,9 @@
+{
+  "alias": "sakila-qwen35-4b-q4km",
+  "filename": "Qwen3.5-4B-Q4_K_M.gguf",
+  "model_id": "unsloth/Qwen3.5-4B-GGUF",
+  "model_sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+  "quantization_declared": "Q4_K_M",
+  "repository_revision": "e87f176479d0855a907a41277aca2f8ee7a09523",
+  "size_bytes": 2740937888
+}

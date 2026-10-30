@@ -48,6 +48,13 @@ Thesis: **Analisis Pengaruh Metadata terhadap Execution Accuracy pada Sistem Tex
 | D42 | Bind rescore to exact adjudicated gold and frozen evaluation policy | Preserve six submission hashes, reject unrecorded corrections/complexity changes and database/comparator/protocol drift; no new inference |
 | D43 | Compare integer sampler parameters exactly | Postrun inspection exposed float32 serialization differences; floats retain defined tolerance, large neighboring integer seeds must fail verification; actual final seed matched exactly |
 | D44 | Latest reconstruction tests archived MCP replay in a new database/environment | publication-01 verified schema/data and all payload hashes with 144 tests; does not claim fresh catalog ingestion or regenerated model outputs |
+| D45 | Preserve preliminary-01 and create a separate exploratory revision | User requested independent audit and redesigned questions/metadata; outcomes must not be selected for richer metadata to win |
+| D46 | Use pinned Spider component rules and a separate information-need profile | Canonical structure gives 10/10/5/5 raw levels; source-feasible domain coverage is 0/2/4 across simple/medium/complex |
+| D47 | Ground three S3 rule cards in executable official Sakila semantics | Stock, rewards and late component have global definitions; local field meanings remain in S1/S2; full customer balance is excluded |
+| D48 | Exclude unresolved public targets and require independent reference witnesses | Final 30 and 12 pilot references agree on primary plus 8 fixture cases; home-store population ambiguities remain excluded rather than hidden in private gold |
+| D49 | Complete 180 diagnostic trials before the fixed 600-trial exploratory benchmark | Five controlled metadata renderings, three repetitions, no score-based tuning or extra generation probes |
+| D50 | Bind run evidence to selected model/database/source and use versioned SQL policy | Four independent gate findings closed; v2 native-function alternatives tested before generation; v1 and old scores preserved |
+| D51 | Fix source/Git commit for both revised runs and keep results local | Append-only logs, explicit resume, exact paired contrasts and auxiliary replay; human review remains pending |
 
 ## Verified observations
 
@@ -58,3 +65,50 @@ Thesis: **Analisis Pengaruh Metadata terhadap Execution Accuracy pada Sistem Tex
 - DataHub MCP 0.8.0 defaults to 120-character field descriptions and annotation-dependent field priority ordering. Full retrieval and independent canonical sorting are required.
 - Metadata runtime compatibility verified for server 0.8.0, FastMCP 3.2.0, MCP SDK 1.30.0, ingestion SDK 1.7.0.17, Core v1.8.0. MCP serverInfo.version=3.2.0 identifies the FastMCP framework; it must not be confused with the server package version.
 
+
+
+### D52 — Pertanyaan alami revision03
+
+Atas instruksi peneliti, hilangkan footer kolom teknis dan gunakan permintaan bisnis berbahasa Indonesia. Definisi domain tetap pada metadata. Tetap30soal/10–10–10 dan enam tugas source-rule. Tambahkan tiga ordered tasks termasuk dua top-k berdasarkan celah cakupan, bukan model EX. Blind review Q154 menghasilkan klarifikasi relasi yang diminta tanpa SQL recipe.
+
+### D53 — Kesetaraan kolom global
+
+Revision03 memilih permutation policy eksplisit: satu bijeksi kolom berlaku untuk seluruh hasil, aliases bebas, whole-row duplicates dan requested row order dipertahankan. Numeric/date contracts memakai koordinat gold. Fixed policy v1/v2 tetap tersedia. Tidak ada regrading atau relabelling hasil lama secara diam-diam.
+
+### D54 — Source correction dan batas run baru
+
+Perbaiki lookup question_attributes dari Question objects ke question_id string dengan regression test. Pertahankan source equality gate. Source/prompt/questions/comparator berubah, sehingga approval/pilot versi lama tidak dianggap bukti untuk request versi baru. Tidak ada generation baru selama perubahan instrumen ini.
+
+### D55 — Reference dan witness revision03
+
+Gold B ditulis independen tanpa gold A/prediksi dan dikunci sebelum eksekusi. Seluruh30pasangan agree pada baseline+8variations; semua critical mutants distinguished. Fixtures revision03 menambah ranking/tie boundaries pada clone terisolasi, tanpa mengubah Sakila utama. Human review tetap pending; agreement AI dan finite witnesses bukan proof semantik universal.
+
+
+### D56 — Pernyataan review peneliti dan run utama
+
+Peneliti secara eksplisit menyatakan input telah direview serta meminta600trial dan BABIV/V. Catat `user_attested_complete` dengan reviewer identity/date belum diberikan; tidak mengarang submission atau signed review. Execution manifest terpisah mengikat scope yang sama, tanpa mengubah input asli.
+
+### D57 — Smoke teknis sebelum600trial
+
+Pakai3pertanyaan terpisah×4snapshot=12request untuk memastikan jalur source/model/API/safety/evaluator/sampler yang sama bekerja. References/mutants diperiksa independen pada9database cases. Tidak ada score threshold; diagnostic180lama tetap arsip dan tidak diulang. Manuscript builder hanya menerima600primary+4800auxiliary outcomes lengkap.
+
+
+### D58 — Bounded local model capability extension
+
+After revision03 main results were shown, the researcher authorized a new local-model pilot. Preserve the completed600trial run and its manuscripts as a completed main experiment, not a retrospectively relabelled pilot. Test at most two pre-pinned candidates in declared order on12separate P301–P312 tasks ×4conditions ×2requests. Selection never uses the main30questions, significance or the largest condition gap. Any later main replication requires a disclosed amendment and existing main/smoke freezes.
+
+### D59 — Capability admission and reasoning budget
+
+Freeze engineering thresholds before candidate generation: S3≥18/24correct, domain≥6/12correct, at least one correct trial in each of3families and S3SQLsuccess≥23/24, plus complete context/infrastructure/sampler/source checks. First passing candidate is preferred; neither candidate is guaranteed to pass. Reasoning on, server-separated reasoning_content, thinking budget2048 and total output4096 remain identical across conditions. Raw reasoning/final response is stored, final SQL alone evaluated, without DB feedback or semantic repair. Pilot evidence cannot impersonate human review or authorize main execution.
+
+### D60 — Independent interpretations and reference execution optimization
+
+Original A/B inputs and blind B receipt are retained. B signed arithmetic was corrected after pre-generation MySQL1690. P309A planner timeouts were resolved by materializing eligible customer IDs before monthly event summation; this optimization occurred after B was visible and is not claimed as fresh blind authorship. The original canonical A remains the explicit structural-profile source. All12pairs then agree on primary+9isolated variations and all33declared mutants have successful semantic witnesses. Some new domain targets are derivative reports over the same3rules. New-pilot human review remains pending; no identity/approval is fabricated.
+
+### D61 — Researcher locks Qwen3.5-9B and explicitly waives further pilot generation
+
+After the earlier main and Qwen3-8B capability results were disclosed, the researcher selected Qwen3.5-9B, requested600main trials directly and asked to monitor the job personally. Bind the exact statement to the unchanged reviewed30question stimulus, selected model/config/Compose and preserved prior history. The unexecuted4Bfallback is superseded, not silently treated as evaluated. Record a disclosed researcher-selected replication; do not claim prospective capability admission, retrospective preregistration or guaranteed statistical significance.
+
+### D62 — Zero-generation preflight and sampler observations from actual main responses
+
+The explicit amendment waives capability pilot and generation smoke, while retaining model-byte/backend/source/context/database/reference/safety/evaluator checks. Revalidate all30reference pairs and56mutants on primary+8variants under current code. Check all120main contexts without generation. Observe actual sampler/seed/cache after each durable main response using GET only; bind every proof to the frozen manifest and outcome. Preserve terminal outcomes if post-completion observation fails. The fixed600trial controller retains append-only logging, stop-on-infrastructure behavior and no automatic repair/retry. Run through a locked systemd user service with sleep inhibition; no Codex monitor loop after launch. Reports/statistics/BABIV/V are generated after complete evidence and remain local.

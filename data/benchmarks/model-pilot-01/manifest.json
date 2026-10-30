@@ -1,0 +1,76 @@
+{
+  "artifacts": {
+    "candidate_models": {
+      "path": "data/benchmarks/model-pilot-01/candidate-models.json",
+      "sha256": "ca747c1bd19a6cffadeb16c6755d219bde22851133d49d53ed076eb9f45a72a7"
+    },
+    "canonical_gold": {
+      "path": "data/benchmarks/model-pilot-01/gold.jsonl",
+      "sha256": "0e0573df4057eb714fa23b4b6a2c020180e88923ec3c1718132f388107246225"
+    },
+    "contracts": {
+      "path": "data/benchmarks/model-pilot-01/reference-v4/contracts.jsonl",
+      "sha256": "a61373a7bda7392eb4fd5231fe3729f66ee1037a368000a921dcb9f31c56cddb"
+    },
+    "fixture_specification": {
+      "path": "research/model-pilot-01/fixture_cases.json",
+      "sha256": "c4f2d3414eef3afc0953a277a67c700507ce9e1c7da3dafd5fda087113826674"
+    },
+    "gold": {
+      "path": "data/benchmarks/model-pilot-01/reference-v4/gold.jsonl",
+      "sha256": "a1f90c8d15590479538cf33e5b542cba8ed7ab63b7d844a4b9e26443f38d198c"
+    },
+    "independent_correction": {
+      "path": "runs/model-selection/pilot-independent-01/receipt-v2.json",
+      "sha256": "05572c913ade3f60c43f6ff9835ce1bee9f8eef22208562ce43015daf5b9659c"
+    },
+    "independent_gold": {
+      "path": "runs/model-selection/pilot-independent-01/gold-b-v2.jsonl",
+      "sha256": "d7cf0ea401982ff42b1797645d6de43a4ef975bf7741f2fb30cd0295e8e2e54d"
+    },
+    "independent_receipt": {
+      "path": "runs/model-selection/pilot-independent-01/receipt.json",
+      "sha256": "7f8413b542242e7a3135afc0d6dfdffa40989685205481fb3225414e9738edc4"
+    },
+    "mutations": {
+      "path": "data/benchmarks/model-pilot-01/reference-v4/mutations.json",
+      "sha256": "66e96a02daa23ea6f6beb171ce568879cb7818ed072ec373639347f487d4bc0f"
+    },
+    "protocol": {
+      "path": "data/benchmarks/model-pilot-01/protocol.json",
+      "sha256": "f11347d1a0fd78c6c2601086ddbfa53250fcec9fca3fb9399504074bbd3f298a"
+    },
+    "questions": {
+      "path": "data/benchmarks/model-pilot-01/reference-v4/questions.jsonl",
+      "sha256": "8ba328f7c381da3036f15d90ddde4cfa9fe638d2a9859b2a1b5349190d1ae5f4"
+    },
+    "reference_correction": {
+      "path": "runs/model-selection/reference-corrections-01/receipt-v4.json",
+      "sha256": "eba927eae70ac268fcae0c61c605e567cba893493758ca619824d91926ff8fb5"
+    },
+    "reference_lock": {
+      "path": "runs/model-selection/reference-checks-04/input-lock.json",
+      "sha256": "40e789729ddc4ead6a61dfeb5b6b705fb709bdc12723af31f5a2ff52eda2d9c1"
+    },
+    "reference_summary": {
+      "path": "runs/model-selection/reference-checks-04/summary.json",
+      "sha256": "d3f599e86d0b57ace7784b84ff984b5cc8ef32d9a71b7316d545a236fd56dd3e"
+    }
+  },
+  "classification_basis": "Original canonical independent A profiles; P309execution optimized after reference validation, without changing task or selection label.",
+  "human_review_complete": false,
+  "limits": [
+    "New pilot uses AI-assisted references and finite witnesses, human review not asserted.",
+    "Some domain targets are derivative compositions of known Sakila definitions, not new policy families.",
+    "A execution optimization occurred after B was visible; original independent inputs/intents retained."
+  ],
+  "main_experiment_allowed": false,
+  "pilot_id": "local-model-capability-pilot-01",
+  "snapshot_sha256": {
+    "S0": "49a0fb52333e0da4956d51a9c35bfc722b2874711422238c63e01b5916dae808",
+    "S1": "a5a30dd8f8784360340348de5aff49289308b7ddd4d089c2ca36f214f50e2e01",
+    "S2": "dcf1eb760dd65ce87a41ecd35183f541496f132b7726a6b7cfee924fef2f7d8e",
+    "S3": "5fa53258f6f777801b3b3e3610d7ba60a1cd9b8b2af8f7d8584e9e6452098020"
+  },
+  "status": "frozen_AI_checked_engineering_pilot"
+}

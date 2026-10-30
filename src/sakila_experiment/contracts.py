@@ -36,6 +36,8 @@ class GoldReference(StrictModel):
     column_count: int = Field(ge=1)
     ordered: bool = False
     approximate_columns: tuple[int, ...] = ()
+    date_columns: tuple[int, ...] = ()
+    column_order: Literal["fixed", "permutation"] = "fixed"
     review_status: Literal["draft", "approved"] = "draft"
     semantic_notes: str = ""
 

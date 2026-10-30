@@ -1,0 +1,6 @@
+{
+  "snapshot_sha256": "5fa53258f6f777801b3b3e3610d7ba60a1cd9b8b2af8f7d8584e9e6452098020",
+  "original_snapshot_manifest_sha256": "cdf55d2ae6f8f518bc012473ad99291a5110eccb832b4713897b6179b70ef171",
+  "source": "Existing frozen DataHub/MCP metadata preparation; unchanged annotations reused across revision03.",
+  "gold_or_model_results_included_in_context": false
+}

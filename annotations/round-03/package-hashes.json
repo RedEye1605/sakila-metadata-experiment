@@ -1,0 +1,24 @@
+{
+  "files": {
+    "annotations.csv": "89b35b9c226a45a5f81020d69836cb3c69adb129653c29b19adf29e350b07022",
+    "business-terms.csv": "3014c9684710c942ce45dae5a6cc5d8c2076227de87e256b9c3a1a4bd12f414b",
+    "context-s3.json": "5fa53258f6f777801b3b3e3610d7ba60a1cd9b8b2af8f7d8584e9e6452098020",
+    "generation-instruction.txt": "4691bd1a0e4f64b4e4a5f013d2f7e376428da6f7f7df0f5591831429782b088e",
+    "input-hashes.json": "269964c192a5149017dde8d0ca08eec44afa37939e70459da11ec6e9a9a038ee",
+    "metadata-provenance.json": "60ee7ee651835380d738ff54efd8c16d3a8b2f9a049b24c538a6b612d60bd0d3",
+    "questions-blind.csv": "d1d7fdcdb22b86923b59bc17793aa9be42258937c517bb9528d1f96613b76c84",
+    "questions-reference.csv": "2f57be293a31e76a718246141106c26cfc23bc49186b056dbc2c90e10e9765f4",
+    "review-guide.md": "d2334775b6323fe7c7904fe1a33d7dfd2309e80913abacacffe63aacaa221e2e",
+    "stage-1-blind.zip": "34e56e41ac064a10862b664d46fe36b2c5d2ce49ca7f3b825629eb40b6015881",
+    "stage-2-reference.zip": "11ffafaf9c5adf076b61f563072a4e63a0ffb05b868b088c65bca2fe4d9a4177"
+  },
+  "human_review_complete": false,
+  "model_results_included": false,
+  "records": {
+    "annotations": 106,
+    "business-terms": 3,
+    "questions-blind": 30,
+    "questions-reference": 30
+  },
+  "source_cells_verified": true
+}

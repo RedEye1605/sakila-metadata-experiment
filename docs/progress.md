@@ -1,5 +1,7 @@
 # Status implementasi — 28 Oktober 2026
 
+**Revisi setelah audit sedang dikerjakan.** Status berikut mendokumentasikan preliminary-01. Input serta hasil lama dipertahankan. Perkembangan revision-02, proposal benchmark, metadata tiga aturan, 180-trial diagnostic design, context checks dan pending independent follow-up dicatat terpisah dalam [status revisi](revision-02/implementation-status.md). Belum ada revised generation atau EX baru.
+
 Pipeline end-to-end sudah menyelesaikan **36 trial pilot dan 600 trial pendahuluan nyata**. Audit lengkap lulus: 600 unique IDs, 150/kondisi, 200/complexity, seluruh responses/terminal outcomes tersimpan dan database tidak berubah. Tidak ada insiden infrastruktur selama run benchmark. Gold/anotasi tetap **draft**; EX/statistik bukan persetujuan semantik.
 
 ## Terimplementasi dan terverifikasi

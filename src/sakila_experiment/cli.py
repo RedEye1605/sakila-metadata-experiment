@@ -66,7 +66,9 @@ def build_parser() -> argparse.ArgumentParser:
     for name, help_text in (("freeze-main", "Freeze reviewed main inputs, all prompt budgets and gold results; no generation"),
                             ("run-main", "Run/resume only an unchanged, reviewed frozen main experiment"),
                             ("freeze-preliminary", "Freeze provisional 600-trial inputs without approving references"),
-                            ("run-preliminary", "Explicitly run provisional pilot or frozen 600-trial evaluation")):
+                            ("run-preliminary", "Explicitly run provisional pilot or frozen 600-trial evaluation"),
+                            ("freeze-diagnostic", "Freeze all 180 diagnostic assignments without generation"),
+                            ("run-diagnostic", "Run/resume a frozen separate revision-02 diagnostic")):
         command = subcommands.add_parser(name, help=help_text)
         command.add_argument("--config", type=Path, default=Path("configs/pilot.toml"))
         command.add_argument("--snapshot-root", type=Path, default=Path("snapshots/candidates-v2"))
@@ -74,7 +76,7 @@ def build_parser() -> argparse.ArgumentParser:
         command.add_argument("--pilot-directory", type=Path, required=name in {"freeze-main", "run-main"})
         command.add_argument("--output-directory", type=Path, required=True)
         command.add_argument("--experiment-id", required=True)
-        if "preliminary" in name:
+        if "preliminary" in name or "diagnostic" in name:
             command.add_argument("--allow-unreviewed", action="store_true", help="Acknowledge provisional EX against unreviewed references; never creates approval")
             if name == "run-preliminary":
                 command.add_argument("--pilot", action="store_true", help="Use the separate nine-question, 36-trial pilot")
@@ -88,6 +90,21 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     try:
         config = load_config(args.config)
+        if args.command in {"freeze-diagnostic", "run-diagnostic"}:
+            from .experiment.runner import RunError, run_diagnostic
+            from .experiment.ledger import LedgerError
+            from .generation.llama import LLMServiceError
+            from .metadata.snapshots import SnapshotError
+            from .contracts import DatasetError
+            try:
+                report = run_diagnostic(config, args.snapshot_root, args.backend_evidence, args.output_directory, args.experiment_id,
+                                        freeze_only=args.command == "freeze-diagnostic", allow_unreviewed=args.allow_unreviewed,
+                                        progress=lambda text: print(text, flush=True))
+            except (RunError, LedgerError, LLMServiceError, SnapshotError, DatasetError) as exc:
+                print(str(exc), file=sys.stderr)
+                return 1
+            print(canonical_json(report).decode(), end="")
+            return 0
         if args.command in {"freeze-preliminary", "run-preliminary"}:
             from .experiment.runner import RunError, run_preliminary
             from .experiment.ledger import LedgerError
@@ -104,7 +121,7 @@ def main(argv: list[str] | None = None) -> int:
                 return 1
             print(canonical_json(report).decode(), end="")
             return 0
-        if args.command in {"model", "backend", "metadata", "review", "experiment"}:
+        if args.command in {"model", "backend", "metadata", "review", "experiment", "instrument"}:
             from .operations import dispatch
             from .experiment.ledger import LedgerError
             from .generation.llama import LLMServiceError

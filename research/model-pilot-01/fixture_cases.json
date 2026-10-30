@@ -1,0 +1,211 @@
+{
+  "amendment": "Preserve8original cases; separate ninth pilot case distinguishes August rewards boundaries and July calendar/cutoff/ranking. Primary database unchanged.",
+  "cases": [
+    {
+      "fixture_id": "zero-groups",
+      "purpose": "Parents without children, current home-store diversity, copies without rental, duplicate display names.",
+      "sql": [
+        "INSERT INTO sakila.country(country_id,country) VALUES(60001,'Fixture Country')",
+        "INSERT INTO sakila.actor(actor_id,first_name,last_name) VALUES(60001,'PENELOPE','FIXTURE')",
+        "INSERT INTO sakila.category(category_id,name) VALUES(250,'Fixture Category')",
+        "INSERT INTO sakila.language(language_id,name) VALUES(200,'Fixture Language')",
+        "INSERT INTO sakila.staff(staff_id,first_name,last_name,address_id,store_id,active,username) VALUES(200,'Fixture','Inactive',1,1,0,'fixture200')",
+        "INSERT INTO sakila.store(store_id,manager_staff_id,address_id) VALUES(200,200,1)",
+        "UPDATE sakila.staff SET store_id=200 WHERE staff_id=200",
+        "INSERT INTO sakila.customer(customer_id,store_id,first_name,last_name,address_id,active,create_date) VALUES(60001,200,'Fixture','Zero',1,0,'2005-07-01 00:00:00')",
+        "INSERT INTO sakila.film(film_id,title,language_id,length,rental_duration,rental_rate,replacement_cost,rating) VALUES(60001,'FIXTURE ZERO TITLE',1,123,4,2.35,19.99,'PG')",
+        "INSERT INTO sakila.inventory(inventory_id,film_id,store_id) VALUES(6000001,60001,1)",
+        "INSERT INTO sakila.staff(staff_id,first_name,last_name,address_id,store_id,username,active) VALUES(201,'FIXTURE','NOHOME',1,1,'fixture201',1)",
+        "INSERT INTO sakila.store(store_id,manager_staff_id,address_id) VALUES(201,201,1)"
+      ]
+    },
+    {
+      "fixture_id": "grain-fanout",
+      "purpose": "One title, multiple copies and rental/payment events; a payment event is not a rental or title.",
+      "sql": [
+        "INSERT INTO sakila.film(film_id,title,language_id,length,rental_duration,rental_rate,replacement_cost,rating) VALUES(60002,'FIXTURE FANOUT TITLE',1,121,4,2.35,19.99,'PG')",
+        "INSERT INTO sakila.inventory(inventory_id,film_id,store_id) VALUES(6000001,60002,1),(6000002,60002,2)",
+        "INSERT INTO sakila.customer(customer_id,store_id,first_name,last_name,address_id,active,create_date) VALUES(60001,1,'Fixture','Fanout',1,1,'2005-07-01 00:00:00')",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000001,'2005-07-01 00:00:00',6000002,60001,'2005-07-05 00:00:01',1),(2000000002,'2005-07-08 00:00:00',6000002,60001,'2005-07-09 00:00:00',1),(2000000003,'2005-07-10 00:00:00',6000001,60001,'2005-07-11 00:00:00',2)",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60001,60001,2,2000000001,12.34,'2005-07-01 01:00:00'),(60002,60001,2,2000000001,5.67,'2005-07-01 02:00:00'),(60003,60001,1,2000000003,7.89,'2005-07-10 01:00:00')",
+        "INSERT INTO sakila.film_actor(actor_id,film_id) VALUES(1,60002)",
+        "INSERT INTO sakila.film_category(film_id,category_id) VALUES(60002,1)"
+      ]
+    },
+    {
+      "fixture_id": "role-associations",
+      "purpose": "Home-store/current inventory-store and rental/payment-processor distinctions; retained inactive staff.",
+      "sql": [
+        "UPDATE sakila.customer SET store_id=2,active=0 WHERE customer_id=1",
+        "UPDATE sakila.staff SET active=0,store_id=2 WHERE staff_id=1",
+        "UPDATE sakila.payment SET staff_id=2 WHERE payment_id=1",
+        "UPDATE sakila.rental SET staff_id=1 WHERE rental_id=1",
+        "UPDATE sakila.inventory SET store_id=1 WHERE inventory_id=1"
+      ]
+    },
+    {
+      "fixture_id": "null-optionality",
+      "purpose": "Valid NULL references/values without assigning a fictitious fee reason or language.",
+      "sql": [
+        "UPDATE sakila.payment SET rental_id=NULL,amount=12.34 WHERE payment_id=1",
+        "UPDATE sakila.rental SET return_date=NULL WHERE rental_id=1",
+        "UPDATE sakila.film SET length=NULL,description=NULL,original_language_id=2,rating=NULL WHERE film_id=1",
+        "UPDATE sakila.address SET postal_code=NULL,address2=NULL WHERE address_id=1",
+        "UPDATE sakila.customer SET email=NULL WHERE customer_id=1"
+      ]
+    },
+    {
+      "fixture_id": "ties-top-k",
+      "purpose": "Distinct-value versus row ranking; maxima within period; category tie-breaking. Equal tariff values, two eligible staff tied for top1, and at least12 customers tied across the top10 boundary.",
+      "sql": [
+        "UPDATE sakila.film SET replacement_cost=30.00,rating='PG' WHERE film_id IN(1,2,3,4,5)",
+        "UPDATE sakila.film SET rental_duration=6,rental_rate=9.99 WHERE film_id IN(1,2)",
+        "UPDATE sakila.film SET rental_duration=4,rental_rate=8.88 WHERE film_id IN(3,4)",
+        "UPDATE sakila.film SET rating='NC-17' WHERE film_id IN(6,7)",
+        "UPDATE sakila.payment SET staff_id=1",
+        "UPDATE sakila.rental SET staff_id=1",
+        "UPDATE sakila.payment SET staff_id=2 WHERE payment_id=1",
+        "UPDATE sakila.rental SET staff_id=2 WHERE rental_id=(SELECT rental_id FROM sakila.payment WHERE payment_id=2)",
+        "UPDATE sakila.inventory SET film_id=1",
+        "UPDATE sakila.inventory SET film_id=inventory_id WHERE inventory_id IN(2,3)",
+        "UPDATE sakila.film_category SET category_id=1",
+        "UPDATE sakila.film_category SET category_id=2 WHERE film_id=2",
+        "UPDATE sakila.film_category SET category_id=3 WHERE film_id=3",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES (40001,'2005-08-31 08:00:00',1,201,'2005-09-01 08:00:00',1),(40002,'2005-08-31 08:01:00',2,201,'2005-09-01 08:00:00',1),(40003,'2005-08-31 08:02:00',3,201,'2005-09-01 08:00:00',1),(40004,'2005-08-31 08:03:00',1,202,'2005-09-01 08:00:00',1),(40005,'2005-08-31 08:04:00',2,202,'2005-09-01 08:00:00',1),(40006,'2005-08-31 08:05:00',3,202,'2005-09-01 08:00:00',1),(40007,'2005-08-31 08:06:00',1,203,'2005-09-01 08:00:00',1),(40008,'2005-08-31 08:07:00',2,203,'2005-09-01 08:00:00',1),(40009,'2005-08-31 08:08:00',3,203,'2005-09-01 08:00:00',1),(40010,'2005-08-31 08:09:00',1,204,'2005-09-01 08:00:00',1),(40011,'2005-08-31 08:10:00',2,204,'2005-09-01 08:00:00',1),(40012,'2005-08-31 08:11:00',3,204,'2005-09-01 08:00:00',1),(40013,'2005-08-31 08:12:00',1,205,'2005-09-01 08:00:00',1),(40014,'2005-08-31 08:13:00',2,205,'2005-09-01 08:00:00',1),(40015,'2005-08-31 08:14:00',3,205,'2005-09-01 08:00:00',1),(40016,'2005-08-31 08:15:00',1,206,'2005-09-01 08:00:00',1),(40017,'2005-08-31 08:16:00',2,206,'2005-09-01 08:00:00',1),(40018,'2005-08-31 08:17:00',3,206,'2005-09-01 08:00:00',1),(40019,'2005-08-31 08:18:00',1,207,'2005-09-01 08:00:00',1),(40020,'2005-08-31 08:19:00',2,207,'2005-09-01 08:00:00',1),(40021,'2005-08-31 08:20:00',3,207,'2005-09-01 08:00:00',1),(40022,'2005-08-31 08:21:00',1,208,'2005-09-01 08:00:00',1),(40023,'2005-08-31 08:22:00',2,208,'2005-09-01 08:00:00',1),(40024,'2005-08-31 08:23:00',3,208,'2005-09-01 08:00:00',1),(40025,'2005-08-31 08:24:00',1,209,'2005-09-01 08:00:00',1),(40026,'2005-08-31 08:25:00',2,209,'2005-09-01 08:00:00',1),(40027,'2005-08-31 08:26:00',3,209,'2005-09-01 08:00:00',1),(40028,'2005-08-31 08:27:00',1,210,'2005-09-01 08:00:00',1),(40029,'2005-08-31 08:28:00',2,210,'2005-09-01 08:00:00',1),(40030,'2005-08-31 08:29:00',3,210,'2005-09-01 08:00:00',1),(40031,'2005-08-31 08:30:00',1,211,'2005-09-01 08:00:00',1),(40032,'2005-08-31 08:31:00',2,211,'2005-09-01 08:00:00',1),(40033,'2005-08-31 08:32:00',3,211,'2005-09-01 08:00:00',1),(40034,'2005-08-31 08:33:00',1,212,'2005-09-01 08:00:00',1),(40035,'2005-08-31 08:34:00',2,212,'2005-09-01 08:00:00',1),(40036,'2005-08-31 08:35:00',3,212,'2005-09-01 08:00:00',1)"
+      ]
+    },
+    {
+      "fixture_id": "temporal-boundaries",
+      "purpose": "Same-day different times/processors, interval endpoints, exact-period plus one second.",
+      "sql": [
+        "UPDATE sakila.payment SET payment_date='2005-07-01 01:00:00',staff_id=1 WHERE payment_id=1",
+        "UPDATE sakila.payment SET payment_date='2005-07-01 23:59:59',staff_id=2 WHERE payment_id=2",
+        "UPDATE sakila.payment SET payment_date='2005-10-01 00:00:00' WHERE payment_id=3",
+        "UPDATE sakila.rental r JOIN sakila.inventory i ON i.inventory_id=r.inventory_id JOIN sakila.film f ON f.film_id=i.film_id SET r.rental_date='2005-08-01 00:00:00',r.return_date=DATE_ADD('2005-08-01 00:00:00',INTERVAL f.rental_duration DAY) WHERE r.rental_id=1",
+        "UPDATE sakila.rental r JOIN sakila.inventory i ON i.inventory_id=r.inventory_id JOIN sakila.film f ON f.film_id=i.film_id SET r.return_date=DATE_ADD(DATE_ADD(r.rental_date,INTERVAL f.rental_duration DAY),INTERVAL 1 SECOND) WHERE r.rental_id=2",
+        "UPDATE sakila.rental r JOIN sakila.inventory i ON i.inventory_id=r.inventory_id JOIN sakila.film f ON f.film_id=i.film_id SET r.rental_date='2005-07-01 23:59:59',r.return_date=DATE_ADD('2005-07-02 00:00:00',INTERVAL f.rental_duration DAY) WHERE r.rental_id=1",
+        "INSERT INTO sakila.film(film_id,title,language_id,length,rental_duration,rental_rate,replacement_cost,rating) VALUES(60001,'FIXTURE CUTOFF TITLE',1,99,4,2.35,19.99,'PG')",
+        "INSERT INTO sakila.inventory(inventory_id,film_id,store_id) VALUES(6000001,60001,1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000001,'2006-03-01 00:00:00',6000001,1,'2006-03-06 00:00:00',1)",
+        "INSERT INTO sakila.inventory(inventory_id,film_id,store_id) VALUES(6000002,60001,1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000002,'2006-03-01 12:00:00',6000002,1,'2006-03-06 12:00:00',1)"
+      ]
+    },
+    {
+      "fixture_id": "numeric-and-duplicates",
+      "purpose": "Small exact money values and repeated semantic values across distinct IDs. Rewards boundaries:8payments total20 fail,7payments total35 fail,8payments total40 inactive qualify; August1cohort excluded from previous July. Shared address creates multiple customers per city.",
+      "sql": [
+        "UPDATE sakila.payment SET amount=0.01 WHERE payment_id=1",
+        "UPDATE sakila.payment SET amount=0.02 WHERE payment_id=2",
+        "UPDATE sakila.payment SET amount=0.03 WHERE payment_id=3",
+        "UPDATE sakila.actor SET first_name='PENELOPE' WHERE actor_id IN(2,3)",
+        "UPDATE sakila.address SET district='Fixture District',postal_code='00001' WHERE address_id IN(1,2,3)",
+        "UPDATE sakila.film SET length=101 WHERE film_id IN(1,2,3)",
+        "INSERT INTO sakila.customer(customer_id,store_id,first_name,last_name,address_id,active,create_date) VALUES(60001,1,'Fixture','Rewards1',5,1,'2005-07-01 00:00:00')",
+        "INSERT INTO sakila.customer(customer_id,store_id,first_name,last_name,address_id,active,create_date) VALUES(60002,1,'Fixture','Rewards2',5,1,'2005-07-01 00:00:00')",
+        "INSERT INTO sakila.customer(customer_id,store_id,first_name,last_name,address_id,active,create_date) VALUES(60003,1,'Fixture','Rewards3',5,0,'2005-07-01 00:00:00')",
+        "INSERT INTO sakila.customer(customer_id,store_id,first_name,last_name,address_id,active,create_date) VALUES(60004,1,'Fixture','Rewards4',5,1,'2005-07-01 00:00:00')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60001,60001,1,NULL,2.50,'2005-07-15 23:00:00'),(60002,60001,1,NULL,2.50,'2005-07-15 23:01:00'),(60003,60001,1,NULL,2.50,'2005-07-15 23:02:00'),(60004,60001,1,NULL,2.50,'2005-07-15 23:03:00'),(60005,60001,1,NULL,2.50,'2005-07-15 23:04:00'),(60006,60001,1,NULL,2.50,'2005-07-15 23:05:00'),(60007,60001,1,NULL,2.50,'2005-07-15 23:06:00'),(60008,60001,1,NULL,2.50,'2005-07-15 23:07:00')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60009,60002,1,NULL,5.00,'2005-07-15 23:00:00'),(60010,60002,1,NULL,5.00,'2005-07-15 23:01:00'),(60011,60002,1,NULL,5.00,'2005-07-15 23:02:00'),(60012,60002,1,NULL,5.00,'2005-07-15 23:03:00'),(60013,60002,1,NULL,5.00,'2005-07-15 23:04:00'),(60014,60002,1,NULL,5.00,'2005-07-15 23:05:00'),(60015,60002,1,NULL,5.00,'2005-07-15 23:06:00')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60016,60003,1,NULL,5.00,'2005-07-31 23:00:00'),(60017,60003,1,NULL,5.00,'2005-07-31 23:01:00'),(60018,60003,1,NULL,5.00,'2005-07-31 23:02:00'),(60019,60003,1,NULL,5.00,'2005-07-31 23:03:00'),(60020,60003,1,NULL,5.00,'2005-07-31 23:04:00'),(60021,60003,1,NULL,5.00,'2005-07-31 23:05:00'),(60022,60003,1,NULL,5.00,'2005-07-31 23:06:00'),(60023,60003,1,NULL,5.00,'2005-07-31 23:07:00')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60024,60004,1,NULL,5.00,'2005-08-01 23:00:00'),(60025,60004,1,NULL,5.00,'2005-08-01 23:01:00'),(60026,60004,1,NULL,5.00,'2005-08-01 23:02:00'),(60027,60004,1,NULL,5.00,'2005-08-01 23:03:00'),(60028,60004,1,NULL,5.00,'2005-08-01 23:04:00'),(60029,60004,1,NULL,5.00,'2005-08-01 23:05:00'),(60030,60004,1,NULL,5.00,'2005-08-01 23:06:00'),(60031,60004,1,NULL,5.00,'2005-08-01 23:07:00')",
+        "UPDATE sakila.payment SET amount=10.00 WHERE payment_id=4"
+      ]
+    },
+    {
+      "fixture_id": "catalog-variation",
+      "purpose": "Varied film/original language, release years, Unicode text, empty descriptions and NULL rating.",
+      "sql": [
+        "UPDATE sakila.film SET language_id=2,original_language_id=3,release_year=2003,description='Caf\u00e9 film',rating='NC-17' WHERE film_id=1",
+        "UPDATE sakila.film SET language_id=3,original_language_id=1,release_year=2007,description='',rating='G' WHERE film_id=2",
+        "UPDATE sakila.film SET language_id=1,original_language_id=NULL,description=NULL,rating=NULL WHERE film_id=3"
+      ]
+    },
+    {
+      "fixture_id": "pilot-rule-boundaries",
+      "purpose": "August strict5/15thresholds, last-day payment, inactive eligible customers; calendar versus elapsed days, July1midnight cutoff, open-return zero and competing film late-component ranks.",
+      "sql": [
+        "INSERT INTO sakila.customer(customer_id,store_id,first_name,last_name,address_id,active,create_date) VALUES(60001,1,'Pilot','Boundary60001',1,0,'2005-06-01 00:00:00')",
+        "INSERT INTO sakila.customer(customer_id,store_id,first_name,last_name,address_id,active,create_date) VALUES(60002,1,'Pilot','Boundary60002',1,1,'2005-06-01 00:00:00')",
+        "INSERT INTO sakila.customer(customer_id,store_id,first_name,last_name,address_id,active,create_date) VALUES(60003,1,'Pilot','Boundary60003',1,0,'2005-06-01 00:00:00')",
+        "INSERT INTO sakila.customer(customer_id,store_id,first_name,last_name,address_id,active,create_date) VALUES(60004,2,'Pilot','Boundary60004',1,1,'2005-06-01 00:00:00')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60001,60001,1,NULL,3.20,'2005-08-15 00:00:00')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60002,60001,1,NULL,3.20,'2005-08-15 00:00:01')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60003,60001,1,NULL,3.20,'2005-08-15 00:00:02')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60004,60001,1,NULL,3.20,'2005-08-15 00:00:03')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60005,60001,1,NULL,3.20,'2005-08-15 00:00:04')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60006,60002,1,NULL,2.50,'2005-08-15 00:00:00')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60007,60002,1,NULL,2.50,'2005-08-15 00:00:01')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60008,60002,1,NULL,2.50,'2005-08-15 00:00:02')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60009,60002,1,NULL,2.50,'2005-08-15 00:00:03')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60010,60002,1,NULL,2.50,'2005-08-15 00:00:04')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60011,60002,1,NULL,2.50,'2005-08-15 00:00:05')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60012,60003,1,NULL,3.00,'2005-08-15 00:00:00')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60013,60003,1,NULL,3.00,'2005-08-15 00:00:01')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60014,60003,1,NULL,3.00,'2005-08-15 00:00:02')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60015,60003,1,NULL,3.00,'2005-08-15 00:00:03')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60016,60003,1,NULL,3.00,'2005-08-15 00:00:04')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60017,60003,1,NULL,3.00,'2005-08-31 23:59:59')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60018,60004,1,NULL,3.00,'2005-08-15 00:00:00')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60019,60004,1,NULL,3.00,'2005-08-15 00:00:01')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60020,60004,1,NULL,3.00,'2005-08-15 00:00:02')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60021,60004,1,NULL,3.00,'2005-08-15 00:00:03')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60022,60004,1,NULL,3.00,'2005-08-15 00:00:04')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60023,60004,1,NULL,3.00,'2005-08-15 00:00:05')",
+        "INSERT INTO sakila.payment(payment_id,customer_id,staff_id,rental_id,amount,payment_date) VALUES(60024,60004,1,NULL,100.00,'2005-09-01 00:00:01')",
+        "INSERT INTO sakila.film(film_id,title,language_id,length,rental_duration,rental_rate,replacement_cost,rating) VALUES(60001,'PILOT BOUNDARY 60001',1,100,4,2.99,20.05,'G')",
+        "INSERT INTO sakila.inventory(inventory_id,film_id,store_id) VALUES(6000001,60001,1)",
+        "INSERT INTO sakila.film(film_id,title,language_id,length,rental_duration,rental_rate,replacement_cost,rating) VALUES(60002,'PILOT BOUNDARY 60002',1,100,4,2.99,20.05,'G')",
+        "INSERT INTO sakila.inventory(inventory_id,film_id,store_id) VALUES(6000002,60002,1)",
+        "INSERT INTO sakila.film(film_id,title,language_id,length,rental_duration,rental_rate,replacement_cost,rating) VALUES(60003,'PILOT BOUNDARY 60003',1,100,4,2.99,20.05,'G')",
+        "INSERT INTO sakila.inventory(inventory_id,film_id,store_id) VALUES(6000003,60003,1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000001,'2005-06-30 23:59:40',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000002,'2005-06-30 23:59:41',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000003,'2005-06-30 23:59:42',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000004,'2005-06-30 23:59:43',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000005,'2005-06-30 23:59:44',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000006,'2005-06-30 23:59:45',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000007,'2005-06-30 23:59:46',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000008,'2005-06-30 23:59:47',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000009,'2005-06-30 23:59:48',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000010,'2005-06-30 23:59:49',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000011,'2005-06-30 23:59:50',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000012,'2005-06-30 23:59:51',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000013,'2005-06-30 23:59:52',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000014,'2005-06-30 23:59:53',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000015,'2005-06-30 23:59:54',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000016,'2005-06-30 23:59:55',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000017,'2005-06-30 23:59:56',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000018,'2005-06-30 23:59:57',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000019,'2005-06-30 23:59:58',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000020,'2005-06-30 23:59:59',6000001,60003,'2005-07-15 00:00:01',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000021,'2005-06-29 00:00:00',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000022,'2005-06-29 00:00:01',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000023,'2005-06-29 00:00:02',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000024,'2005-06-29 00:00:03',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000025,'2005-06-29 00:00:04',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000026,'2005-06-29 00:00:05',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000027,'2005-06-29 00:00:06',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000028,'2005-06-29 00:00:07',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000029,'2005-06-29 00:00:08',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000030,'2005-06-29 00:00:09',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000031,'2005-06-29 00:00:10',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000032,'2005-06-29 00:00:11',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000033,'2005-06-29 00:00:12',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000034,'2005-06-29 00:00:13',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000035,'2005-06-29 00:00:14',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000036,'2005-06-29 00:00:15',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000037,'2005-06-29 00:00:16',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000038,'2005-06-29 00:00:17',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000039,'2005-06-29 00:00:18',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000040,'2005-06-29 00:00:19',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000041,'2005-06-29 00:00:20',6000002,60003,'2005-07-13 23:59:59',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000042,'2005-07-01 00:00:01',6000003,60003,'2006-03-01 00:00:00',1)",
+        "INSERT INTO sakila.rental(rental_id,rental_date,inventory_id,customer_id,return_date,staff_id) VALUES(2000000043,'2005-06-01 00:00:00',6000003,60003,NULL,1)"
+      ]
+    }
+  ],
+  "fixed_session_timestamp": 1120176000,
+  "fixture_version": "model-pilot-v1",
+  "primary_database_mutation_allowed": false
+}

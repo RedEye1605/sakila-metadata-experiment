@@ -87,6 +87,21 @@ def test_evaluation_outage_preserves_response_and_resume_only_evaluates(tmp_path
     assert len(calls) == 4
 
 
+def test_post_completion_observer_failure_preserves_terminal_without_regeneration(tmp_path, monkeypatch):
+    config, snapshots, assignments, _, _, _, calls = setup_pilot(tmp_path, monkeypatch)
+    output = tmp_path / "observer-failure"
+    def observer(_):
+        raise runner.RunError("synthetic sampler observation unavailable")
+    with pytest.raises(runner.RunError, match="sampler observation"):
+        runner.run_pilot(config, snapshots, Path("unused"), output, "fixture", progress=observer)
+    with Ledger(output / "ledger.sqlite3") as ledger:
+        assert set(ledger.completed("fixture")) == {assignments[0].trial_id}
+        assert ledger.connection.execute("SELECT count(*) FROM events WHERE kind='infrastructure_failure'").fetchone()[0] == 0
+    assert len(calls) == 1
+    runner.run_pilot(config, snapshots, Path("unused"), output, "fixture", progress=lambda _: None)
+    assert len(calls) == 4
+
+
 def test_infrastructure_is_never_ex_zero_but_invalid_model_output_is(tmp_path, monkeypatch):
     config, snapshots, assignments, reference, success, response, calls = setup_pilot(tmp_path, monkeypatch)
     invalid = replace(response, text="", response_valid=False)

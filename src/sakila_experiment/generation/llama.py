@@ -57,6 +57,7 @@ class GenerationResponse:
     inference_latency_ms: float
     response_valid: bool
     infrastructure_error: str | None = None
+    request_parameters: dict | None = None
 
 
 class LlamaClient:
@@ -123,12 +124,14 @@ class LlamaClient:
                    "top_k": self.settings.top_k, "min_p": 0.0, "repeat_penalty": 1.0,
                    "max_tokens": self.settings.max_output_tokens, "seed": seed,
                    "stream": False, "cache_prompt": False, "n": 1}
+        parameters = {key: value for key, value in payload.items() if key != "messages"}
+        parameters["messages_sha256"] = checked.prompt.prompt_sha256
         started = perf_counter()
         raw = self._post("/v1/chat/completions", payload)
         elapsed = (perf_counter() - started) * 1000
         choices = raw.get("choices")
         if not isinstance(choices, list) or len(choices) != 1 or not isinstance(choices[0], dict):
-            return GenerationResponse(raw, None, None, None, None, "unavailable", elapsed, False, "backend_choices_invalid")
+            return GenerationResponse(raw, None, None, None, None, "unavailable", elapsed, False, "backend_choices_invalid", parameters)
         choice = choices[0]
         message = choice.get("message")
         text = message.get("content") if isinstance(message, dict) else None
@@ -141,5 +144,5 @@ class LlamaClient:
         return GenerationResponse(raw, text if isinstance(text, str) else None, choice.get("finish_reason"), inputs, outputs,
                                   "api_usage" if inputs is not None and outputs is not None else "unavailable_or_partial",
                                   elapsed, isinstance(text, str) and bool(text.strip()),
-                                  "input_token_accounting_mismatch" if mismatch else None)
+                                  "input_token_accounting_mismatch" if mismatch else None, parameters)
 

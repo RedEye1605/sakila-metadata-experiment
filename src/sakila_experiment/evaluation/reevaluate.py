@@ -13,7 +13,7 @@ from ..db.execute import ResultTable, execute_sql
 from ..db.inspect import inspect_database
 from ..db.values import decode_value
 from ..metadata.snapshots import validate_scenario_set
-from .compare import COMPARATOR_VERSION, ComparisonSpec, compare_results
+from .compare import COMPARATOR_VERSION, compare_results, comparison_spec
 from .gold import structural_complexity
 
 
@@ -122,6 +122,8 @@ def reevaluate(config, source: Path, gold_path: Path, questions_path: Path, snap
     receipt = json.loads(receipt_path.read_bytes())
     validate_fixed_evaluation(config, manifest)
     references = load_gold(gold_path)
+    if any(r.column_order != "fixed" or r.date_columns for r in references.values()):
+        raise ValueError("Legacy reference-only adjudication cannot change the frozen comparison policy")
     if any(r.review_status != "approved" for r in references.values()):
         raise ValueError("All replacement references require semantic approval")
     questions = load_questions(questions_path)
@@ -140,7 +142,7 @@ def reevaluate(config, source: Path, gold_path: Path, questions_path: Path, snap
     for qid, reference in references.items():
         execution = execute_sql(config, reference.sql, tables)
         if execution.status != "success": raise ValueError("Reviewed gold execution failed: " + qid)
-        compare_results(execution.result, execution.result, ComparisonSpec(reference.column_count, reference.ordered, reference.approximate_columns))
+        compare_results(execution.result, execution.result, comparison_spec(reference))
         gold[qid] = execution
         publish_artifact(output / "gold-results" / (qid + ".json"), canonical_json(execution.result.encoded()))
     revised = []
@@ -152,7 +154,7 @@ def reevaluate(config, source: Path, gold_path: Path, questions_path: Path, snap
             count = payload["column_count"]
             actual = ResultTable(tuple("column_" + str(i) for i in range(count)), tuple(0 for _ in range(count)),
                                  tuple(tuple(decode_value(c) for c in r) for r in payload["rows"]))
-            comparison = compare_results(actual, gold[row["question_id"]].result, ComparisonSpec(reference.column_count, reference.ordered, reference.approximate_columns))
+            comparison = compare_results(actual, gold[row["question_id"]].result, comparison_spec(reference))
             item.update(execution_accuracy=comparison.execution_accuracy, comparison_reason=comparison.reason)
         else:
             item["execution_accuracy"] = 0

@@ -1,0 +1,49 @@
+# Separate capability pilot; fixed model settings, no main benchmark selection.
+# Revision03 inputs; a matching pilot/context/source freeze is required before generation.
+project_root = ".."
+prompt_template = "prompts/generation-v3.txt"
+
+[database]
+host = "127.0.0.1"
+port = 13306
+database = "sakila"
+username = "experiment_reader"
+password_env = "SAKILA_READER_PASSWORD"
+password_file = "secrets/reader_password.txt"
+connect_timeout_s = 5
+read_timeout_s = 15
+query_timeout_ms = 10000
+max_rows = 100000
+max_result_bytes = 67108864
+sql_mode = "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+time_zone = "+00:00"
+sql_policy_version = "mysql-readonly-v2"
+time_names_locale = "en_US"
+
+[datahub]
+gms_url = "http://127.0.0.1:18080"
+ui_url = "http://127.0.0.1:19002"
+token_env = "DATAHUB_GMS_TOKEN"
+server_version = "0.8.0"
+field_description_length_limit = 16384
+description_length_limit = 65536
+
+[inference]
+base_url = "http://127.0.0.1:18082"
+model_id = "sakila-qwen3-8b-q4km"
+context_tokens = 16384
+max_output_tokens = 4096
+safety_margin_tokens = 256
+temperature = 0.6
+top_p = 0.95
+top_k = 20
+timeout_s = 600
+
+[experiment]
+repetitions = 5
+question_count = 30
+questions_per_complexity = 10
+scenario_ids = ["S0", "S1", "S2", "S3"]
+order_seed = 2026102801
+inference_seed_base = 2026102803
+analysis_seed = 2026102802

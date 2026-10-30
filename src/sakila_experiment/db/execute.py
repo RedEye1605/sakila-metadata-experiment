@@ -53,7 +53,7 @@ def _abort_stream(cursor: SSCursor, connection) -> None:
 
 
 def execute_sql(config: AppConfig, sql: str, tables: frozenset[str]) -> QueryExecution:
-    validation = validate_sql(sql, tables, config.database.database)
+    validation = validate_sql(sql, tables, config.database.database, policy_version=config.database.sql_policy_version)
     if not validation.accepted:
         return QueryExecution("rejected", validation.code)
     started = None

@@ -44,7 +44,8 @@ def registry_from_events(events: list[dict]) -> tuple[str, ...]:
     return tuple(sorted(urns))
 
 
-async def export_metadata(root: Path, scenario: str, destination: Path, *, page_size: int = 100) -> dict:
+async def export_metadata(root: Path, scenario: str, destination: Path, *, page_size: int = 100,
+                          specification_path: Path | None = None) -> dict:
     # Imported only in the separate metadata tooling environment.
     from mcp import ClientSession, StdioServerParameters
     from mcp.client.stdio import stdio_client
@@ -55,7 +56,8 @@ async def export_metadata(root: Path, scenario: str, destination: Path, *, page_
         raise MetadataRetrievalError("A completed export already exists")
     events_path = root / "runs/metadata/validated-ingestion.json"
     datasets = registry_from_events(json.loads(events_path.read_text()))
-    specification = json.loads((root / "data/annotations/specification.json").read_text())
+    specification_path = specification_path or root / "data/annotations/specification.json"
+    specification = json.loads(specification_path.read_text())
     terms = tuple(sorted(term["urn"] for term in specification["business_terms"])) if scenario == "S3" else ()
     token = (root / "secrets/datahub_token.txt").read_text().strip()
     environment = dict(os.environ)
@@ -121,6 +123,9 @@ async def export_metadata(root: Path, scenario: str, destination: Path, *, page_
               "field_description_length_limit": 16384, "description_length_limit": 65536,
               "dataset_urns": list(datasets), "term_urns": list(terms), "calls": calls,
               "scope_registry_sha256": sha256_bytes(events_path.read_bytes()), "model_generation_enabled": False}
+    if specification_path.resolve() != (root / "data/annotations/specification.json").resolve():
+        bundle["annotation_specification_canonical_sha256"] = sha256_bytes(canonical_json(specification))
+        bundle["annotation_specification_file_sha256"] = sha256_bytes(specification_path.read_bytes())
     publish_artifact(destination / "export.json", canonical_json(bundle))
     return bundle
 

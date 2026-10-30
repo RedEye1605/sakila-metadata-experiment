@@ -1,0 +1,12 @@
+{"complexity":"medium","question":"Film apa saja yang judulnya diawali huruf A? Keluaran (berurutan): film_id, title.","question_id":"P101","schema_references":[]}
+{"complexity":"complex","question":"Berapa banyak film yang memiliki fitur Deleted Scenes sekaligus Behind the Scenes? Keluaran (berurutan): jumlah_film.","question_id":"P102","schema_references":[]}
+{"complexity":"complex","question":"Kategori mana yang memiliki sedikitnya lima judul film dengan fitur Commentaries? Keluaran (berurutan): category_id, name, jumlah_judul.","question_id":"P103","schema_references":[]}
+{"complexity":"simple","question":"Berapa banyak pengembalian film yang tercatat pada hari Sabtu? Keluaran (berurutan): jumlah_pengembalian.","question_id":"P104","schema_references":[]}
+{"complexity":"complex","question":"Pada jam berapa paling banyak penyewaan dimulai? Keluaran (berurutan): jam, jumlah_penyewaan.","question_id":"P105","schema_references":[]}
+{"complexity":"medium","question":"Berapa banyak judul film berbeda yang disewa pada masing-masing bulan? Keluaran (berurutan): bulan, jumlah_judul.","question_id":"P106","schema_references":[]}
+{"complexity":"complex","question":"Pelanggan aktif mana yang alamat emailnya berakhiran .org? Keluaran (berurutan): customer_id, first_name, email.","question_id":"P107","schema_references":[]}
+{"complexity":"medium","question":"Berapa banyak kota berbeda yang tercatat untuk masing-masing kode pos? Keluaran (berurutan): postal_code, jumlah_kota.","question_id":"P108","schema_references":[]}
+{"complexity":"complex","question":"Di negara mana saja terdapat alamat staf? Keluaran (berurutan): country_id, country.","question_id":"P109","schema_references":[]}
+{"complexity":"complex","question":"Pemeran mana yang pernah bermain bersama pemeran ber-ID 1? Keluaran (berurutan): actor_id, first_name, last_name.","question_id":"P110","schema_references":[]}
+{"complexity":"simple","question":"Berapa banyak pasangan pemeran berbeda yang pernah berbagi judul film? Keluaran (berurutan): jumlah_pasangan.","question_id":"P111","schema_references":[]}
+{"complexity":"complex","question":"Pemeran mana yang film-filmnya menjangkau sedikitnya dua belas kategori? Keluaran (berurutan): actor_id, first_name, jumlah_kategori.","question_id":"P112","schema_references":[]}

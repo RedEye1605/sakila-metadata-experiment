@@ -2,7 +2,7 @@
 
 **Judul penelitian:** Analisis Pengaruh Metadata terhadap Execution Accuracy pada Sistem Text-to-SQL Berbasis Large Language Model (Studi Kasus: Basis Data Sakila)
 
-**Status naskah:** draft perancangan dan implementasi untuk bimbingan, 28 Oktober 2026. Pipeline telah menyelesaikan 36 trial pilot dan 600 trial pendahuluan. Gold/anotasi tetap draft dan laporan EX aktual disimpan lokal; tidak ada persetujuan reviewer yang dibuat otomatis. Penomoran dapat diselaraskan dengan pedoman kampus.
+**Status naskah:** draft perancangan dan implementasi untuk bimbingan, 28 Oktober 2026. Bagian4.1–4.11mendokumentasikan implementasi pendahuluan yang telah menyelesaikan36pilot dan600trial. Bagian4.12membedakan revisi instrumen setelah audit; revisi belum mempunyai EX baru. Gold/anotasi tetap draft dan laporan aktual disimpan lokal; tidak ada persetujuan reviewer yang dibuat otomatis. Penomoran dapat diselaraskan dengan pedoman kampus.
 
 ## 4.1 Tujuan dan Kedudukan Implementasi
 
@@ -353,6 +353,60 @@ Pemeriksaan reproduksi terisolasi sebelumnya memakai workspace/venv dan MySQL ba
 
 Repository publik tersedia pada [GitHub](https://github.com/RedEye1605/sakila-metadata-experiment). Source, protokol, draft benchmark/metadata serta diagram dipublikasikan; actual EX/predictions, runtime evidence dan submission tetap lokal sebelum review. BAB IV menjelaskan pembangunan instrumen; tabel hasil dan inferensi metadata merupakan materi BAB V setelah status ilmiahnya dijelaskan. Tidak ada klaim penelitian telah terbit atau mempunyai DOI.
 
+## 4.12 Revisi Instrumen Setelah Audit Pendahuluan
+
+### 4.12.1 Kedudukan revisi dan dasar metodologis
+
+Audit dilakukan sesudah hasil pendahuluan tersedia. Oleh karena itu, revisi disebut exploratory dan urutan waktunya dinyatakan secara terbuka. Source, input, ledger serta hasil pendahuluan tidak ditimpa. Peningkatan EX akibat metadata tetap merupakan hipotesis; instrumen tidak mensyaratkan S3 memperoleh skor tertinggi. Delapan tahap metodologi penelitian tidak berubah.
+
+Kompleksitas direvisi menggunakan adapter komponen SQL dari pinned official Spider evaluator. Pemetaan 10 easy/10 medium/5 hard/5 extra menghasilkan 10 simple/10 medium/10 complex. `evaluation.structure` menyimpan component counts, fitur AST, upstream commit dan adaptations. Sembilan belas oracle cases dari source upstream dan boundary tests memeriksa pemetaan. Canonical queries yang memakai struktur di luar adapter ditahan; model tetap boleh menghasilkan alternatif valid seperti CTE atau window. Label menjelaskan reference yang dibekukan, bukan kesulitan intrinsik soal.
+
+Struktur SQL dipisahkan dari kebutuhan pengetahuan, terinspirasi BIRD. Profil schema mapping, local semantics dan domain integration merupakan definisi operasional lokal. Pembedaannya memerlukan audit complete model input: question, common instructions dan snapshot. Nama field/FK pada S0 dapat memberi informasi yang derivable. Jumlah glossary atau panjang deskripsi tidak diperlakukan sebagai jumlah pengetahuan baru.
+
+### 4.12.2 Penyusunan ulang metadata dan pertanyaan
+
+S1/S2 mencakup 106 elemen. Sebanyak 74 elemen trivial mempertahankan short/detailed yang sama agar tidak menambah uraian redundan. S3 mempertahankan S2 secara identik dan menambah tiga kartu global yang didasarkan pada executable official Sakila routines: inventory availability, monthly rewards, dan returned-rental late component. Makna field lokal tetap berada di S1/S2.
+
+Rewards memperhitungkan payment events dan mensyaratkan kedua threshold dilampaui secara strict pada bulan kalender lengkap sebelum reference date. Definisi stock mencakup existing never-rented copies dan mengecualikan salinan dengan open rental. Definisi komponen keterlambatan menyebut calendar days, NULL-return behavior, inclusive DATETIME cutoff, date-only midnight, serta customer total nol bila tidak memiliki rental relevan. Full customer balance dikeluarkan karena komentar/body routine mempunyai perbedaan yang tidak aman digeneralisasikan. Source file dan deskripsi terikat SHA-256.
+
+DataHub menampung kondisi secara berurutan. Preparation 03 mengambil dua MCPexports per kondisi dan membangun empat snapshot yang stabil. S0/S1/S2 tetap memiliki payload yang sama dengan preparation 02; penjelasan cutoff/zero mengubah S3. Raw tools, requests, responses, normalized content serta snapshot manifests disimpan. Tidak ada API fallback atau enrichment tersembunyi dari database pada builder. Validator provenance membaca ulang kedua ekspor MCP, bukan hanya status flag.
+
+Pertanyaan baru memakai permintaan analitik alami dan parameter yang diperlukan, dengan urutan output columns eksplisit. Business definitions dan join recipes tidak ditulis pada pertanyaan. Common output conventions yang sama mengatur precision, DATE format, NULL, zero counts dan row ordering. Kontrak internal tetap rinci dan tidak dikirim ke LLM.
+
+Pool bertambah 45→54 untuk memasukkan tiga source-rule families, lalu menjadi 60 untuk mengurangi dominasi agregasi pada simple stratum. Usulan sampling memilih lima simple filters, lima simple aggregates, sepuluh medium dan sepuluh complex; complex tetap lima hard/lima extra. Alokasi source-dependent domain tasks adalah 0 simple/2 medium/4 complex. Sorted pools, explicit exclusions, mandatory coverage dan seed 2026102801 direkam sebelum inference. Ini constrained study design dan bukan sampel representatif seluruh workload industri.
+
+### 4.12.3 Validasi reference dengan kasus pembeda
+
+Dua penulis reference AI-assisted bekerja terpisah. Auditor mendapat pertanyaan dan sumber yang ditetapkan serta tidak melihat referenceA atau keluaran model. First-pass interpretations, source inputs dan revision history dikunci hash. Status ini tidak disebut human approval.
+
+Delapan data variations dibuat pada clone MySQL tersendiri port 13311. Schema, PK/FK dan triggers dipertahankan; primary 13306 tetap read-only. Variasi menguji zero groups, grain/fan-out, entity roles, optional references/NULL, ties, temporal boundaries, numeric/duplicate behavior dan catalog variation. Wrong SQL variants ditulis dari requirement sebelum inference, bukan dipilih dari kegagalan model. Minimal satu distinguishing mutant dan seluruh critical boundary mutants harus mempunyai witness sebelum suatu soal eligible.
+
+Pengujian menemukan reference-author defects yang tidak tampak pada primary database: zero-population joins, conditional SUM NULL policy, title/category fan-out dan unsigned arithmetic underflow 1690. ReferenceA diperbaiki mengikuti common contract dan independentB tanpa mengubah referenceB terkunci. Kandidat dengan unresolved ambiguity/disagreement dikeluarkan atau ditahan; query timeout tidak diatasi dengan memperpanjang batas khusus untuk soal itu. Bukti 54 kandidat pada baseline+delapan variations dipertahankan; enam kandidat tambahan serta fixturev 5 memerlukan pemeriksaan versi tersendiri.
+
+EX baseline tetap metrik utama. Auxiliary replay mengeksekusi SQL tersimpan pada delapan clone variations, untuk semua assigned trials termasuk yang gagal baseline, tanpa generation atau repair. Hasil auxiliary dilaporkan terpisah dan tidak menggantikan EX primary. Finite witnesses tidak membuktikan semantic equivalence universal.
+
+### 4.12.4 Diagnostik konteks, runner dan logging
+
+Diagnostik terpisah berisi 12 pilot ×5 renderings ×3 repetitions=180 requests. A adalah canonical S3. B menambah wrapper deskripsi dengan domain propositions yang sama. C mempertahankan deskripsi A dan mengulang tiga true domain definitions yang tidak dibutuhkan pilot. B-order 1/B-order 2 merotasi description blocks sebesar 35 dan 70 posisi, dengan technical schema tetap. Teks A/B/C melewati DataHub/MCP; rotasi merupakan transform yang dicatat dari B.
+
+Tokenizer model yang terpasang mengukur annotationA2846,B6358,C6377 tokens. Selisih B/Csekitar 0.30%, memenuhi batas 5% sebelum generation. Pemeriksaan lengkap 240 candidate prompts dan 60 diagnostic prompts menunjukkan maximum input 8911 tokens. Input+output reserve 1024+margin 256 muat pada context 16384, tanpa truncation. Ini bukti kelayakan konteks, bukan hasil generation atau EX.
+
+Runner revisi memakai benchmark/diagnostic manifests terikat hash dan tidak mempromosikan draft menjadi main. Ia membekukan seluruh 60 diagnostic prompt budgets, kemudian mensyaratkan 180 diagnostic outcomes lengkap sebelum benchmark 600 dapat dibekukan. Model/settings, source version, canonical snapshots, database dan template harus sama antara diagnostik dan benchmark. Actual resolved request parameters, seed serta messages hash disimpan dan diperiksa oleh log audit. Stored responses dipakai kembali saat resume; ambiguous dispatch tidak digenerate ulang otomatis.
+
+Comparatorv2 menambahkan kontrak opt-in untuk equivalent ISO calendar-date representations dan declared average/ratio numeric tolerance. Duplicate multiplicity, DATE/DATETIME granularity, exact monetary sums dan column position tetap dijaga. Hasil pendahuluan lama tidak dihitung ulang menggunakan comparator baru.
+
+### 4.12.5 Rencana analisis dan status aktual
+
+Rencana revisi memakai 30 question blocks. Omnibus menggunakan 100000 within-question label permutations. Enam primary contrasts memakai exact integer sign-flip distributions dan Holm, dengan semua tied/zero blocks dipertahankan. Effect sizes berupa percentage points;10000 whole-question bootstrap samples berstrata structural complexity memberikan pointwise intervals. Empat diagnostic contrasts bersifat deskriptif dengan paired question bootstrap; tidak dilakukan significance sweep. Source/analysis seeds dibekukan sebelum revised outcomes.
+
+Pada checkpoint pra-generation terakhir, 228 automated tests termasuk integration MySQL lulus. Independent complete-input audit mencakup 60 soal/196 proposisi dan menerima definisi sumber S3; addendum menahan tiga home-store population requests yang masih ambigu. Seluruh 30 soal terpilih serta 12 pilot lolos reference agreement, execution dan distinguishing witnesses pada primary + delapan fixture v6. Input aktif dibekukan pada `data/benchmarks/revision-02/final-02`, dengan knowledge profiles 10 schema mapping, 14 local semantics dan 6 domain integration. Ini bukan pengesahan semantik manusia; gold tetap draft.
+
+Runtime reviewer menutup empat gate defects pada evidence binding melalui focused independent follow-up. Preflight juga menemukan penolakan fungsi MySQL native aman; `mysql-readonly-v2` menambah alternatif terbatas yang diuji native, dengan UTC dan locale `en_US`. V1 dan hasil pendahuluan lama dipertahankan. Karena instrumen, prompt, sampling dan policy berubah, selisih old/new EX tidak boleh diklaim sebagai efek metadata saja. Perubahan policy terakhir diuji otomatis dan terhadap dokumentasi resmi; independent sign-off khusus perubahan tersebut belum selesai karena batas penggunaan reviewer.
+
+Driver dry-run memvalidasi rencana 180 diagnostic requests, 600 benchmark requests dan delapan auxiliary cases tanpa generation. Source/Git commit dikunci sebelum dispatch; score-based tuning, repair dan stopping tidak diperbolehkan. Laporan EX revisi belum tersedia pada checkpoint ini. Paket CSV/panduan akhir di `annotations/round-02` tidak memuat prediksi/skor dan seluruh keputusan manusia masih kosong. Review sesudah generation harus ditulis dengan waktu sebenarnya.
+
+Rincian metode, amendments, acceptance gates dan bukti berada pada `docs/revision-02/dataset-methodology.md`, `protocol.md`, `evaluation-protocol.md`, `analysis-plan.md`, `amendments.md` dan `implementation-status.md`. Penulis BABVharus menunggu run manifest, completion dan laporan aktual revisi; angka tidak boleh disimpulkan dari tests atau token budgets.
+
 ## Referensi bukti implementasi
 
 - [Decision log](decisions.md)
@@ -363,3 +417,32 @@ Repository publik tersedia pada [GitHub](https://github.com/RedEye1605/sakila-me
 - [Panduan review](review-guide.md)
 
 Sumber perangkat lunak: [DataHub](https://docs.datahub.com/), [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk), dan [llama.cpp server](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md). Perilaku yang dinyatakan berhasil pada bab ini harus ditelusuri ke bukti versi terpasang, bukan diasumsikan hanya dari dokumentasi versi terbaru.
+
+
+## 4.13 Revisi pertanyaan dan kesetaraan kolom (revision-03)
+
+Revisi ini ditetapkan sebelum generation benchmark baru untuk memperbaiki cakupan ordering/top-k, menghilangkan petunjuk projection teknis pada soal, dan menerima ekuivalensi hasil dengan urutan kolom berbeda. Source, manifest dan keluaran versi sebelumnya tetap dipertahankan. Judul penelitian, delapan tahap metodologi, database resmi Sakila, empat tingkat metadata, satu local model serta desain30×4×5 tidak berubah.
+
+### 4.13.1 Penyusunan pertanyaan alami
+
+Dataset tetap30soal:10simple,10medium,10complex; raw Spider10easy/10medium/5hard/5extra. Footer `Keluaran (berurutan)` serta identifier `table.column`/snake_case dihapus. Pertanyaan menyatakan kebutuhan bisnis dan objek/ukuran yang diminta dalam bahasa Indonesia. Parameter seperti tanggal, batas nominal dan jumlah peringkat tetap disebut bila merupakan bagian tugas. Definisi business terms, unit field, peran home store, ketersediaan salinan, rewards dan komponen keterlambatan berada dalam metadata yang sudah bersumber. Pertanyaan tidak menjelaskan cara join, agregasi SQL atau formula aturan bisnis.
+
+Cakupan baru meliputi laporan film berurutan menurut tarif (Q128), satu staf dengan jumlah pembayaran lintas pemroses terbanyak (Q141), dan sepuluh pelanggan dengan keragaman kategori serta judul tertinggi (Q152). Komposisi kebutuhan tetap10schema mapping,14local semantics,6domain integration dari tiga keluarga aturan. Pemilihan scope berdasarkan celah kemampuan yang diuji dan instruksi peneliti, bukan hasil EX model.
+
+Reviewer AI independen mengunci interpretasi question-only sebelum membaca metadata dan menulis reference B tanpa melihat gold A/prediksi model. Review menemukan ambiguitas observed actor/category pairs versus Cartesian product pada Q154. Wording kemudian menyebut kategori film yang pernah dibintangi pemeran, dalam bahasa kebutuhan bisnis. Initial lock, amendment wording dan final independent references diarsipkan; AI review tidak dilaporkan sebagai human annotation.
+
+### 4.13.2 EX dengan pemetaan kolom global
+
+Evaluator `ex-results-v3-column-permutation` memeriksa jumlah kolom dan mencari satu bijeksi yang berlaku pada seluruh baris. Contoh gold `(nama, pendapatan)` dapat cocok dengan prediksi `(pendapatan, nama)`. Alias tidak menjadi syarat. Pemetaan yang menghubungkan pendapatan ke orang berbeda tetap salah. Kolom tidak dibandingkan sebagai himpunan nilai independen, dan isi setiap baris tidak diurutkan sendiri-sendiri.
+
+Sesudah mapping, hasil tanpa permintaan urutan dibandingkan sebagai multiset whole rows sehingga multiplicity duplikat dipertahankan. Hasil ranking/ordering dibandingkan menurut urutan baris. Aturan ties yang seragam pada semua kondisi memakai identifier numerik unik entitas ascending setelah prioritas yang diminta. Top-k tepat k atau seluruh eligible rows jika kurang dari k. Posisi kolom keluaran bebas; urutan baris hanya dipersyaratkan oleh maksud pertanyaan.
+
+Kontrak numeric tolerance dan DATE tetap memakai koordinat kolom gold. Count serta total uang exact. NULL tidak disamakan dengan teks/zero. Empty results masih memerlukan jumlah kolom sama, dengan batas bahwa identitas kolom kosong tidak dapat ditentukan dari nilainya. Ledger menyimpan policy dan mapping aktual. Search-budget exhaustion merupakan evaluator/infrastructure incident, bukan model EX nol. Prinsip global permutation mengacu pada Test Suite SQL Evaluation; implementasi lokal tetap memakai MySQL dan kontrak tipe/budget eksplisit.
+
+### 4.13.3 Implementasi dan verifikasi
+
+Komponen yang diperbarui mencakup typed GoldReference/ComparisonSpec, comparator, runner, auxiliary replay, reference validator dan integrity audit. Policy lama tetap default fixed untuk reproduksi v1/v2; seluruh gold revision03 memilih permutation secara eksplisit dan manifest mengikat versi evaluator. Bug lookup objek Question versus question_id pada pembuatan question_attributes diperbaiki dengan regression test. Tidak ada pelonggaran source equality gate.
+
+Dua reference untuk seluruh30soal berhasil dan sepakat pada Sakila utama serta delapan variations clone. Setiap predeclared critical mutant mempunyai observed witness. Fixture ties memperlihatkan dua staf tied pada top1 dan sedikitnya12pelanggan pada batas top10, sehingga salah urutan/k/tie-breaking dapat dibedakan. Primary schema dan records tetap utuh. Pengujian comparator mencakup swapped projections, rusaknya pasangan nilai, global versus row-specific permutation, duplikat, NULL, date/numeric contracts, ordering dan resource limits. Audit independen juga memakai exhaustive/synthetic relation cases.
+
+Detail kontrak ada pada `docs/revision-03/evaluation-protocol.md`; manifest dan validation receipts pada `data/benchmarks/revision-03/final-02`. Evidence lengkap lokal berada di `runs/revision-03`. Review manusia masih pending. Belum ada generation/EX revision03 pada tahap perbaikan ini. Sebelum600trial baru, full prompt budgets, pilot yang sesuai versi, source freeze dan backend/sampler harus kembali diverifikasi. Hasil revision02 tidak menjadi hasil revision03.
