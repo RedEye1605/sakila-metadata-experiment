@@ -108,6 +108,11 @@ def test_smoke_and_waiver_cannot_both_be_claimed():
 
 @pytest.mark.integration
 def test_actual_amended_instrument_validates_offline_without_generation():
+    document = json.loads((ROOT / SELECTED).read_bytes())
+    private_receipts = [value["path"] for value in document.values()
+                        if isinstance(value, dict) and value.get("path", "").startswith("runs/")]
+    if any(not (ROOT / path).is_file() for path in private_receipts):
+        pytest.skip("Frozen local audit receipts are intentionally not public; synthetic gates and MySQL integration remain enabled")
     result = validate_instrument(ROOT, ROOT / SELECTED)
     assert result["generation_requests"] == 0 and result["question_count"] == 30
 
