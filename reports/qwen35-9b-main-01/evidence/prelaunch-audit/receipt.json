@@ -1,0 +1,182 @@
+{
+  "amendment_reference_sha256": {
+    "configs/models/qwen35-9b-q4km.json": "4688d5151f21263bf33fb3aedeacdccd840d4abd445fb85b52a0b8dc45a635b2",
+    "configs/qwen35-9b-main.toml": "212c929582dac0112219976bfd2480528f7e88433f0f69930b9e3dd7fc7aa41b",
+    "data/benchmarks/revision-03/execution-01/manifest.json": "b1b43a52847928de174dbd0955384d96ae3496cbdf1d9db5885a6ec0872df699",
+    "infra/inference/compose.qwen35-9b.yaml": "4eeb2db3f2d084c4ac595e868ed8f26154597af3d23f579e756b8a4f433716a6",
+    "runs/model-selection/qwen3-8b-01/completion.json": "e58ecadbe22eff716f318e66348488966876f02b2540cc6530b6a9a1b6a765df",
+    "runs/revision-03/main-01/benchmark/manifest.json": "f776424caa4b94b4908dc66f2eab757792bc8670bea0cb96b2f1a368853f6a00"
+  },
+  "audit_guardrails": {
+    "actual_new_main_outcomes_read": false,
+    "monitor_loops_started": false,
+    "new_model_generation_requests": 0,
+    "new_research_SQL_executions": 0,
+    "publication": false,
+    "service_changes": 0,
+    "source_config_input_HEAD_mutations": false
+  },
+  "authorization_and_claims": {
+    "additional_pilot_requests": 0,
+    "additional_smoke_requests": 0,
+    "basis": "explicit direct user statement after prior results",
+    "capability_pass_claimed": false,
+    "existing_stimulus_review_basis": "preserved prior researcher self-attestation, names/date unprovided",
+    "model": "Qwen/Qwen3.5-9B; pinned unsloth Q4_K_M artifact",
+    "monitoring_after_launch": "researcher only; this auditor will not monitor or wait",
+    "new_independent_human_approval_claimed": false,
+    "scheduled_main_assignments": 600
+  },
+  "backend_verification_sha256": "590bee48fd5d0bf748f9f9c007e24fc6ef028ff6526bd2ec9bd60f3d6de5fd57",
+  "independent_offline_gate_checks": [
+    {
+      "context_helper_called": true,
+      "fault": "valid",
+      "passed": true,
+      "reason": null,
+      "rejected": false
+    },
+    {
+      "context_helper_called": false,
+      "fault": "temperature",
+      "passed": true,
+      "reason": "Runtime configuration differs from the authorized amendment",
+      "rejected": true
+    },
+    {
+      "context_helper_called": false,
+      "fault": "max_output",
+      "passed": true,
+      "reason": "Runtime configuration differs from the authorized amendment",
+      "rejected": true
+    },
+    {
+      "context_helper_called": false,
+      "fault": "seed_config",
+      "passed": true,
+      "reason": "Runtime configuration differs from the authorized amendment",
+      "rejected": true
+    },
+    {
+      "context_helper_called": false,
+      "fault": "database_policy",
+      "passed": true,
+      "reason": "Runtime configuration differs from the authorized amendment",
+      "rejected": true
+    },
+    {
+      "context_helper_called": false,
+      "fault": "backend_model",
+      "passed": true,
+      "reason": "Observed backend differs from the explicitly locked model/deployment",
+      "rejected": true
+    },
+    {
+      "context_helper_called": false,
+      "fault": "backend_command",
+      "passed": true,
+      "reason": "Observed backend differs from the explicitly locked model/deployment",
+      "rejected": true
+    },
+    {
+      "context_helper_called": true,
+      "fault": "missing_context",
+      "passed": true,
+      "reason": "Every one of the120main contexts must fit completely",
+      "rejected": true
+    }
+  ],
+  "instrument_artifact_sha256": {
+    "data/amendments/qwen35-9b-direct-main-01.json": "8039e04997725cf1d3a45c338fb57fbb7420349273c8c4ec2a96a9f593596f9a",
+    "data/benchmarks/revision-02/annotations.json": "568ebfe88c03832ad09179489927d92b4aea5e6089fb65b7b3766f363e5f10f6",
+    "data/benchmarks/revision-02/facts.json": "1cf42dffbec71963de86cf867cecda7ed544948bf604df325a3dad194273cdea",
+    "data/benchmarks/revision-03/final-02/contracts.jsonl": "50dec4415f14a67c43b666445a7e9f769abe37d32bd4cd09db2ccc1582f028bb",
+    "data/benchmarks/revision-03/final-02/gold.jsonl": "0863a794e3a030a15ac0838e1b5d9d4c92b6ada9e41fa59ea210d1f47b767df8",
+    "data/benchmarks/revision-03/final-02/questions.jsonl": "cd6213e4e66492688e8b17d7b80bb77e8205e1575032b9f1d763269537ebf74e",
+    "data/benchmarks/revision-03/final-02/selection.json": "825295c0d9fdb5914ea4809002e6259d9db040fbd2f919cea04ce2234e9cf0c4",
+    "data/reviews/revision03-user-attestation.json": "0dc2cb55d7a6fa468beb1485fd312c6c70883526f596a6fc52992be59f275c1a",
+    "docs/revision-03/analysis-plan.md": "aba84f1bed9eff2d04f88e7451ba8671b7ca85ebf27e71d547146ad0d1a07902",
+    "docs/revision-03/evaluation-protocol.md": "1f246738f1804e916fdbe30932da79b58d4359dabf24bf3aa09a66efcc6206f7",
+    "prompts/generation-v3.txt": "4691bd1a0e4f64b4e4a5f013d2f7e376428da6f7f7df0f5591831429782b088e",
+    "research/revision-02/spider-source-lock.json": "4b8aa3115877068b79e6c42fff9e7d18cb2f663de3d96bec763db383065df430",
+    "research/revision-03/fixture_cases.json": "c3152fc322f4abd0c9968026e69bbca41541dd09ca7a0abd52ee154c0ae1fc6d",
+    "runs/qwen35-9b/reference-checks-01/input-lock.json": "278bf1615e4f82cd3de6f70c9c7ee8884d77e293f565c90f9b200364766f2718",
+    "runs/qwen35-9b/reference-checks-01/summary.json": "8f1a124adc642e23c72ca66f3a244e0d42a712d89f7578fd182ecd2dc8b7e504",
+    "runs/revision-02/metadata/preparation-03/validation.json": "48dedd3e9616b63ea97f59d8f241328ec5a89b7c3f2754f9a22ac9c6fdacd61d",
+    "runs/revision-03/independent-review-01/gate-receipt-v2.json": "f2288f002aceda7c97da44f51670260542c2933eb75396d8e611ae6c63bc4d7e"
+  },
+  "parent_reported_broader_validation": {
+    "final_post_finding_suite": "parent will rerun; not independently rerun by this bounded audit",
+    "integration_included": true,
+    "prelaunch_full_suite_passed": 321
+  },
+  "recorded_at_utc": "2026-10-29T15:17:22.005790+00:00",
+  "report_sha256": "8d0ff99aa9d5a4bbf30c0f4e699fbd4dbcf68a3104711b25bad29ee65ccaf2ef",
+  "resolved_findings": [
+    {
+      "id": "DM-R1",
+      "issue": "Thesis source sentence referred to smoke and benchmark despite direct waiver",
+      "resolution": "Source sentence now says Source commit benchmark"
+    },
+    {
+      "id": "DM-R2",
+      "issue": "New appendix/combined manuscript initially appended after output hash index creation",
+      "resolution": "Writer include_frozen_context emits both before indexing; driver passes True"
+    }
+  ],
+  "reviewed_source_configuration_sha256": {
+    "configs/models/qwen35-9b-q4km.json": "4688d5151f21263bf33fb3aedeacdccd840d4abd445fb85b52a0b8dc45a635b2",
+    "configs/qwen35-9b-main.toml": "212c929582dac0112219976bfd2480528f7e88433f0f69930b9e3dd7fc7aa41b",
+    "data/amendments/qwen35-9b-direct-main-01.json": "8039e04997725cf1d3a45c338fb57fbb7420349273c8c4ec2a96a9f593596f9a",
+    "data/benchmarks/revision-03/qwen35-9b-execution-01/manifest.json": "5de42b007a0cade35241c3d531fe57e711965841774c578e7c554579954dcffc",
+    "infra/inference/compose.qwen35-9b.yaml": "4eeb2db3f2d084c4ac595e868ed8f26154597af3d23f579e756b8a4f433716a6",
+    "research/qwen35-9b/prepare_execution.py": "16bf382f76c54e3fa3054875f960fb04adbefa12c1a9f3b12bcf09e97ec5b3ec",
+    "research/qwen35-9b/prepare_writing.py": "caf2681dc4b73c06a53b1bebd06afc81d70af31288ff49e68b498e8f4910888b",
+    "research/qwen35-9b/run_experiment.py": "76396e82343e528d34b6a1efbdcabdabedfda1771cff9cbe4250e64fad95c834",
+    "research/qwen35-9b/status.py": "a7cc25911053f978ee8de92f7b2dbe76c733a0a1d60b82884b9be416f112104c",
+    "research/revision-03/write_thesis.py": "9714ea70ea5f448658a15e66570a59df5ce43e19cede8ed00a3853fbd7b54fca",
+    "src/sakila_experiment/analysis/report.py": "32220871508631171b1d28d59517361add3e20291a1bcb7792370eb791ea908d",
+    "src/sakila_experiment/experiment/direct_main.py": "0cb84ce1bf739591b11277c47126e60db4d59af3ed60c6640555abef8df2b084",
+    "src/sakila_experiment/experiment/runner.py": "4da2b5935a63e536b5f9d25f642f4c89d63d25b33051e642348d12bf3967ac5e",
+    "src/sakila_experiment/generation/backend.py": "626862200ee952b7f0b1ce171fbc8e0c13dab1c9605fee722a955a9b700cff8d",
+    "src/sakila_experiment/generation/llama.py": "28f43a10ea53bd6f4fd72b8af512b05ca61c43f627a956148f5ab48345cdb66b",
+    "src/sakila_experiment/instrument.py": "e63dbcf695a3cb25e2c757ff2f03c0c2b97247c5f7911af62e21c24446682f0c",
+    "tests/unit/test_direct_main.py": "1df1cb33d38ddd345bacb8e0bc8388f77b117340cff55a4aa524ec7eb2b6219c",
+    "tests/unit/test_runner.py": "120977ab13822cb2433c30c213f64258878dcb256644e64859afc1bc763bf197",
+    "tests/unit/test_thesis_writer.py": "2f9b54d0e1011e3cf896e2d247ec2e014e4400dafbca15d20994831971a0f23f"
+  },
+  "scope_limits": [
+    "Offline/synthetic evidence only; sampler helper tests use mock GET and temporary ledger data, no real model or research database query",
+    "No prediction of actual EX or certification of future 600-dispatch completion",
+    "Model-file bytes not rehashed by auditor; pinned verified download/runtime receipts inspected",
+    "Parent final commit/source freeze and final broader test results remain execution preparation",
+    "Pre-result writing packet service-policy claims are descriptions; no live service unit was inspected or controlled by auditor"
+  ],
+  "status": "bounded_direct_main_prelaunch_audit_passed_no_unresolved_material_blocker",
+  "unresolved_material_blockers": [],
+  "validation_performed": {
+    "actual_amended_instrument_offline_validated": true,
+    "direct_main_sampler_tests": {
+      "duration_seconds": 0.33,
+      "passed": 24,
+      "skipped": 1
+    },
+    "fresh_reference_cases": 9,
+    "full_main_context_hashes_reconstructed": 120,
+    "independent_gate_cases_passed": 8,
+    "max_recorded_input_tokens": 5032,
+    "observer_resume_600synthetic_thesis_tests": {
+      "duration_seconds": 12.0,
+      "passed": 5
+    },
+    "post_reporting_fix_thesis_rerun": {
+      "duration_seconds": 0.13,
+      "overlap_with_prior_tests": true,
+      "passed": 2
+    },
+    "protected_old_main_artifacts_unchanged": 13,
+    "protected_prior_candidate_artifacts_unchanged": 10,
+    "reference_question_pairs": 30,
+    "strict_witness_mutants": 56
+  }
+}

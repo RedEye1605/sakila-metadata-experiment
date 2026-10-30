@@ -1,0 +1,17 @@
+evaluation_status,scenario_id,measurement,available,missing,mean,median
+user_attested_review,S0,inference_latency_ms,150,0,35034.28109790033,27384.88818150654
+user_attested_review,S0,sql_execution_latency_ms,150,0,13.254302800050937,2.6195374957751483
+user_attested_review,S0,input_tokens,150,0,2652.2,2647.0
+user_attested_review,S0,output_tokens,150,0,609.0266666666666,456.0
+user_attested_review,S1,inference_latency_ms,150,0,37882.77731761986,29221.234201497282
+user_attested_review,S1,sql_execution_latency_ms,150,0,13.611913613373568,2.5936790043488145
+user_attested_review,S1,input_tokens,150,0,4078.2,4073.0
+user_attested_review,S1,output_tokens,150,0,594.4333333333333,426.0
+user_attested_review,S2,inference_latency_ms,150,0,42598.196756440644,29882.928320002975
+user_attested_review,S2,sql_execution_latency_ms,150,0,12.60698223952204,2.6226860063616186
+user_attested_review,S2,input_tokens,150,0,4567.2,4562.0
+user_attested_review,S2,output_tokens,150,0,656.86,410.5
+user_attested_review,S3,inference_latency_ms,150,0,43752.234282673744,30933.093941501284
+user_attested_review,S3,sql_execution_latency_ms,149,1,12.17260923519443,2.400115001364611
+user_attested_review,S3,input_tokens,150,0,4997.2,4992.0
+user_attested_review,S3,output_tokens,150,0,660.3933333333333,416.5

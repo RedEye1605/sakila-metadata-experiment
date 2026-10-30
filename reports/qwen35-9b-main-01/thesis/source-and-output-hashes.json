@@ -1,0 +1,25 @@
+{
+  "experiment_id": "qwen35-9b-main-01",
+  "files": {
+    "BAB_IV.md": "159e309ed966e8251b1dea5cf1d6cd39ace56606ceefe2cca9ca1cda5d85b720",
+    "BAB_V.md": "fb8a9a9ffd0dccbfe7914e4a5973f3cfb0915156d5765b57802bb51387288cff",
+    "FIGURES.md": "78c57c09d70e58d94eeead722f97d5ddee1a9163f156b1062f886eabc217aa4a",
+    "LAMPIRAN_METADATA_PROMPT.md": "1250de58044629c8a280c759dd7893076d1836a98d5b53b229f8862c645e81b8",
+    "LAMPIRAN_QUESTIONS_GOLD.md": "ed659072dc658172ba5a00b086bacbb8b713a5757c19f1641a37299e6a5d0be5",
+    "LAMPIRAN_SCHEMA.md": "f6ff1df8822b7813ea27ade2a27bcf9fba510c170f1bed1b1407d44190e32f64",
+    "NASKAH_BAB_IV_V_LENGKAP.md": "62c33bf95d54a3ce6a09d4b3d797563e34455d52ad82638d405aefa0e6dd7479",
+    "figures/complexity.pdf": "70e01267a5078dfd82940204aa72035bf27713d76881fe5ad90022e0ac2fc589",
+    "figures/complexity.png": "58c29ffbf49a5860be12abdc05fbcef6686ca0a37d08b379690d1a011e26be05",
+    "figures/execution-accuracy.pdf": "8d91be77a2c18151187f6f797b666c60fcd083d782a18a355b82c3563dc628c7",
+    "figures/execution-accuracy.png": "0ac872938d290515286054eae52187e8444a4d718c69c899a7020622b81c462c",
+    "figures/paired-differences.pdf": "355ad0fe4e216cf69fd7dd8c39cb7ee8b8cc026a745f82731ee03b9ae8377dc4",
+    "figures/paired-differences.png": "bbfa451cc2cb315231db41b2a6db1c716931ebd808651595a90f3d8f49d786fa",
+    "figures/question-consistency.pdf": "143dc6e2aec9ed703af26109c7e7ed3e5d749b52ef34fe7ae9058fee317bf199",
+    "figures/question-consistency.png": "1a056f87232cb2ad3d8e56eb9b8a63721c677e206cadbb56a7549433605adad1",
+    "figures/supporting-measurements.pdf": "070d23fc4f1faa392695a975f1103754b00838c85546b2c57d238700baa8162e",
+    "figures/supporting-measurements.png": "4218bee6d94f3cc5b9f6a28de2eb88409fe51ba48e8c9f147daab32b8f8d11a0"
+  },
+  "main_manifest_sha256": "c067be50240912f23d625a8c0080bbd497a8d1f4ba7509a2c3c4b17520543d1d",
+  "reviewer_identity_status": "pending_user_entry",
+  "source_commit": "ab3860c2742936073ded5b1bed66951b738b2a5f"
+}

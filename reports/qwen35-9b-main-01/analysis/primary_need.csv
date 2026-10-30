@@ -1,0 +1,13 @@
+scenario_id,profile,questions,trials,correct,execution_accuracy_percent
+S0,domain_integration,6,30,2,6.666666666666667
+S0,local_semantics,14,70,52,74.28571428571429
+S0,schema_mapping,10,50,44,88.0
+S1,domain_integration,6,30,2,6.666666666666667
+S1,local_semantics,14,70,64,91.42857142857143
+S1,schema_mapping,10,50,45,90.0
+S2,domain_integration,6,30,3,10.0
+S2,local_semantics,14,70,63,90.0
+S2,schema_mapping,10,50,43,86.0
+S3,domain_integration,6,30,13,43.333333333333336
+S3,local_semantics,14,70,64,91.42857142857143
+S3,schema_mapping,10,50,44,88.0

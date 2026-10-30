@@ -1,0 +1,2 @@
+# Keep the hash-indexed publication bundle byte-identical on Windows too.
+/reports/qwen35-9b-main-01/** -text

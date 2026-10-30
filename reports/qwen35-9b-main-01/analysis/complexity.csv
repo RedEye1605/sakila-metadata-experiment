@@ -1,0 +1,13 @@
+evaluation_status,scenario_id,complexity,trials,correct,execution_accuracy_percent
+user_attested_review,S0,complex,50,19,38.0
+user_attested_review,S0,medium,50,34,68.0
+user_attested_review,S0,simple,50,45,90.0
+user_attested_review,S1,complex,50,22,44.0
+user_attested_review,S1,medium,50,40,80.0
+user_attested_review,S1,simple,50,49,98.0
+user_attested_review,S2,complex,50,19,38.0
+user_attested_review,S2,medium,50,40,80.0
+user_attested_review,S2,simple,50,50,100
+user_attested_review,S3,complex,50,25,50.0
+user_attested_review,S3,medium,50,46,92.0
+user_attested_review,S3,simple,50,50,100

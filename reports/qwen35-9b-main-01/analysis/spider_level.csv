@@ -1,0 +1,17 @@
+scenario_id,profile,questions,trials,correct,execution_accuracy_percent
+S0,easy,10,50,45,90.0
+S0,extra,5,25,10,40.0
+S0,hard,5,25,9,36.0
+S0,medium,10,50,34,68.0
+S1,easy,10,50,49,98.0
+S1,extra,5,25,10,40.0
+S1,hard,5,25,12,48.0
+S1,medium,10,50,40,80.0
+S2,easy,10,50,50,100
+S2,extra,5,25,11,44.0
+S2,hard,5,25,8,32.0
+S2,medium,10,50,40,80.0
+S3,easy,10,50,50,100
+S3,extra,5,25,14,56.00000000000001
+S3,hard,5,25,11,44.0
+S3,medium,10,50,46,92.0

@@ -1,0 +1,1646 @@
+{
+  "inventory_version": 2,
+  "status": "draft",
+  "exposure_scope": "annotation_prose_only_not_complete_model_input",
+  "facts": [
+    {
+      "fact_id": "local:actor",
+      "statement": "Daftar pemeran film.",
+      "owner": "actor",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-actor.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:actor.actor_id",
+      "statement": "ID unik aktor.",
+      "owner": "actor.actor_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-actor.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:actor.first_name",
+      "statement": "Nama depan aktor.",
+      "owner": "actor.first_name",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-actor.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:actor.last_name",
+      "statement": "Nama belakang aktor.",
+      "owner": "actor.last_name",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-actor.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:actor.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "actor.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-actor.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:address",
+      "statement": "Alamat pelanggan, staf, dan toko.",
+      "owner": "address",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:address",
+      "statement": "Setiap rekaman menyimpan satu alamat yang dapat dirujuk entitas lain.",
+      "owner": "address",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:address.address",
+      "statement": "Baris utama alamat.",
+      "owner": "address.address",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:address.address2",
+      "statement": "Baris tambahan alamat.",
+      "owner": "address.address2",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:address.address2",
+      "statement": "Nilai tambahan dapat tidak diisi.",
+      "owner": "address.address2",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:address.address_id",
+      "statement": "ID unik alamat.",
+      "owner": "address.address_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:address.city_id",
+      "statement": "ID kota terkait.",
+      "owner": "address.city_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:address.district",
+      "statement": "Distrik atau wilayah alamat.",
+      "owner": "address.district",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:address.district",
+      "statement": "Wilayah ini disimpan terpisah dari nama kota dan negara.",
+      "owner": "address.district",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:address.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "address.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:address.location",
+      "statement": "Geometri lokasi alamat.",
+      "owner": "address.location",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:address.phone",
+      "statement": "Nomor telepon alamat.",
+      "owner": "address.phone",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:address.postal_code",
+      "statement": "Kode pos alamat.",
+      "owner": "address.postal_code",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:address.postal_code",
+      "statement": "Kode disimpan sebagai teks; nol di awal merupakan bagian dari kode.",
+      "owner": "address.postal_code",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-address.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:category",
+      "statement": "Daftar kategori film.",
+      "owner": "category",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-category.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:category.category_id",
+      "statement": "ID unik kategori.",
+      "owner": "category.category_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-category.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:category.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "category.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-category.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:category.name",
+      "statement": "Nama kategori film.",
+      "owner": "category.name",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-category.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:city",
+      "statement": "Daftar kota.",
+      "owner": "city",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-city.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:city.city",
+      "statement": "Nama kota.",
+      "owner": "city.city",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-city.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:city.city_id",
+      "statement": "ID unik kota.",
+      "owner": "city.city_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-city.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:city.country_id",
+      "statement": "ID negara terkait.",
+      "owner": "city.country_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-city.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:city.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "city.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-city.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:country",
+      "statement": "Daftar negara.",
+      "owner": "country",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-country.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:country.country",
+      "statement": "Nama negara.",
+      "owner": "country.country",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-country.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:country.country_id",
+      "statement": "ID unik negara.",
+      "owner": "country.country_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-country.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:country.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "country.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-country.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:customer",
+      "statement": "Daftar pelanggan penyewaan.",
+      "owner": "customer",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:customer",
+      "statement": "Setiap baris merepresentasikan satu pelanggan yang terdaftar.",
+      "owner": "customer",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:customer.active",
+      "statement": "Penanda pelanggan aktif.",
+      "owner": "customer.active",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:customer.active",
+      "statement": "Menonaktifkan rekaman merupakan alternatif menghapus pelanggan; status yang tercatat tidak menggambarkan status historis setiap transaksi.",
+      "owner": "customer.active",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:customer.address_id",
+      "statement": "ID alamat terkait.",
+      "owner": "customer.address_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:customer.create_date",
+      "statement": "Waktu pencatatan pelanggan.",
+      "owner": "customer.create_date",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:customer.create_date",
+      "statement": "Tanggal dan waktu saat pelanggan ditambahkan ke sistem; berbeda dari tanggal transaksi pelanggan.",
+      "owner": "customer.create_date",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:customer.customer_id",
+      "statement": "ID unik pelanggan.",
+      "owner": "customer.customer_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:customer.email",
+      "statement": "Alamat email pelanggan.",
+      "owner": "customer.email",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:customer.first_name",
+      "statement": "Nama depan pelanggan.",
+      "owner": "customer.first_name",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:customer.last_name",
+      "statement": "Nama belakang pelanggan.",
+      "owner": "customer.last_name",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:customer.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "customer.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:customer.store_id",
+      "statement": "ID home store pelanggan.",
+      "owner": "customer.store_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:customer.store_id",
+      "statement": "Menunjuk home store tempat pelanggan umumnya berbelanja; pelanggan dapat menyewa dari toko lain.",
+      "owner": "customer.store_id",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-customer.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film",
+      "statement": "Katalog judul film.",
+      "owner": "film",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:film",
+      "statement": "Satu rekaman merepresentasikan satu judul dalam katalog.",
+      "owner": "film",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film.description",
+      "statement": "Ringkasan cerita film.",
+      "owner": "film.description",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:film.description",
+      "statement": "Teks memuat sinopsis atau ringkasan alur cerita.",
+      "owner": "film.description",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film.film_id",
+      "statement": "ID unik film.",
+      "owner": "film.film_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film.language_id",
+      "statement": "ID bahasa film.",
+      "owner": "film.language_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:film.language_id",
+      "statement": "Mengacu pada bahasa versi film yang tercatat dalam katalog.",
+      "owner": "film.language_id",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "film.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film.length",
+      "statement": "Durasi film dalam menit.",
+      "owner": "film.length",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film.original_language_id",
+      "statement": "ID bahasa asli film.",
+      "owner": "film.original_language_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:film.original_language_id",
+      "statement": "Dipakai ketika versi film dialihsuarakan ke bahasa baru; referensi bahasa asal dapat tidak diisi.",
+      "owner": "film.original_language_id",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film.rating",
+      "statement": "Klasifikasi rating penonton film.",
+      "owner": "film.rating",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:film.rating",
+      "statement": "Kode yang tersedia adalah G, PG, PG-13, R, dan NC-17.",
+      "owner": "film.rating",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film.release_year",
+      "statement": "Tahun rilis film.",
+      "owner": "film.release_year",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film.rental_duration",
+      "statement": "Periode sewa film dalam hari.",
+      "owner": "film.rental_duration",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film.rental_rate",
+      "statement": "Tarif sewa film per periode.",
+      "owner": "film.rental_rate",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:film.rental_rate",
+      "statement": "Tarif berlaku untuk periode yang ditentukan pada rental_duration, bukan jumlah pembayaran yang telah diterima.",
+      "owner": "film.rental_rate",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film.replacement_cost",
+      "statement": "Nilai penggantian film.",
+      "owner": "film.replacement_cost",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:film.replacement_cost",
+      "statement": "Biaya yang ditetapkan bila film tidak dikembalikan atau dikembalikan rusak; nilai konfigurasi bukan bukti pembayaran telah terjadi.",
+      "owner": "film.replacement_cost",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film.special_features",
+      "statement": "Fitur tambahan DVD film.",
+      "owner": "film.special_features",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:film.special_features",
+      "statement": "Satu DVD dapat mencantumkan beberapa fitur dari Trailers, Commentaries, Deleted Scenes, dan Behind the Scenes.",
+      "owner": "film.special_features",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film.title",
+      "statement": "Judul film.",
+      "owner": "film.title",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film_actor",
+      "statement": "Hubungan film dengan pemerannya.",
+      "owner": "film_actor",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_actor.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:film_actor",
+      "statement": "Setiap pasangan film dan aktor mencatat keterlibatan aktor pada film tersebut.",
+      "owner": "film_actor",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_actor.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film_actor.actor_id",
+      "statement": "ID aktor terkait.",
+      "owner": "film_actor.actor_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_actor.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film_actor.film_id",
+      "statement": "ID film terkait.",
+      "owner": "film_actor.film_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_actor.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film_actor.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "film_actor.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_actor.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film_category",
+      "statement": "Hubungan film dengan kategori.",
+      "owner": "film_category",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_category.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:film_category",
+      "statement": "Setiap pasangan film dan kategori mencatat keanggotaan kategori film.",
+      "owner": "film_category",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_category.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film_category.category_id",
+      "statement": "ID kategori terkait.",
+      "owner": "film_category.category_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_category.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film_category.film_id",
+      "statement": "ID film terkait.",
+      "owner": "film_category.film_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_category.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film_category.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "film_category.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_category.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film_text",
+      "statement": "Teks film untuk pencarian.",
+      "owner": "film_text",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_text.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:film_text",
+      "statement": "Berisi teks yang digunakan untuk pencarian judul dan sinopsis film.",
+      "owner": "film_text",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_text.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film_text.description",
+      "statement": "Ringkasan pada teks pencarian film.",
+      "owner": "film_text.description",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_text.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film_text.film_id",
+      "statement": "ID film pada teks pencarian.",
+      "owner": "film_text.film_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_text.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:film_text.title",
+      "statement": "Judul pada teks pencarian film.",
+      "owner": "film_text.title",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-film_text.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:inventory",
+      "statement": "Salinan film pada toko.",
+      "owner": "inventory",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-inventory.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:inventory",
+      "statement": "Satu rekaman merepresentasikan satu salinan fisik dari satu judul pada satu toko.",
+      "owner": "inventory",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-inventory.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:inventory.film_id",
+      "statement": "ID film terkait.",
+      "owner": "inventory.film_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-inventory.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:inventory.inventory_id",
+      "statement": "ID unik salinan inventaris.",
+      "owner": "inventory.inventory_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-inventory.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:inventory.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "inventory.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-inventory.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:inventory.store_id",
+      "statement": "ID toko salinan inventaris.",
+      "owner": "inventory.store_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-inventory.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:language",
+      "statement": "Daftar bahasa film.",
+      "owner": "language",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-language.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:language.language_id",
+      "statement": "ID unik bahasa.",
+      "owner": "language.language_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-language.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:language.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "language.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-language.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:language.name",
+      "statement": "Nama bahasa.",
+      "owner": "language.name",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-language.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:payment",
+      "statement": "Catatan pembayaran pelanggan.",
+      "owner": "payment",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:payment",
+      "statement": "Satu rekaman merepresentasikan satu kejadian pembayaran oleh pelanggan.",
+      "owner": "payment",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:payment.amount",
+      "statement": "Nilai pembayaran pelanggan.",
+      "owner": "payment.amount",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:payment.customer_id",
+      "statement": "ID pelanggan pemilik pembayaran.",
+      "owner": "payment.customer_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:payment.customer_id",
+      "statement": "Pelanggan yang saldonya dikenai pembayaran ini.",
+      "owner": "payment.customer_id",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:payment.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "payment.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:payment.payment_date",
+      "statement": "Waktu pembayaran diproses.",
+      "owner": "payment.payment_date",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:payment.payment_date",
+      "statement": "Memuat tanggal dan waktu pemrosesan kejadian pembayaran.",
+      "owner": "payment.payment_date",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:payment.payment_id",
+      "statement": "ID unik pembayaran.",
+      "owner": "payment.payment_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:payment.rental_id",
+      "statement": "ID penyewaan terkait pembayaran.",
+      "owner": "payment.rental_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:payment.rental_id",
+      "statement": "Referensi rental bersifat opsional; pembayaran dapat terkait biaya belum dilunasi tanpa alokasi langsung ke satu rental. Referensi kosong sendiri tidak menentukan jenis pembayaran.",
+      "owner": "payment.rental_id",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:payment.staff_id",
+      "statement": "ID staf pemroses pembayaran.",
+      "owner": "payment.staff_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-payment.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:rental",
+      "statement": "Catatan transaksi penyewaan.",
+      "owner": "rental",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:rental",
+      "statement": "Satu rekaman merepresentasikan satu kejadian penyewaan atas satu salinan inventaris.",
+      "owner": "rental",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:rental.customer_id",
+      "statement": "ID pelanggan terkait.",
+      "owner": "rental.customer_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:rental.inventory_id",
+      "statement": "ID salinan yang disewa.",
+      "owner": "rental.inventory_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:rental.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "rental.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:rental.rental_date",
+      "statement": "Waktu transaksi penyewaan.",
+      "owner": "rental.rental_date",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:rental.rental_date",
+      "statement": "Memuat tanggal dan waktu awal kejadian penyewaan.",
+      "owner": "rental.rental_date",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:rental.rental_id",
+      "statement": "ID unik penyewaan.",
+      "owner": "rental.rental_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:rental.return_date",
+      "statement": "Waktu pengembalian tercatat.",
+      "owner": "rental.return_date",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:rental.return_date",
+      "statement": "Nilai dapat kosong jika waktu pengembalian belum dicatat.",
+      "owner": "rental.return_date",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:rental.staff_id",
+      "statement": "ID staf pemroses penyewaan.",
+      "owner": "rental.staff_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-rental.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:staff",
+      "statement": "Daftar staf penyewaan.",
+      "owner": "staff",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:staff",
+      "statement": "Setiap baris merepresentasikan satu anggota staf.",
+      "owner": "staff",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:staff.active",
+      "statement": "Penanda staf aktif.",
+      "owner": "staff.active",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:staff.active",
+      "statement": "Rekaman staf yang meninggalkan pekerjaan dipertahankan dengan status tidak aktif; ini status yang tercatat, bukan rekonstruksi masa lalu.",
+      "owner": "staff.active",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:staff.address_id",
+      "statement": "ID alamat terkait.",
+      "owner": "staff.address_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:staff.email",
+      "statement": "Alamat email staf.",
+      "owner": "staff.email",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:staff.first_name",
+      "statement": "Nama depan staf.",
+      "owner": "staff.first_name",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:staff.last_name",
+      "statement": "Nama belakang staf.",
+      "owner": "staff.last_name",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:staff.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "staff.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:staff.password",
+      "statement": "Nilai autentikasi akun staf.",
+      "owner": "staff.password",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:staff.picture",
+      "statement": "Data foto staf.",
+      "owner": "staff.picture",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:staff.staff_id",
+      "statement": "ID unik staf.",
+      "owner": "staff.staff_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:staff.store_id",
+      "statement": "ID home store staf.",
+      "owner": "staff.store_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:staff.store_id",
+      "statement": "Menunjuk home store penugasan staf; staf dapat bekerja di toko lain.",
+      "owner": "staff.store_id",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:staff.username",
+      "statement": "Nama akun login staf.",
+      "owner": "staff.username",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:staff.username",
+      "statement": "Digunakan untuk login staf ke sistem penyewaan.",
+      "owner": "staff.username",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-staff.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:store",
+      "statement": "Daftar toko penyewaan.",
+      "owner": "store",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-store.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:store.address_id",
+      "statement": "ID alamat terkait.",
+      "owner": "store.address_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-store.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:store.last_update",
+      "statement": "Waktu pembaruan rekaman.",
+      "owner": "store.last_update",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-store.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:store.manager_staff_id",
+      "statement": "ID staf manajer toko.",
+      "owner": "store.manager_staff_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-store.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "detail:store.manager_staff_id",
+      "statement": "Staf yang ditetapkan sebagai manajer untuk rekaman toko ini.",
+      "owner": "store.manager_staff_id",
+      "first_annotation_scenario": "S2",
+      "kind": "local_detail_or_technical_restatement",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-store.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "local:store.store_id",
+      "statement": "ID unik toko.",
+      "owner": "store.store_id",
+      "first_annotation_scenario": "S1",
+      "kind": "local_description",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-tables-store.html"
+      ],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "domain:stock-availability",
+      "statement": "Satu salinan tersedia jika tidak memiliki penyewaan yang waktu pengembaliannya belum diisi; salinan tanpa riwayat penyewaan juga tersedia.",
+      "owner": "business_context:inventory-availability",
+      "first_annotation_scenario": "S3",
+      "kind": "documented_routine_rule",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-functions-inventory_in_stock.html"
+      ],
+      "derived_from": [],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "domain:stock-snapshot",
+      "statement": "Ketersediaan tersebut adalah state catatan snapshot, bukan rekonstruksi histori.",
+      "owner": "business_context:inventory-availability",
+      "first_annotation_scenario": "S3",
+      "kind": "routine_scope_boundary",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-functions-inventory_in_stock.html"
+      ],
+      "derived_from": [],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "domain:rewards-period",
+      "statement": "Periode rewards adalah bulan kalender penuh sebelum tanggal sistem laporan.",
+      "owner": "business_context:monthly-rewards",
+      "first_annotation_scenario": "S3",
+      "kind": "documented_routine_rule",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-procedures-rewards_report.html"
+      ],
+      "derived_from": [],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "domain:rewards-event-grain",
+      "statement": "Frekuensi rewards dihitung dari kejadian pembayaran, bukan jumlah rental.",
+      "owner": "business_context:monthly-rewards",
+      "first_annotation_scenario": "S3",
+      "kind": "executable_routine_rule",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-procedures-rewards_report.html"
+      ],
+      "derived_from": [],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "domain:rewards-strict-both",
+      "statement": "Jumlah pembayaran dan total nominal keduanya harus melampaui ambang masing-masing; equality belum eligible.",
+      "owner": "business_context:monthly-rewards",
+      "first_annotation_scenario": "S3",
+      "kind": "executable_routine_rule",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-procedures-rewards_report.html"
+      ],
+      "derived_from": [],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "domain:rewards-no-active-filter",
+      "statement": "Status aktif pelanggan bukan kriteria tambahan rewards pada routine ini.",
+      "owner": "business_context:monthly-rewards",
+      "first_annotation_scenario": "S3",
+      "kind": "executable_routine_rule",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-procedures-rewards_report.html"
+      ],
+      "derived_from": [],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "domain:late-empty-zero",
+      "statement": "Komponen pelanggan menjumlah kontribusi rental tercakup dan bernilai nol jika tidak ada rental tercakup.",
+      "owner": "business_context:returned-rental-late-component",
+      "first_annotation_scenario": "S3",
+      "kind": "executable_routine_component",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-functions-get_customer_balance.html"
+      ],
+      "derived_from": [],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "domain:late-calendar-excess",
+      "statement": "Komponen keterlambatan adalah satu unit nominal per kelebihan hari kalender pengembalian terhadap periode katalog, minimum nol.",
+      "owner": "business_context:returned-rental-late-component",
+      "first_annotation_scenario": "S3",
+      "kind": "executable_routine_component",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-functions-get_customer_balance.html"
+      ],
+      "derived_from": [],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "domain:late-null-return",
+      "statement": "Penyewaan dengan pengembalian belum tercatat menyumbang nol pada komponen executable ini.",
+      "owner": "business_context:returned-rental-late-component",
+      "first_annotation_scenario": "S3",
+      "kind": "executable_routine_component",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-functions-get_customer_balance.html"
+      ],
+      "derived_from": [],
+      "human_review_status": "pending"
+    },
+    {
+      "fact_id": "domain:late-start-cutoff",
+      "statement": "Awal penyewaan harus tidak melewati waktu acuan, inklusif; tanggal tanpa jam diinterpretasikan 00:00:00. Cutoff tidak membatasi waktu pengembalian.",
+      "owner": "business_context:returned-rental-late-component",
+      "first_annotation_scenario": "S3",
+      "kind": "executable_routine_scope_boundary",
+      "sources": [
+        "https://dev.mysql.com/doc/sakila/en/sakila-structure-functions-get_customer_balance.html"
+      ],
+      "derived_from": [],
+      "human_review_status": "pending"
+    }
+  ],
+  "limits": "Authoring draft. Technical entailment and proposition-level redundancy need independent review. First annotation occurrence is not complete-input availability or necessity. Record count is not a count of strictly atomic or novel facts. Routine sources must be checked against the exact cached executable body, not comments alone."
+}

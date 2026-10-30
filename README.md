@@ -6,15 +6,28 @@
 
 Investigate how metadata annotation changes the execution accuracy of one fixed local LLM on the official MySQL Sakila database. DataHub and MCP prepare auditable metadata snapshots; Python runs independent inference requests, safe SQL execution, result comparison and question-paired analysis.
 
-> **Research status:** review completion for the revision03 stimulus was declared by the researcher; reviewer names/date remain to be entered. Earlier main and engineering results are preserved locally. The researcher has now selected Qwen3.5-9B for a separate600trial replication with an explicit no-additional-pilot amendment. Actual predictions, EX scores and statistical outputs remain local. Richer metadata is not assumed to improve accuracy.
+> **Current status:** the Qwen3.5-9B replication is complete: **600 main trials**. The researcher authorized publication of the [actual BAB IV–V, EX reports, figures and evidence bundle](reports/qwen35-9b-main-01/README.md) for thesis writing on Windows. Start with the [new-agent brief](reports/qwen35-9b-main-01/AGENT_BRIEF.md) and [Windows guide](reports/qwen35-9b-main-01/WINDOWS.md). Reviewer names/date and campus formatting remain to be supplied by the researcher. Richer metadata is not assumed to improve accuracy.
 
 ![Two-phase experimental architecture](docs/figures/architecture.svg)
 
 **Thesis title — unchanged:** *Analisis Pengaruh Metadata terhadap Execution Accuracy pada Sistem Text-to-SQL Berbasis Large Language Model (Studi Kasus: Basis Data Sakila)*
 
-[BAB IV](docs/bab-iv.md) · [Runbook](docs/runbook.md) · [Annotator guide](annotations/round-03/review-guide.md) · [AI handoff](docs/ai-handoff.md) · [Decisions](docs/decisions.md)
+[Current BAB IV](reports/qwen35-9b-main-01/thesis/BAB_IV.md) · [Current BAB V](reports/qwen35-9b-main-01/thesis/BAB_V.md) · [EX report](reports/qwen35-9b-main-01/analysis/report.md) · [AI handoff](docs/ai-handoff.md) · [Decisions](docs/decisions.md)
 
-A full preliminary run has completed and passed integrity checks. Its archived release passed 144 local and isolated-reconstruction tests; actual scores remain embargoed pending review.
+## Completed Qwen3.5-9B run
+
+| Condition | Correct / 150 | EX (%) |
+|---|---:|---:|
+| S0 | 98 | 65.33 |
+| S1 | 111 | 74.00 |
+| S2 | 109 | 72.67 |
+| S3 | 121 | 80.67 |
+
+Question-paired omnibus permutation: `p = 0.001019989800101999`. Only S3–S0 is significant after Holm correction across six contrasts: +15.33 percentage points, `p_Holm = 0.0234375`. This does not establish that every description increment helps. The model was selected after earlier results were known; that history and the explicit waiver of further pilot/smoke generation are disclosed in the [writing bundle](reports/qwen35-9b-main-01/README.md). Do not rerun inference to write the thesis.
+
+## Archived development checkpoints
+
+A full preliminary run completed and passed integrity checks. Its archived release passed 144 local and isolated-reconstruction tests. Earlier embargo statements below describe their historical checkpoint; later authorization covers the curated writing bundle, without changing original manifests.
 
 **Revision-02 inputs are frozen after independent audit.** The revised design uses a pinned Spider complexity adapter, three source-based domain rules, a separate 180-trial diagnostic and isolated semantic witnesses. All 30 selected and 12 pilot references pass nine database cases; 228 local tests including MySQL integration pass. No revised EX exists at this pre-generation source checkpoint. Read the [revision status](docs/revision-02/implementation-status.md), [dataset methodology](docs/revision-02/dataset-methodology.md), [runbook](docs/revision-02/runbook.md), and [blank review packet](annotations/round-02/review-guide.md). The design does not require richer metadata to win.
 
@@ -68,13 +81,13 @@ uv run --frozen sakila-experiment schedule --questions data/public/main.question
 
 MySQL binds to **127.0.0.1:13306**, DataHub GMS/UI to **18080/19002**, and inference to **18081**. Credentials, downloads and experiment logs are Git-ignored. `.env.example` documents configuration; never commit an actual `.env`.
 
-Public candidate payloads in `snapshots/distribution-v1` are byte-identical to the local candidates. Distribution manifests use relative provenance paths and preserve original manifest hashes. Raw MCP exports/runtime receipts remain local; replay requires their archive or fresh documented DataHub/MCP preparation. Public payloads alone do not establish fresh ingestion.
+Public candidate payloads in `snapshots/distribution-v1` are byte-identical to the original candidates. They describe the earlier instrument. The current writing bundle includes the four actual revision snapshots and curated original MCP receipts in its evidence archive; these support archived replay, not a claim of fresh ingestion. Distribution manifests use relative provenance paths and preserve original manifest hashes.
 
 See the [full reconstruction guide](docs/reproduction.md) for fresh DataHub preparation, runtime-image receipts and the distinction between archived replay and a new ingestion.
 
 ## Running an experiment
 
-The current researcher-selected replication uses **Qwen3.5-9B Q4_K_M** with a hash-bound [execution amendment](data/amendments/qwen35-9b-direct-main-01.json). Follow its [protocol and monitoring commands](docs/qwen35-9b-main.md). This specific amendment waives additional capability-pilot and smoke generation, retains zero-generation engineering checks, and verifies sampler/seed/cache from each actual main response. It does not claim prospective model selection or guaranteed significance.
+The completed researcher-selected replication used **Qwen3.5-9B Q4_K_M** with a hash-bound [execution amendment](data/amendments/qwen35-9b-direct-main-01.json). Its [protocol](docs/qwen35-9b-main.md) records launch settings and historical monitoring commands. This specific amendment waived additional capability-pilot and smoke generation, retained zero-generation engineering checks, and verified sampler/seed/cache from each actual main response. It does not claim prospective model selection or guaranteed significance. Use stored results for writing; a new run is a separate research action.
 
 For archived/default execution, follow the [runbook](docs/runbook.md). Its database/snapshot/reference, context, separate pilot and sampler requirements remain enforced for unamended runs.
 
@@ -102,21 +115,22 @@ annotations/      # A01/A02 templates; actual submissions remain private
 infra/            # Pinned deployments, reproduction and publication checks
 tests/            # Synthetic unit cases and isolated MySQL integration
 docs/             # Protocols, decisions, BAB IV, handoff, editable figures
+reports/qwen35-9b-main-01/ # Published chapters, measured results, inputs and audit evidence
 ```
 
 `data/private` means isolated from generation, **not confidential storage**: draft gold is available for scientific inspection. Actual model outputs and human submissions are private by default.
 
 ## Evaluation and reproducibility
 
-EX compares execution results, not SQL text. Unordered results use multisets; ordered questions use sequences. Aliases are ignored; column count/position are fixed. Integer/decimal values remain exact; floating tolerances must be declared. Model SQL errors/rejections receive EX=0. Unrelated infrastructure/evaluator failures remain separate from completed trials.
+EX compares execution results, not SQL text. Unordered results use multisets; ordered questions use sequences. The current revision03 policy ignores aliases and accepts one global column permutation, preserving full-row associations and duplicate multiplicities. Column count is fixed; numeric/date contracts use gold coordinates. Integer/decimal values remain exact; floating tolerances must be declared. Model SQL errors/rejections receive EX=0. Unrelated infrastructure/evaluator failures remain separate from completed trials.
 
-The question is the paired block. Five repetitions are aggregated per question–condition; 600 trials are not 600 independent questions. See [EX rules](docs/evaluation-protocol.md), [analysis plan](docs/analysis-plan.md), [verification matrix](docs/evidence-matrix.md) and [publication policy](docs/publication.md).
+The question is the paired block. Five repetitions are aggregated per question–condition; 600 trials are not 600 independent questions. See the current [EX rules](docs/revision-03/evaluation-protocol.md), [analysis plan](docs/revision-03/analysis-plan.md), [verification matrix](docs/evidence-matrix.md) and [publication policy](docs/publication.md).
 
 Tests cover duplicate/NULL/type/order cases, unsafe SQL, timeouts, corrupted artifacts, deployment drift, outages, ambiguous crashes and safe resume. An earlier clean environment reproduced database and snapshot payloads from archived MCP exports. This is distinct from fresh DataHub ingestion or guaranteed identical stochastic outputs.
 
 ## Review and reuse
 
-Each independent annotator receives **152 items**: 39 questions, 106 descriptions and seven terms. Distribute only their designated CSV folder, shared schema/reference material and [guide](annotations/round-01/GUIDE.md), without model predictions/scores. Consolidation creates pending adjudication; software never creates human approval.
+The original round-01 review packet contained **152 items**: 39 questions, 106 descriptions and seven terms. It is historical; current revision03 materials and status are described in the [review packet](annotations/round-03/review-guide.md) and [writing brief](reports/qwen35-9b-main-01/AGENT_BRIEF.md). Review completion was declared by the researcher; reviewer identity/date are not fabricated. A new independent review should receive only its designated inputs without model predictions/scores. Software never creates human approval.
 
 After review, **gold SQL/result-contract-only corrections** can rescore stored predictions under a hash-bound adjudication record without new inference. Changes to questions, snapshots, prompt, model or sampling require new generation. Original ledgers remain intact.
 

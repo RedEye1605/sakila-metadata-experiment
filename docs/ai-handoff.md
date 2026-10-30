@@ -1,56 +1,45 @@
-# Handoff untuk penulisan penelitian
+# Mulai di sini — handoff penulisan skripsi
 
-Dokumen ini mengarahkan penulis/AI pendamping; bukan sumber untuk mengarang hasil penelitian.
+**Pipeline dan run Qwen3.5-9B sudah selesai.** Peneliti meminta paket aktual dipublikasikan agar dapat melanjutkan penulisan di Windows dengan agent baru. Tugas berikutnya adalah penyusunan/penyuntingan naskah berdasarkan evidence, bukan menjalankan ulang eksperimen.
 
-**Otorisasi eksekusi terkini:** peneliti menyatakan review selesai dan meminta run end-to-end. Gunakan `configs/revision03-main.toml` serta `data/benchmarks/revision-03/execution-01/manifest.json`. Basis review adalah pernyataan langsung peneliti; nama dan tanggal reviewer belum dicatat dan diisi peneliti kemudian. Rencana eksekusi ada pada `docs/revision-03/execution-plan.md`:12engineering requests lalu600main trials, paired analysis,8auxiliary cases dan manuscript generator. BAB IV/V hasil aktual berada di `runs/revision-03/main-01/thesis/` hanya setelah pipeline lengkap. Jangan menganggap status source ini sebagai bukti run sudah selesai atau mengarang EX bila completion belum ada.
+## Paket yang harus dibaca
 
-**Instrumen terkini revision-03:** gunakan `docs/revision-03/`, `data/benchmarks/revision-03/final-02/`, `configs/revision03.toml` dan `prompts/generation-v3.txt`. Soal tidak lagi memiliki footer kolom teknis, dan EX menerima satu pemetaan bijektif kolom global. Ranking/ordering tetap memerlukan urutan baris benar. Tiga soal ordered mencakup dua top-k dengan konvensi ties seragam. Gold A/B sepakat pada sembilan database cases; human review tetap pending. Belum ada generation atau EX revision03. Hasil diagnostik revision02 tetap milik versi lama dan tidak boleh dipindahkan ke revision03. BAB IV bagian4.13 menjelaskan perubahan. Uraian berikutnya adalah sejarah versi lama kecuali diberi label terkini.
+1. [Paket penulisan dan hasil aktual](../reports/qwen35-9b-main-01/README.md).
+2. [Brief lengkap untuk agent baru](../reports/qwen35-9b-main-01/AGENT_BRIEF.md).
+3. [Panduan Windows dan pemeriksaan offline](../reports/qwen35-9b-main-01/WINDOWS.md).
+4. [BAB IV — Perancangan dan Implementasi](../reports/qwen35-9b-main-01/thesis/BAB_IV.md), [BAB V — Hasil dan Pembahasan](../reports/qwen35-9b-main-01/thesis/BAB_V.md).
+5. [Satu naskah BAB IV–V beserta lampiran](../reports/qwen35-9b-main-01/thesis/NASKAH_BAB_IV_V_LENGKAP.md).
+6. [Laporan EX/statistik](../reports/qwen35-9b-main-01/analysis/report.md), [audit pascarun](../reports/qwen35-9b-main-01/evidence/postrun-audit/report.md), [riwayat run](../reports/qwen35-9b-main-01/HISTORY.md).
 
-**Pembaruan revision-02:** tabel dan penjelasan pendahuluan di bawah mengacu pada instrumen lama. Revisi setelah audit ada pada `docs/bab-iv.md` bagian 4.12 dan `docs/revision-02/`. Revisi memakai tiga kartu domain dan 12 pilot diagnostik, berbeda dari tujuh istilah/sembilan pilot lama. Input akhir `data/benchmarks/revision-02/final-02` berisi 30 soal dari pool 60 dengan rubric adaptasi Spider dan kebutuhan pengetahuan terpisah. Reference utama/pilot lolos sembilan database; source checkpoint lulus 228 tests dan driver dry-run tanpa generation. Tidak ada EX revisi pada checkpoint ini; jangan menyalin skor lama menjadi skor revisi. Gunakan run completion/laporan aktual nanti, bukan status source pra-run, untuk menulis hasil. Human review tetap pending; paket akhir berada di `annotations/round-02`.
+Judul tetap: **Analisis Pengaruh Metadata terhadap Execution Accuracy pada Sistem Text-to-SQL Berbasis Large Language Model (Studi Kasus: Basis Data Sakila)**.
 
-Judul wajib: **Analisis Pengaruh Metadata terhadap Execution Accuracy pada Sistem Text-to-SQL Berbasis Large Language Model (Studi Kasus: Basis Data Sakila)**.
+## Run utama saat ini
 
-Gunakan delapan tahap metodologi yang disepakati: Studi Literatur; Penyusunan Anotasi Metadata; Penyusunan Dataset Pengujian; Perancangan Pipeline Text-to-SQL; Implementasi Pipeline Text-to-SQL; Pengujian Text-to-SQL; Analisis Hasil; Penarikan Kesimpulan dan Saran. Setup Sakila dan pemeriksaan model adalah kegiatan teknis, bukan tahap penelitian tambahan. EX dihitung dalam pengujian; statistik masuk analisis hasil.
+Run `qwen35-9b-main-01`: 30 soal Indonesia × 4 kondisi × 5 repetitions = **600 trial lengkap**; 150/kondisi, 200/complexity. Model upstream Qwen/Qwen3.5-9B, GGUF Q4_K_M dari Unsloth. Source eksperimen `ab3860c2742936073ded5b1bed66951b738b2a5f`; source penulisan/publikasi sesudahnya tidak mengganti source run.
 
-## Sumber wajib
+| Kondisi | Benar/150 | EX (%) |
+|---|---:|---:|
+| S0 | 98 | 65,33 |
+| S1 | 111 | 74,00 |
+| S2 | 109 | 72,67 |
+| S3 | 121 | 80,67 |
 
-| Kebutuhan | Sumber |
-|---|---|
-| BAB IV: rancangan dan implementasi | `docs/bab-iv.md`, `docs/implementation-plan.md`, `docs/reproduction.md`, source modules |
-| Kontrol dan keputusan | `docs/decisions.md`, `docs/evaluation-protocol.md`, `docs/analysis-plan.md` |
-| Diagram editable dan siap pakai | `docs/figures/source/*.mmd`, SVG/PNG pada directory induk |
-| Soal/gold dan kontrak | `data/public/main.questions.jsonl`, `data/private/main.gold.jsonl`, `data/pilot` |
-| Anotasi dan skenario | `data/annotations/specification.json`, `snapshots/distribution-v1` |
-| Review independen | `annotations/round-01/GUIDE.md`, template A01/A02; submission privat terpisah |
-| Klaim pengujian | `docs/evidence-matrix.md`, laporan pytest/reproduction aktual di `runs/` lokal |
-| BAB V | **Hanya** laporan EX aktual, manifest, ledger dan adjudikasi yang disediakan peneliti secara privat |
+Omnibus paired permutation `p=0.001019989800101999`. Hanya S3–S0 signifikan setelah Holm enam kontras: +15,33 poin persentase, `p_Holm=0.0234375`. Lima repetitions tidak membuat 600 observasi menjadi independen; statistik memakai 30 question blocks. Jangan menyatakan semua tambahan metadata signifikan atau lebih panjang selalu lebih baik.
 
-Repository publik sengaja tidak menyertakan keluaran model, angka EX, p-values atau grafik hasil sebelum review. Ketiadaan hasil di repository bukan izin mengisi angka ilustratif sebagai hasil nyata. Jangan membuat nama reviewer, tanggal, jumlah persetujuan, tingkat akurasi atau signifikansi.
+Terdapat 600 durable responses/outcomes/sampler proofs, 0 infrastructure incidents, 576 SQL successes, 23 model execution errors, 1 parser rejection. Delapan variasi terisolasi menghasilkan 4.800 auxiliary SQL outcomes tanpa generation baru. Audit independen pascarun mencatat 17 checks lulus. Database fisik sesudah completion cocok dengan schema/data fingerprint beku. Periksa cakupan tepatnya dalam laporan audit, bukan klaim bebas bug universal.
 
-## Fakta desain yang harus dipertahankan
+## Kontrol dan batas klaim
 
-- S0–S3 memakai database, data, technical schema, coverage, urutan serialisasi, prompt, pertanyaan, model/settings dan evaluator yang sama. S1/S2 mencakup 106 elemen; S3 mempertahankan deskripsi S2 verbatim lalu menambah tujuh istilah bisnis.
-- Sakila aktual mempunyai 16 base tables, 90 kolom, 22 FK, 47.268 baris. Views/routines tidak menjadi konteks model. Gunakan diagram yang diturunkan dari audit aktual, bukan skema buatan.
-- DataHub mengelola anotasi; MCP mengambilnya pada persiapan. Eksperimen memakai snapshot beku. Model tidak memiliki akses MySQL, MCP, DataHub, gold atau hasil sebelumnya.
-- Desain 30×4×5 menghasilkan 600 trial, bukan 600 pertanyaan independen. Lima request dapat menghasilkan SQL identik. Sembilan soal pilot terpisah dari 30 utama.
-- EX menilai ekuivalensi hasil pada database tetap. Duplicate multiplicity, NULL, posisi kolom, numerik dan ordering mengikuti kontrak; exact SQL matching bukan metrik utama. Hasil sama pada satu database tidak membuktikan general semantic equivalence.
-- Model error adalah terminal EX=0. Infrastruktur gagal tidak otomatis EX=0. Tidak ada repair semantik, error feedback atau kesempatan kedua untuk trial model yang sudah selesai.
-- Input length meningkat dengan deskripsi dan dicatat. Jangan mengklaim efek metadata terpisah dari panjang token melalui kontrol yang tidak dilakukan.
+DataHub/MCP hanya digunakan pada metadata preparation. Inference menerima snapshot beku, pertanyaan dan instruksi sama; model tidak mengakses MySQL, gold, tools atau history. S3 menambah tiga domain definitions, bukan tujuh istilah pada versi awal. Evaluator menerima satu global column permutation, mempertahankan whole-row duplicates, typed values dan row order yang diminta. Tiga ordered tasks mencakup dua top-k tasks.
 
-## Status ilmiah dan batas klaim
+Model dipilih peneliti sesudah hasil model terdahulu diketahui; pilot/smoke generation tambahan secara eksplisit ditiadakan. Run ini mempunyai 600 main requests, **0 additional pilot, 0 smoke**. Jangan menulis bahwa model ini lulus capability pilot atau dipilih prospektif. Hasil lama tetap tersedia untuk disclosure dan tidak boleh diganti label menjadi pilot.
 
-Benchmark/gold/anotasi masih **draft**. Peneliti mengizinkan 36 pilot dan 600 trial **pendahuluan** untuk menghasilkan laporan teknis. Software tidak mengubah draft menjadi approved. Gunakan kata pendahuluan/provisional pada semua keluaran yang belum melewati review.
+Review completion stimulus merupakan pernyataan peneliti; nama/tanggal reviewer belum diberikan dan harus diisi peneliti. Raw gold mempertahankan label draft historis; user attestation terpisah mengikat versi yang dieksekusi. AI/reference agreement tidak menggantikan bukti reviewer manusia. BAB I–III, template kampus dan identitas reviewer tidak boleh dikarang.
 
-Run pendahuluan sudah lengkap dan lolos audit. Laporan aktual berada secara lokal di `runs/analysis/preliminary-01`, khususnya `interpretation.md`, `report.md` dan `report.json`. Jangan mengirim paket penulis yang memuat skor kepada A01/A02 sebelum submission independen mereka selesai. Source generation/analisis asli adalah commit bb32938; hardening review ditambahkan sesudah completion, bukan mengganti source di tengah run.
+## Petunjuk kerja
 
-Rencana analisis dipilih sebelum run pendahuluan dan di-hash: agregasi skor/5 per question–scenario, omnibus permutation dalam question blocks, enam paired contrasts dengan Holm, 10.000 bootstrap question-level berstrata complexity; seed dan implementasi tercatat. Uraikan asumsi exchangeability, keterbatasan 30 soal terpilih, tied/discrete scores, pointwise CI, dan bahwa nonsignificance bukan bukti ekuivalensi.
+Gunakan angka dari JSON/CSV aktual dan lampiran input di paket. Bedakan engineering validation, human review attestation dan inferensi statistik. Pertahankan delapan tahap metodologi, satu database/model tetap dalam run dan batas generalisasi 30 purposively selected questions. Simpan revisi editorial terpisah dari evidence beku.
 
-Sesudah adjudikasi, perubahan gold/kontrak saja dapat menghasilkan rescore turunan tanpa generation jika seluruh generation inputs identik. Pertanyaan/metadata/prompt/model/settings berubah memerlukan run baru. Jangan menyebut hasil pascareview otomatis konfirmatori ketika skor sebelumnya sudah dilihat. Catat setiap koreksi dan urutan waktu secara terbuka.
+Tidak diperlukan model weights, Python, Docker, DataHub, MCP atau MySQL untuk membaca/menulis bab. Arsip evidence dan verifier tersedia untuk pemeriksaan offline. Path absolut Linux dalam receipts adalah provenance historis, bukan konfigurasi Windows.
 
-## Petunjuk menyusun BAB IV dan BAB V
-
-BAB IV menjelaskan tujuan instrumen, kebutuhan, lingkungan, arsitektur dua fase, Sakila aktual, metadata, normalisasi/provenance, dataset, prompt/model, safety/comparator, scheduler/logging, review serta pengujian implementasi. Tabel kebutuhan dan bukti membantu membedakan planned, implemented, tested dan reviewed.
-
-BAB V memakai hanya file aktual lokal yang diberikan peneliti: `report.json`, `report.md`, `execution-accuracy.csv`, `complexity.csv`, `questions.csv`, `paired-contrasts.csv`, `measurements.csv`, grafik PNG/PDF, manifest/freeze/completion dan catatan review. Periksa 600 ID unik, denominator 150/kondisi, 200/complexity dan database_unchanged. Jangan menafsirkan pilot sebagai efek metadata utama. Laporkan effect size dan uncertainty bersama p-values; diskusikan ketepatan gold serta error model tanpa cherry-picking.
-
-Naskah harus menyatakan bahwa pipeline merupakan instrumen eksperimen kuantitatif analitis, bukan produk chatbot atau model baru. Jangan mengubah judul, menambah studi banding model besar-besaran, atau membuat hasil yang belum ada.
+Dokumen arsip yang masih menyebut pra-run, pilot lama, embargo atau model lama harus dibaca menurut versinya. [Otorisasi publikasi baru](../reports/qwen35-9b-main-01/PUBLICATION_AUTHORIZATION.json) berlaku untuk curated writing bundle; manifest historis tetap byte-identical. Credentials, weights dan volume database tidak dipublikasikan.

@@ -1,0 +1,238 @@
+{
+  "artifact_references": {
+    "original_review_receipt": {
+      "path": "runs/revision-03/independent-review-01/review-receipt.json",
+      "sha256": "e9cf9a7722f88da99c32d694d42c971d12c39fd0e178b4e8e1afaa4ca23eb539"
+    },
+    "prior_gate_receipt": {
+      "path": "runs/revision-03/independent-review-01/gate-receipt.json",
+      "sha256": "39fbc51093a64a38f0c31b9b8ef8387f5fb31efdfb0bc82980b0b14de7ae2900"
+    },
+    "prior_normalization_lock": {
+      "path": "runs/revision-03/independent-review-01/normalization-lock.json",
+      "sha256": "2feaacff7cb63003520f159cbadfcb12f42290d18994164523b0d3d573f4a04d"
+    },
+    "question_file": {
+      "path": "data/benchmarks/revision-03/questions.jsonl",
+      "sha256": "cd6213e4e66492688e8b17d7b80bb77e8205e1575032b9f1d763269537ebf74e"
+    },
+    "question_intents": {
+      "path": "runs/revision-03/independent-review-01/question-intents.jsonl",
+      "sha256": "6b8b0e8a550bc518f294ee9ada2043a190eae41b93ce6038c38bb7c281d965ac"
+    },
+    "reference_lock": {
+      "path": "runs/revision-03/independent-review-01/reference-lock.json",
+      "sha256": "f6b5f5f2afabfb7c397ab45b206cc4b2d2567bdf63514b0a4abbf23857c02ef9"
+    }
+  },
+  "canonical_json_implementation": {
+    "helper_source_sha256": "9e9d50b022eaf5d8e604dad3367c70ef9a6b44e5fb34ee38cd1e0457efc064ac",
+    "import": "from sakila_experiment.artifacts import canonical_json",
+    "interpreter": ".venv/bin/python",
+    "source_helper_path": "src/sakila_experiment/artifacts.py",
+    "trailing_LF_per_record": true
+  },
+  "gold_b_draft_field_interpretation": "Original Gold B draft:false means independent AI authorship was finalized only. It does not mean human review or approval; human_review_complete remains false and human review is pending.",
+  "gold_b_is_draft_for_human_review": true,
+  "human_review_complete": false,
+  "human_review_status": "pending",
+  "normalization_statement": "Serialization adaptation only: existing assessment rows and source input texts are unchanged. The gate question_packet_sha256 now uses the actual project canonical_json JSONL helper; the original compact-array packet hash remains explicitly preserved. Human-review flags clarify existing AI-finalized authorship and do not represent approval. No SQL, original receipt, or original reference lock changed.",
+  "normalization_timestamp_utc": "2026-10-28T16:39:41.427527+00:00",
+  "original_array_question_packet_serialization": "UTF-8 json.dumps([{question_id,question} in file order], ensure_ascii=False, sort_keys=True, separators=(comma,colon)); no trailing newline.",
+  "original_array_question_packet_sha256": "d19e1d595010ae72753fe5bc5822030121ed0c7a8951e8e293a6d0e9a7b49991",
+  "prompt_template_sha256": "4691bd1a0e4f64b4e4a5f013d2f7e376428da6f7f7df0f5591831429782b088e",
+  "question_assessments": [
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Pembayaran tercatat pada berapa tanggal kalender yang berbeda?",
+      "question_id": "Q102"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Berapa banyak judul film berbeda dalam persediaan seluruh toko secara keseluruhan?",
+      "question_id": "Q105"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Berapa rata-rata lama satu periode sewa film dalam hari?",
+      "question_id": "Q107"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Ada berapa home store berbeda yang tercatat pada pelanggan?",
+      "question_id": "Q112"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Berapa rata-rata biaya penggantian film dalam katalog?",
+      "question_id": "Q114"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Tampilkan nama setiap kategori film beserta jumlah judul film dalam kategori tersebut.",
+      "question_id": "Q116"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Tampilkan nama setiap distrik beserta jumlah alamat yang tercatat di distrik tersebut.",
+      "question_id": "Q117"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Tampilkan nama setiap negara beserta jumlah kota yang tercatat di negara tersebut.",
+      "question_id": "Q118"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Tampilkan nomor setiap staf beserta jumlah pelanggan berbeda yang penyewaan filmnya pernah diproses oleh staf tersebut.",
+      "question_id": "Q119"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Berapa rata-rata durasi pemutaran film dalam menit untuk setiap klasifikasi usia penonton? Tampilkan klasifikasi tersebut beserta rata-ratanya.",
+      "question_id": "Q120"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Tampilkan setiap status keaktifan pelanggan yang tercatat beserta total nilai pembayaran pelanggannya.",
+      "question_id": "Q121"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Sebutkan nama depan yang dimiliki lebih dari satu pemeran, beserta jumlah pemeran untuk masing-masing nama tersebut.",
+      "question_id": "Q125"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Tampilkan judul, tarif satu periode sewa, dan lama periode sewa dalam hari untuk semua film dengan tarif satu periode di atas 2.00, urut dari tarif tertinggi.",
+      "question_id": "Q128"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Sebutkan nama kota tempat tinggal pelanggan yang tercatat tidak aktif, tanpa mengulang nama kota yang sama.",
+      "question_id": "Q133"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Sebutkan judul semua film yang tidak melibatkan pemeran bernama depan PENELOPE.",
+      "question_id": "Q134"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Untuk satu staf yang paling banyak memproses pembayaran atas penyewaan yang diproses staf lain, tampilkan nomor staf, nomor home store staf, dan jumlah pembayaran tersebut.",
+      "question_id": "Q141"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Film apa saja yang pernah disewa pelanggan tetapi tidak dimiliki home store pelanggan tersebut? Tampilkan nomor dan judul film, nomor pelanggan, serta nomor home store pelanggan.",
+      "question_id": "Q143"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Sebutkan nomor salinan film yang tersedia untuk disewa menurut ketentuan Sakila.",
+      "question_id": "Q146"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Sebutkan nomor pelanggan yang memenuhi syarat rewards bulanan Sakila pada tanggal acuan 1 Agustus 2005, dengan ambang frekuensi 7 dan ambang nilai pembayaran 20.00.",
+      "question_id": "Q147"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Tampilkan judul setiap film dalam katalog beserta jumlah salinan yang tersedia di toko 1 menurut ketentuan Sakila.",
+      "question_id": "Q148"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Tampilkan nama negara yang memiliki penerima rewards bulanan Sakila beserta jumlah penerima di setiap negara, untuk tanggal acuan 1 Agustus 2005 dengan ambang frekuensi 7 dan ambang nilai pembayaran 20.00.",
+      "question_id": "Q149"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Untuk setiap pelanggan, tampilkan nomor pelanggan beserta nilai komponen keterlambatan menurut rutin Sakila pada tanggal acuan 1 Maret 2006.",
+      "question_id": "Q150"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Sebutkan nomor penyewaan yang memberikan komponen keterlambatan positif menurut rutin Sakila pada tanggal acuan 1 Maret 2006, beserta nomor pelanggan dan nilai komponen tersebut.",
+      "question_id": "Q151"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Tampilkan nomor dan nama depan sepuluh pelanggan dengan ragam kategori film sewaan terbanyak di antara pelanggan yang pernah menyewa film dari sedikitnya tiga kategori berbeda, beserta jumlah kategori dan jumlah judul film berbeda yang pernah disewa. Dahulukan jumlah kategori terbanyak, lalu jumlah judul terbanyak.",
+      "question_id": "Q152"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Tampilkan nomor, nama depan, dan nama belakang pemeran beserta nomor dan nama setiap kategori film yang pernah dibintanginya.",
+      "question_id": "Q154"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Berapa banyak film yang durasi pemutarannya lebih dari dua jam?",
+      "question_id": "Q155"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Berapa banyak pelanggan yang tercatat tidak aktif?",
+      "question_id": "Q156"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Sebutkan nomor semua pelanggan dengan home store 1.",
+      "question_id": "Q157"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Berapa banyak pembayaran yang nilainya melebihi 10.00?",
+      "question_id": "Q159"
+    },
+    {
+      "material_residual_ambiguity": false,
+      "material_residual_ambiguity_reasons": [],
+      "question": "Sebutkan judul semua film dengan klasifikasi usia PG-13.",
+      "question_id": "Q160"
+    }
+  ],
+  "question_count": 30,
+  "question_packet_serialization": "Concatenation in question-file order of sakila_experiment.artifacts.canonical_json({question_id, question}) bytes; each canonical JSON object ends with LF; SHA256 over all concatenated bytes.",
+  "question_packet_sha256": "2338ee9fc413bf323c0c6bfd3f2f94a15a5dbfad3d2b2e863e30e4af54b01e3c",
+  "schema_normalization_only": true,
+  "serialization_adaptation_only": true,
+  "snapshot_sha256": {
+    "S0": "49a0fb52333e0da4956d51a9c35bfc722b2874711422238c63e01b5916dae808",
+    "S1": "a5a30dd8f8784360340348de5aff49289308b7ddd4d089c2ca36f214f50e2e01",
+    "S2": "dcf1eb760dd65ce87a41ecd35183f541496f132b7726a6b7cfee924fef2f7d8e",
+    "S3": "5fa53258f6f777801b3b3e3610d7ba60a1cd9b8b2af8f7d8584e9e6452098020"
+  },
+  "status": "complete_independent_AI_review"
+}

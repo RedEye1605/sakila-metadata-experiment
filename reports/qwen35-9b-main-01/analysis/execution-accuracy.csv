@@ -1,0 +1,5 @@
+evaluation_status,scenario_id,trials,correct,execution_accuracy_percent
+user_attested_review,S0,150,98,65.33333333333333
+user_attested_review,S1,150,111,74.0
+user_attested_review,S2,150,109,72.66666666666667
+user_attested_review,S3,150,121,80.66666666666666
